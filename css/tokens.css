@@ -1,0 +1,105 @@
+/* Farol — tokens do design system (gerado a partir de tokens.json). Tema pelo atributo data-theme no <html>. */
+:root,
+[data-theme="light"] {
+  --surface-page: #f8f9fa;
+  --surface: #ffffff;
+  --surface-sunken: #f4f6f8;
+  --surface-selected: #e3e5e6;
+  --line: #eceef2;
+  --line-control: #d4dce3;
+  --line-strong: #78838b;
+  --ink: #2c3b48;
+  --ink-soft: #3a4e5d;
+  --ink-muted: #496173;
+  --ink-faint: #8699a9;
+  --brand-navy: #203a6e;
+  --brand-blue: #005086;
+  --brand-sky: #1d8acb;
+  --brand-yellow: #f7b815;
+  --on-brand: #ffffff;
+  --on-yellow: #203a6e;
+  --accent: #1769c2;
+  --accent-soft: #e7f1fc;
+  --on-accent: #ffffff;
+  --accent-legacy: #2e94f9;
+  --slate: #25323d;
+  --on-slate: #ffffff;
+  --chrome: #2c3b48;
+  --chrome-field: #56626d;
+  --on-chrome: #ffffff;
+  --success: #09a339;
+  --success-text: #0b7a2d;
+  --success-soft: #e4f5ea;
+  --danger: #bb243e;
+  --danger-text: #bb243e;
+  --danger-soft: #fbe9ec;
+  --warning-text: #8a5a00;
+  --warning-soft: #fdf3d6;
+  --progress-track: #c9d3dc;
+  --focus-ring: var(--accent);
+  --shadow-header: 0 2px 6px rgba(0, 0, 0, 0.28);
+  --shadow-popover: 0 8px 24px rgba(12, 22, 32, 0.16);
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --surface-page: #10171d;
+  --surface: #172028;
+  --surface-sunken: #1e2933;
+  --surface-selected: #283541;
+  --line: #26323c;
+  --line-control: #5b6d7b;
+  --line-strong: #7d8e9c;
+  --ink: #e9eef2;
+  --ink-soft: #c9d4dc;
+  --ink-muted: #a3b3c0;
+  --ink-faint: #6f8291;
+  --brand-navy: #4766b0;
+  --brand-blue: #5aa7e0;
+  --brand-sky: #4fb0ea;
+  --brand-yellow: #f7b815;
+  --on-brand: #0b1a2a;
+  --on-yellow: #203a6e;
+  --accent: #5aa8f5;
+  --accent-soft: #1b3550;
+  --on-accent: #0b1a2a;
+  --accent-legacy: #2e94f9;
+  --slate: #dbe4ea;
+  --on-slate: #172028;
+  --chrome: #0c1218;
+  --chrome-field: #26333e;
+  --on-chrome: #ffffff;
+  --success: #2fbf5f;
+  --success-text: #5fd585;
+  --success-soft: #16331f;
+  --danger: #f06a80;
+  --danger-text: #f58c9c;
+  --danger-soft: #3a1a21;
+  --warning-text: #f2c14e;
+  --warning-soft: #382c10;
+  --progress-track: #33424f;
+  --focus-ring: var(--accent);
+  --shadow-header: 0 2px 6px rgba(0, 0, 0, 0.6);
+  --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --radius-sm: 4px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+  --size-header: 80px;
+  --size-sidebar: 256px;
+  --size-control: 48px;
+  --size-control-sm: 36px;
+  --size-avatar: 36px;
+  --font-sans: "Nunito Sans", "Segoe UI", system-ui, sans-serif;
+}
+
