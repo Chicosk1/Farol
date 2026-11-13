@@ -1,4 +1,5 @@
 /* Farol — moldura das telas: cabeçalho, menu lateral, barra inferior no celular e barra de demonstração. */
+/* Specs: ACE-RF-03, DUV-RF-06. Rastreabilidade em docs/rastreabilidade.md. */
 (function () {
   'use strict';
   const F = window.Farol;

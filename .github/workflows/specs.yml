@@ -1,0 +1,28 @@
+name: Verificação das specs
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Specs, rastreabilidade e links
+        run: python3 scripts/verificar_specs.py
+
+      - name: Sintaxe do protótipo
+        run: |
+          for arquivo in js/*.js js/screens/*.js; do
+            node --check "$arquivo"
+          done

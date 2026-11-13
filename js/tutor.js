@@ -1,5 +1,6 @@
 /* Farol — tutor simulado. No produto, aqui entra a busca nos trechos (pgvector) e a chamada ao modelo de linguagem.
    No protótipo, a resposta vem de uma base fixa em data.js, escolhida por palavras-chave. */
+/* Specs: TUT-RF-01, TUT-RF-03, TUT-RF-04, TUT-RF-05. Rastreabilidade em docs/rastreabilidade.md. */
 (function () {
   'use strict';
   const F = window.Farol;

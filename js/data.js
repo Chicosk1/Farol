@@ -1,5 +1,6 @@
 /* Farol — dados fictícios do protótipo (curso de Sistemas de Informação).
    Nenhum nome, número ou conteúdo aqui é real. Para trocar o cenário da demonstração, edite este arquivo. */
+/* Specs: ACE-RF-04, MAT-RF-04, RAD-RF-01, REV-RF-01, QUE-RF-02, TUT-RF-14. Rastreabilidade em docs/rastreabilidade.md. */
 (function () {
   'use strict';
   const F = (window.Farol = window.Farol || {});
