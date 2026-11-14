@@ -1,4 +1,5 @@
 /* Aluno: revisão do dia (repetição espaçada) e quizzes aprovados pelo professor. As duas telas usam o mesmo motor. */
+/* Specs: QUE-RF-04, QUE-RF-08, QUE-RF-09, QUE-RF-10, REV-RF-01, REV-RF-02, REV-RF-03, REV-RF-04, REV-RF-05, REV-RF-08, REV-RF-10. Rastreabilidade em docs/rastreabilidade.md. */
 (function () {
   'use strict';
   const F = window.Farol;

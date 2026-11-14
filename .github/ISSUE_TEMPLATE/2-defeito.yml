@@ -1,0 +1,48 @@
+name: Defeito
+description: Algo não funciona como a especificação descreve.
+title: "[Defeito] "
+labels: ["defeito"]
+body:
+  - type: dropdown
+    id: onde
+    attributes:
+      label: Onde
+      options:
+        - Protótipo navegável
+        - Produto
+        - Documentação
+    validations:
+      required: true
+  - type: input
+    id: requisito
+    attributes:
+      label: Requisito afetado
+      description: Identificador do requisito na spec, se houver.
+      placeholder: "TUT-RF-04"
+  - type: textarea
+    id: passos
+    attributes:
+      label: Passos para reproduzir
+      placeholder: |
+        1. Entrar como aluna
+        2. Abrir o tutor de Estruturas de Dados
+        3. Perguntar "isso cai na prova?"
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: O que a spec diz que deveria acontecer
+    validations:
+      required: true
+  - type: textarea
+    id: obtido
+    attributes:
+      label: O que aconteceu
+    validations:
+      required: true
+  - type: input
+    id: ambiente
+    attributes:
+      label: Navegador e aparelho
+      placeholder: "Chrome 131 no Android"

@@ -1,4 +1,5 @@
 /* Aluno: tutor da disciplina. Respostas com citação, modo pistas, modo prova e envio anônimo de dúvidas ao professor. */
+/* Specs: TUT-RF-02, TUT-RF-04, TUT-RF-05, TUT-RF-07, TUT-RF-08, TUT-RF-09, TUT-RF-10, TUT-RF-13, TUT-RF-14, DUV-RF-01, DUV-RF-03, DUV-RF-04. Rastreabilidade em docs/rastreabilidade.md. */
 (function () {
   'use strict';
   const F = window.Farol;

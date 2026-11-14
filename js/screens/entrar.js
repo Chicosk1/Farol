@@ -1,4 +1,5 @@
 /* Tela de entrada: escolha do perfil. No produto, o acesso é pelo login institucional (OpenID Connect). */
+/* Specs: ACE-RF-01, ACE-RF-02. Rastreabilidade em docs/rastreabilidade.md. */
 (function () {
   'use strict';
   const F = window.Farol;

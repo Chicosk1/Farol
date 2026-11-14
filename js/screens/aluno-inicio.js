@@ -1,4 +1,5 @@
 /* Aluno: tela inicial com revisão do dia, atalho para o tutor, novidades e disciplinas. */
+/* Specs: ACE-RF-10, REV-RF-06, REV-RF-07. Rastreabilidade em docs/rastreabilidade.md. */
 (function () {
   'use strict';
   const F = window.Farol;

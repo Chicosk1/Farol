@@ -1,0 +1,49 @@
+name: Nova funcionalidade ou mudança
+description: Proponha algo novo ou uma mudança de comportamento. A proposta vira uma spec antes de virar código.
+title: "[Funcionalidade] "
+labels: ["spec"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        No Farol, toda mudança de comportamento começa por uma especificação em `specs/`. Esta issue é o ponto de partida: descreva o problema, não a solução técnica.
+  - type: textarea
+    id: problema
+    attributes:
+      label: Qual problema isto resolve?
+      description: O que acontece hoje e por que é um problema.
+      placeholder: "Ex.: o professor não sabe quais dúvidas já respondeu em aula."
+    validations:
+      required: true
+  - type: dropdown
+    id: perfis
+    attributes:
+      label: Para quem?
+      multiple: true
+      options:
+        - Aluno
+        - Professor
+        - Coordenação e NDE
+        - TI
+    validations:
+      required: true
+  - type: textarea
+    id: sucesso
+    attributes:
+      label: Como vamos saber que deu certo?
+      description: Um resultado observável e, se possível, mensurável.
+    validations:
+      required: true
+  - type: input
+    id: spec
+    attributes:
+      label: Spec relacionada
+      description: Pasta da spec que muda, ou "nova".
+      placeholder: "003-tutor-da-disciplina"
+  - type: checkboxes
+    id: constituicao
+    attributes:
+      label: Constituição
+      options:
+        - label: A proposta respeita a constituição do projeto (.specify/memory/constitution.md).
+          required: true

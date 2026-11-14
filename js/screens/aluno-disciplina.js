@@ -1,4 +1,5 @@
 /* Aluno: página de uma disciplina, com materiais, quizzes aprovados pelo professor e acesso ao tutor. */
+/* Specs: MAT-RF-07, MAT-RF-08, QUE-RF-04, QUE-RF-07. Rastreabilidade em docs/rastreabilidade.md. */
 (function () {
   'use strict';
   const F = window.Farol;

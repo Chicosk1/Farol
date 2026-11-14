@@ -1,4 +1,5 @@
 /* Professor: rascunhos de questões gerados pela IA. Nada chega ao aluno sem aprovação. */
+/* Specs: QUE-RF-01, QUE-RF-02, QUE-RF-05, QUE-RF-06. Rastreabilidade em docs/rastreabilidade.md. */
 (function () {
   'use strict';
   const F = window.Farol;

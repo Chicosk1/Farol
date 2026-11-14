@@ -1,4 +1,5 @@
 /* Professor: configurações da disciplina. Modo pistas, modo prova, limite diário, resumo semanal e política de uso de IA. */
+/* Specs: ACE-RF-06, TUT-RF-06, TUT-RF-07, TUT-RF-08, TUT-RF-10, RAD-RF-10. Rastreabilidade em docs/rastreabilidade.md. */
 (function () {
   'use strict';
   const F = window.Farol;

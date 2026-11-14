@@ -1,4 +1,5 @@
 /* Professor: materiais da disciplina. O envio de PDF é simulado: o arquivo não sai do navegador. */
+/* Specs: MAT-RF-01, MAT-RF-02, MAT-RF-03, MAT-RF-06. Rastreabilidade em docs/rastreabilidade.md. */
 (function () {
   'use strict';
   const F = window.Farol;

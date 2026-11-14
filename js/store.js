@@ -1,5 +1,6 @@
 /* Farol — estado do protótipo, salvo no navegador (localStorage) para sobreviver a recarregamentos.
    "Reiniciar demonstração" na barra de demonstração volta tudo ao estado inicial. */
+/* Specs: TUT-RF-12. Rastreabilidade em docs/rastreabilidade.md. */
 (function () {
   'use strict';
   const F = window.Farol;

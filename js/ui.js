@@ -1,4 +1,5 @@
 /* Farol — utilitários de interface: escape de HTML, ícones, toasts, modais e pedaços de marcação reaproveitados. */
+/* Specs: TUT-RF-02, MAT-RF-09. Rastreabilidade em docs/rastreabilidade.md. */
 (function () {
   'use strict';
   const F = (window.Farol = window.Farol || {});

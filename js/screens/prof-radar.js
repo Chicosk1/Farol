@@ -1,5 +1,6 @@
 /* Professor: radar da turma. Mostra tópicos com mais dúvidas, acerto por tópico, sugestão para a próxima aula
    e as dúvidas que o tutor não respondeu. Nada aqui identifica alunos. */
+/* Specs: RAD-RF-02, RAD-RF-03, RAD-RF-04, RAD-RF-06, RAD-RF-07, RAD-RF-08, RAD-RF-09, RAD-RF-11, DUV-RF-05, DUV-RF-07. Rastreabilidade em docs/rastreabilidade.md. */
 (function () {
   'use strict';
   const F = window.Farol;

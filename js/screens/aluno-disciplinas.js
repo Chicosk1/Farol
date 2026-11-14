@@ -1,4 +1,5 @@
 /* Aluno: lista de disciplinas, no mesmo formato da plataforma acadêmica (busca, abas e grade ou lista). */
+/* Specs: ACE-RF-10. Rastreabilidade em docs/rastreabilidade.md. */
 (function () {
   'use strict';
   const F = window.Farol;
