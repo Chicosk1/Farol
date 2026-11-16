@@ -43,6 +43,10 @@ FAROL_ACESSO = {
     "ACESSO_A_DISCIPLINA": "disciplinas.servicos.tem_acesso",
 }
 
+# Limites do PDF de uma aula (spec 002, decisão provisória a confirmar com o dono do produto).
+FAROL_PDF_MAX_BYTES = 50 * 1024 * 1024
+FAROL_PDF_MAX_PAGINAS = 300
+
 # Tamanho dos vetores de busca dos trechos. É fixo no banco: trocar o modelo de embeddings por
 # um de outro tamanho exige uma migração (docs/arquitetura.md).
 FAROL_DIMENSAO_DO_VETOR = 256
@@ -135,5 +139,9 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,
     # Um só nome para o conjunto de perfis, nos campos perfis, perfil_ativo e perfil.
-    "ENUM_NAME_OVERRIDES": {"PerfilEnum": "contas.models.Perfil.choices"},
+    "ENUM_NAME_OVERRIDES": {
+        "PerfilEnum": "contas.models.Perfil.choices",
+        "StatusDaImportacaoEnum": "disciplinas.models.StatusDaImportacao",
+        "StatusDoMaterialEnum": "materiais.models.StatusDoMaterial",
+    },
 }

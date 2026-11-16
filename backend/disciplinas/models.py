@@ -135,3 +135,7 @@ class Importacao(models.Model):
 
     def __str__(self) -> str:
         return f"Importação {self.pk} ({self.status})"
+
+
+# Nomes diretos para o contrato OpenAPI (ENUM_NAME_OVERRIDES não importa classes aninhadas).
+StatusDaImportacao = Importacao.Status

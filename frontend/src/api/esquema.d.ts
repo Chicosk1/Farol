@@ -77,6 +77,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/disciplinas/{disciplina_id}/materiais": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Envia o PDF de uma aula da disciplina
+         * @description Guarda o PDF, cria o material e põe o processamento na fila (MAT-RF-01 a 03).
+         */
+        post: operations["disciplinas_materiais_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/eu": {
         parameters: {
             query?: never;
@@ -236,6 +256,15 @@ export interface components {
              */
             arquivo: string;
         };
+        EnvioDeMaterialRequest: {
+            /**
+             * Format: binary
+             * @description O PDF da aula.
+             */
+            arquivo: string;
+            aula_numero: number;
+            aula_titulo: string;
+        };
         /** @description A pessoa que está usando o Farol, com os perfis dela e o perfil em uso. */
         Eu: {
             id: number;
@@ -249,7 +278,7 @@ export interface components {
         };
         Importacao: {
             readonly id: number;
-            readonly status: components["schemas"]["StatusEnum"];
+            readonly status: components["schemas"]["StatusDaImportacaoEnum"];
             /** Linhas aceitas */
             readonly aceitas: number;
             rejeitadas: components["schemas"]["LinhaRejeitada"][];
@@ -266,7 +295,7 @@ export interface components {
         };
         ImportacaoCriada: {
             id: number;
-            status: components["schemas"]["StatusEnum"];
+            status: components["schemas"]["StatusDaImportacaoEnum"];
         };
         ItemDoAviso: {
             titulo: string;
@@ -276,6 +305,10 @@ export interface components {
             /** @description Número da linha no arquivo; o cabeçalho é a linha 1. */
             linha: number;
             motivo: string;
+        };
+        MaterialEnviado: {
+            material_id: number;
+            status: components["schemas"]["StatusDoMaterialEnum"];
         };
         /** @enum {unknown} */
         NullEnum: null;
@@ -298,7 +331,16 @@ export interface components {
          *     * `recusada` - Recusada
          * @enum {string}
          */
-        StatusEnum: "pendente" | "processando" | "concluida" | "recusada";
+        StatusDaImportacaoEnum: "pendente" | "processando" | "concluida" | "recusada";
+        /**
+         * @description * `processando` - Processando
+         *     * `pronto` - Pronto para o tutor
+         *     * `atencao` - Precisa de atenção
+         *     * `erro` - Erro, tente de novo
+         *     * `retirado` - Retirado
+         * @enum {string}
+         */
+        StatusDoMaterialEnum: "processando" | "pronto" | "atencao" | "erro" | "retirado";
         TrocaDePerfilRequest: {
             perfil: components["schemas"]["PerfilEnum"];
         };
@@ -419,6 +461,31 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    disciplinas_materiais_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["EnvioDeMaterialRequest"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaterialEnviado"];
+                };
             };
         };
     };

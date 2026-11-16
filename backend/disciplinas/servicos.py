@@ -91,6 +91,8 @@ def tem_acesso(pessoa, perfil: str | None, disciplina_id: int) -> bool:
         ).exists()
     if perfil == Perfil.PROFESSOR:
         return Disciplina.objects.filter(id=disciplina_id, professor=pessoa).exists()
+    if perfil == Perfil.ADMIN:  # a administração acessa qualquer disciplina que exista
+        return Disciplina.objects.filter(id=disciplina_id).exists()
     return False
 
 

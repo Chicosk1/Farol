@@ -122,8 +122,18 @@ def test_rota_restrita_ao_professor_nega_o_aluno_matriculado(aluna, professor, d
 
 @pytest.mark.requisito("ACE-RF-05")
 def test_perfis_sem_regra_de_acesso_sao_negados(disciplina):
+    coordenacao = Pessoa.objects.create_user(
+        email="coord@exemplo.edu.br", nome="Coordenação", perfis=[Perfil.COORDENACAO]
+    )
+
+    assert chamar(rota_de_qualquer_papel, coordenacao, disciplina.id).status_code == 403
+
+
+@pytest.mark.requisito("ACE-RF-05")
+def test_a_administracao_acessa_qualquer_disciplina_que_exista(disciplina):
     admin = Pessoa.objects.create_user(
         email="ti@exemplo.edu.br", nome="Equipe de TI", perfis=[Perfil.ADMIN]
     )
 
-    assert chamar(rota_de_qualquer_papel, admin, disciplina.id).status_code == 403
+    assert chamar(rota_de_qualquer_papel, admin, disciplina.id).status_code == 200
+    assert chamar(rota_de_qualquer_papel, admin, 999_999).status_code == 403

@@ -121,6 +121,35 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/disciplinas/{disciplina_id}/materiais:
+    post:
+      operationId: disciplinas_materiais_create
+      description: Guarda o PDF, cria o material e põe o processamento na fila (MAT-RF-01
+        a 03).
+      summary: Envia o PDF de uma aula da disciplina
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - materiais
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EnvioDeMaterialRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaterialEnviado'
+          description: ''
   /api/eu:
     get:
       operationId: eu_retrieve
@@ -330,6 +359,25 @@ components:
           description: CSV em UTF-8, separado por vírgula, de até 5 MB.
       required:
       - arquivo
+    EnvioDeMaterialRequest:
+      type: object
+      properties:
+        arquivo:
+          type: string
+          format: binary
+          description: O PDF da aula.
+        aula_numero:
+          type: integer
+          maximum: 999
+          minimum: 1
+        aula_titulo:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - arquivo
+      - aula_numero
+      - aula_titulo
     Eu:
       type: object
       description: A pessoa que está usando o Farol, com os perfis dela e o perfil
@@ -369,7 +417,7 @@ components:
           readOnly: true
         status:
           allOf:
-          - $ref: '#/components/schemas/StatusEnum'
+          - $ref: '#/components/schemas/StatusDaImportacaoEnum'
           readOnly: true
         aceitas:
           type: integer
@@ -410,7 +458,7 @@ components:
         id:
           type: integer
         status:
-          $ref: '#/components/schemas/StatusEnum'
+          $ref: '#/components/schemas/StatusDaImportacaoEnum'
       required:
       - id
       - status
@@ -435,6 +483,16 @@ components:
       required:
       - linha
       - motivo
+    MaterialEnviado:
+      type: object
+      properties:
+        material_id:
+          type: integer
+        status:
+          $ref: '#/components/schemas/StatusDoMaterialEnum'
+      required:
+      - material_id
+      - status
     NullEnum:
       enum:
       - null
@@ -458,7 +516,7 @@ components:
           description: Sempre "ok" quando a API está no ar.
       required:
       - status
-    StatusEnum:
+    StatusDaImportacaoEnum:
       enum:
       - pendente
       - processando
@@ -470,6 +528,20 @@ components:
         * `processando` - Processando
         * `concluida` - Concluída
         * `recusada` - Recusada
+    StatusDoMaterialEnum:
+      enum:
+      - processando
+      - pronto
+      - atencao
+      - erro
+      - retirado
+      type: string
+      description: |-
+        * `processando` - Processando
+        * `pronto` - Pronto para o tutor
+        * `atencao` - Precisa de atenção
+        * `erro` - Erro, tente de novo
+        * `retirado` - Retirado
     TrocaDePerfilRequest:
       type: object
       properties:

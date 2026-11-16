@@ -110,3 +110,7 @@ class Trecho(models.Model):
 
     def __str__(self) -> str:
         return f"{self.material_id} p. {self.pagina} #{self.ordem}"
+
+
+# Nome direto para o contrato OpenAPI (ENUM_NAME_OVERRIDES não importa classes aninhadas).
+StatusDoMaterial = Material.Status

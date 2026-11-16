@@ -1,7 +1,11 @@
 """Regras do módulo materiais (spec 002). Chamado pela API, pelas tarefas e por outros módulos."""
 
+import io
 import logging
 
+from celery import current_app
+from django.conf import settings
+from django.core.files.base import ContentFile
 from django.db import transaction
 from pypdf import PdfReader
 from pypdf.errors import PyPdfError
@@ -19,6 +23,18 @@ MENSAGEM_SEM_TEXTO = (
     "A maioria das páginas deste PDF não tem texto selecionável, como acontece com páginas "
     "escaneadas. O tutor não consegue ler páginas escaneadas: envie uma versão com texto."
 )
+
+
+MENSAGEM_NAO_E_PDF = "Envie um arquivo PDF. Slides podem ser exportados como PDF."
+
+
+class MaterialInvalido(ValueError):
+    """O envio tem um problema que o professor corrige. `campo` é o campo da API com o erro."""
+
+    def __init__(self, campo: str, mensagem: str):
+        super().__init__(mensagem)
+        self.campo = campo
+        self.mensagem = mensagem
 
 
 class _ProblemaDoArquivo(Exception):
@@ -133,3 +149,61 @@ def processar_material(material_id: int) -> Material:
         logger.exception("Falha ao processar o material %s", material_id)
         _marcar_erro(material, MENSAGEM_DE_ERRO_GERAL)
     return material
+
+
+def _validar_pdf(conteudo: bytes, nome: str) -> None:
+    """Confere se o arquivo é um PDF aberto, legível e dentro dos limites (MAT-RF-01)."""
+    if not nome.lower().endswith(".pdf") or b"%PDF-" not in conteudo[:1024]:
+        raise MaterialInvalido("arquivo", MENSAGEM_NAO_E_PDF)
+    limite_em_bytes = settings.FAROL_PDF_MAX_BYTES
+    if len(conteudo) > limite_em_bytes:
+        raise MaterialInvalido(
+            "arquivo", f"O arquivo passa do limite de {limite_em_bytes // (1024 * 1024)} MB."
+        )
+    try:
+        leitor = PdfReader(io.BytesIO(conteudo))
+        if leitor.is_encrypted:
+            raise MaterialInvalido(
+                "arquivo", "O PDF é protegido por senha. Envie uma versão sem senha."
+            )
+        paginas = len(leitor.pages)
+    except PyPdfError:
+        raise MaterialInvalido(
+            "arquivo", "O arquivo não é um PDF válido. Exporte o PDF de novo."
+        ) from None
+    if paginas > settings.FAROL_PDF_MAX_PAGINAS:
+        raise MaterialInvalido(
+            "arquivo", f"O PDF passa do limite de {settings.FAROL_PDF_MAX_PAGINAS} páginas."
+        )
+
+
+def criar_material(
+    disciplina_id: int,
+    conteudo: bytes,
+    nome_do_arquivo: str,
+    aula_numero: int,
+    aula_titulo: str,
+    enviado_por,
+) -> Material:
+    """Valida o PDF e cria o material da aula, ainda sem processar (MAT-RF-01 e 02).
+
+    Levanta MaterialInvalido, sem guardar nada, se o arquivo não pode ser aceito.
+    """
+    _validar_pdf(conteudo, nome_do_arquivo)
+    material = Material(
+        disciplina_id=disciplina_id,
+        aula_numero=aula_numero,
+        aula_titulo=aula_titulo,
+        enviado_por=enviado_por,
+    )
+    material.arquivo.save(nome_do_arquivo, ContentFile(conteudo), save=False)
+    material.save()
+    return material
+
+
+def enfileirar_processamento(material_id: int) -> None:
+    """Põe o processamento do material na fila do Celery.
+
+    A tarefa é chamada pelo nome, porque a camada de serviços não importa a de tarefas.
+    """
+    current_app.signature("materiais.processar", args=(material_id,)).apply_async()

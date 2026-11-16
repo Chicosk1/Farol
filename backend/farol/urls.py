@@ -12,6 +12,7 @@ urlpatterns = [
     path("api/", include("nucleo.api.urls")),
     path("api/", include("contas.api.urls")),
     path("api/", include("disciplinas.api.urls")),
+    path("api/", include("materiais.api.urls")),
     path("admin/", admin.site.urls),
 ]
 
