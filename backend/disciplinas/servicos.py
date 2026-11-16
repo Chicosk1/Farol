@@ -20,12 +20,17 @@ FILTROS = ("todas", "favoritas", "com-tutor")
 
 
 def listar_disciplinas(
-    pessoa, perfil: str | None, busca: str = "", filtro: str = "todas"
+    pessoa,
+    perfil: str | None,
+    busca: str = "",
+    filtro: str = "todas",
+    com_material_pronto: set[int] | None = None,
 ) -> QuerySet[Disciplina]:
     """As disciplinas da pessoa no perfil em uso (ACE-RF-04), com busca e filtro (ACE-RF-10).
 
     O aluno vê as disciplinas em que tem matrícula ativa, e o professor, as que leciona.
-    A busca é por parte do nome, sem diferenciar acentos nem maiúsculas.
+    A busca é por parte do nome, sem diferenciar acentos nem maiúsculas. O filtro com-tutor
+    mostra só as disciplinas cujo id está em `com_material_pronto`.
     """
     if perfil == Perfil.ALUNO:
         disciplinas = Disciplina.objects.filter(
@@ -42,8 +47,9 @@ def listar_disciplinas(
         disciplinas = disciplinas.filter(nome__unaccent__icontains=busca)
 
     if filtro == "com-tutor":
-        # Depende de saber se há material pronto, o que vem com a spec 002 (ACE-T34).
-        return Disciplina.objects.none()
+        # Quem sabe quais disciplinas têm material pronto é o módulo materiais; a API o consulta
+        # e passa os ids, para disciplinas não depender de materiais (ACE-T34).
+        disciplinas = disciplinas.filter(id__in=com_material_pronto or set())
 
     disciplinas = disciplinas.annotate(
         favorita=Exists(Favorito.objects.filter(pessoa=pessoa, disciplina=OuterRef("pk")))

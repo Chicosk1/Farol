@@ -220,14 +220,60 @@ def test_coordenacao_e_admin_ainda_nao_tem_lista_propria(seis_disciplinas, perfi
     assert cliente.get("/api/disciplinas").json() == []
 
 
+def material(disciplina: Disciplina, status: str):
+    from materiais.models import Material
+
+    return Material.objects.create(
+        disciplina=disciplina,
+        aula_numero=1,
+        aula_titulo="Introdução",
+        arquivo="materiais/x.pdf",
+        status=status,
+    )
+
+
 @pytest.mark.requisito("ACE-RF-10")
-def test_filtro_com_tutor_devolve_lista_vazia_ate_existir_o_servico_de_materiais(
+def test_aba_com_tutor_mostra_so_as_disciplinas_com_material_pronto(
     cliente_aluna, aluna_matriculada_nas_seis
 ):
+    estruturas = Disciplina.objects.get(codigo="SINF201")
+    banco = Disciplina.objects.get(codigo="SINF203")
+    redes = Disciplina.objects.get(codigo="SINF206")
+    material(estruturas, "pronto")
+    material(banco, "pronto")
+    material(banco, "processando")  # um pronto basta, e o outro não atrapalha
+    material(redes, "processando")  # sem nenhum pronto, não entra
+
     resposta = cliente_aluna.get("/api/disciplinas", {"filtro": "com-tutor"})
 
     assert resposta.status_code == 200
-    assert resposta.json() == []
+    assert nomes(resposta) == ["Banco de Dados", "Estruturas de Dados"]
+
+
+@pytest.mark.requisito("ACE-RF-10")
+def test_aba_com_tutor_nao_conta_material_retirado_nem_com_erro(
+    cliente_aluna, aluna_matriculada_nas_seis
+):
+    estruturas = Disciplina.objects.get(codigo="SINF201")
+    for status in ("retirado", "erro", "atencao"):
+        material(estruturas, status)
+
+    assert cliente_aluna.get("/api/disciplinas", {"filtro": "com-tutor"}).json() == []
+
+
+@pytest.mark.requisito("ACE-RF-10")
+def test_aba_com_tutor_so_mostra_disciplinas_da_pessoa_e_aceita_busca(
+    cliente_aluna, aluna_matriculada_nas_seis, professor
+):
+    estruturas = Disciplina.objects.get(codigo="SINF201")
+    banco = Disciplina.objects.get(codigo="SINF203")
+    de_outra_turma = criar_disciplina("SINF399", "Estruturas Avançadas", professor)
+    for d in (estruturas, banco, de_outra_turma):
+        material(d, "pronto")
+
+    resposta = cliente_aluna.get("/api/disciplinas", {"filtro": "com-tutor", "busca": "estruturas"})
+
+    assert nomes(resposta) == ["Estruturas de Dados"]
 
 
 @pytest.mark.requisito("ACE-RF-10")

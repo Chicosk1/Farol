@@ -113,6 +113,33 @@ describe('tela de disciplinas (ACE-T33)', () => {
     await waitFor(() => expect(roteador.state.location.pathname).toBe('/entrar'));
   });
 
+  it('a aba Com tutor mostra só as disciplinas que a API devolve com material pronto', async () => {
+    simularApi({
+      'GET /api/eu': { corpo: ANA },
+      'GET /api/disciplinas': { corpo: DISCIPLINAS },
+      'GET /api/disciplinas?filtro=com-tutor': { corpo: [DISCIPLINAS[3]] },
+    });
+    renderizarApp('/disciplinas');
+
+    fireEvent.click(await screen.findByRole('tab', { name: 'Com tutor' }));
+
+    await waitFor(() => expect(screen.getAllByRole('listitem')).toHaveLength(1));
+    expect(screen.getByText('Estruturas de Dados')).toBeInTheDocument();
+  });
+
+  it('na aba Com tutor sem nenhuma disciplina pronta, explica o motivo', async () => {
+    simularApi({
+      'GET /api/eu': { corpo: ANA },
+      'GET /api/disciplinas': { corpo: DISCIPLINAS },
+      'GET /api/disciplinas?filtro=com-tutor': { corpo: [] },
+    });
+    renderizarApp('/disciplinas');
+
+    fireEvent.click(await screen.findByRole('tab', { name: 'Com tutor' }));
+
+    expect(await screen.findByText(/material pronto para o tutor/)).toBeInTheDocument();
+  });
+
   it('não tem violações de acessibilidade', async () => {
     simularApi({ 'GET /api/eu': { corpo: ANA }, 'GET /api/disciplinas': { corpo: DISCIPLINAS } });
     const { container } = renderizarApp('/disciplinas');

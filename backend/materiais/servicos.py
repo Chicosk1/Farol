@@ -244,3 +244,12 @@ def material_para_abrir(pessoa, perfil: str | None, material_id: int) -> Materia
     if not ve_todos_os_materiais(perfil) and material.status != Material.Status.PRONTO:
         raise MaterialNaoEncontrado(material_id)
     return material
+
+
+def disciplinas_com_material_pronto() -> set[int]:
+    """Os ids das disciplinas que têm pelo menos um material pronto para o tutor."""
+    return set(
+        Material.objects.filter(status=Material.Status.PRONTO)
+        .values_list("disciplina_id", flat=True)
+        .distinct()
+    )

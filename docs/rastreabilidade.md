@@ -10,7 +10,7 @@ A coluna Testes mostra os testes do produto que citam o requisito com `@pytest.m
 
 | Spec | Requisitos funcionais | Com teste | Coberto | Simulado | Parcial | Não coberto | Tarefas feitas | Pontos a esclarecer |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [001 Acesso e turmas](../specs/001-acesso-e-turmas/spec.md) | 11 | 8 de 11 | 2 | 3 | 1 | 5 | 33 de 42 | 3 |
+| [001 Acesso e turmas](../specs/001-acesso-e-turmas/spec.md) | 11 | 8 de 11 | 2 | 3 | 1 | 5 | 34 de 42 | 3 |
 | [002 Materiais da disciplina](../specs/002-materiais-da-disciplina/spec.md) | 11 | 8 de 11 | 2 | 5 | 1 | 3 | 15 de 23 | 0 |
 | [003 Tutor da disciplina](../specs/003-tutor-da-disciplina/spec.md) | 14 | 0 de 14 | 6 | 5 | 2 | 1 | 8 de 35 | 0 |
 | [004 Dúvidas ao professor](../specs/004-duvidas-ao-professor/spec.md) | 9 | 0 de 9 | 5 | 0 | 1 | 3 | 4 de 14 | 1 |
@@ -41,7 +41,7 @@ Tarefas já especificadas que aproximam o protótipo do comportamento descrito n
 | `ACE-RF-07` | A importação DEVE ser idempotente: importar o mesmo arquivo duas vezes não duplica registros, e matrículas ausentes no arquivo novo são encerradas. | Não coberto |  | [disciplinas/testes/test_importacao.py](../backend/disciplinas/testes/test_importacao.py) (4) | ACE-T40, ACE-T41 |  |
 | `ACE-RF-08` | Na primeira entrada e a cada nova versão do aviso, o sistema DEVE mostrar ao aluno o que é registrado, para quê e por quanto tempo, e guardar a data da ciência. | Não coberto |  | [contas/testes/test_aviso_privacidade.py](../backend/contas/testes/test_aviso_privacidade.py) (10) | ACE-T50, ACE-T51, ACE-T53 | ACE-T06 |
 | `ACE-RF-09` | O aluno DEVE poder ver e apagar o próprio histórico de conversas com o tutor. | Não coberto |  |  | ACE-T50 | ACE-T52 |
-| `ACE-RF-10` | A lista de disciplinas DEVE permitir buscar por nome, filtrar por Todas, Favoritas e Com tutor, marcar favoritas e alternar entre grade e lista. | Coberto | [aluno-disciplinas.js](../prototipo/js/screens/aluno-disciplinas.js), [aluno-inicio.js](../prototipo/js/screens/aluno-inicio.js) | [disciplinas/testes/test_api_disciplinas.py](../backend/disciplinas/testes/test_api_disciplinas.py) (8), [disciplinas/testes/test_api_favoritos.py](../backend/disciplinas/testes/test_api_favoritos.py) (7) | ACE-T02, ACE-T03, ACE-T30, ACE-T32, ACE-T33, ACE-T35, ACE-T36 | ACE-T34 |
+| `ACE-RF-10` | A lista de disciplinas DEVE permitir buscar por nome, filtrar por Todas, Favoritas e Com tutor, marcar favoritas e alternar entre grade e lista. | Coberto | [aluno-disciplinas.js](../prototipo/js/screens/aluno-disciplinas.js), [aluno-inicio.js](../prototipo/js/screens/aluno-inicio.js) | [disciplinas/testes/test_api_disciplinas.py](../backend/disciplinas/testes/test_api_disciplinas.py) (10), [disciplinas/testes/test_api_favoritos.py](../backend/disciplinas/testes/test_api_favoritos.py) (7) | ACE-T02, ACE-T03, ACE-T30, ACE-T32, ACE-T33, ACE-T35, ACE-T36, ACE-T34 |  |
 | `ACE-RF-11` | A interface DEVE poder ser instalada na tela inicial do celular como aplicativo web (PWA). | Não coberto |  |  |  | ACE-T60 |
 
 ## 002 Materiais da disciplina

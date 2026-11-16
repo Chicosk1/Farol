@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from contas import servicos as contas
 from disciplinas import servicos
 from disciplinas.models import Importacao
+from materiais import servicos as materiais
 from nucleo.permissoes import AcessoADisciplina, exige_perfil_ativo
 
 from .serializers import (
@@ -39,6 +40,11 @@ def listar(request: Request) -> Response:
         contas.perfil_ativo(request.user, request.session),
         busca=consulta.validated_data["busca"],
         filtro=consulta.validated_data["filtro"],
+        com_material_pronto=(
+            materiais.disciplinas_com_material_pronto()
+            if consulta.validated_data["filtro"] == "com-tutor"
+            else None
+        ),
     )
     return Response(DisciplinaSerializer(disciplinas, many=True).data)
 

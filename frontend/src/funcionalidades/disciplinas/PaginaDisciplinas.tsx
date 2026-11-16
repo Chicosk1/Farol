@@ -10,6 +10,7 @@ type Visao = 'grade' | 'lista';
 const ABAS = [
   { id: 'todas', rotulo: 'Todas' },
   { id: 'favoritas', rotulo: 'Favoritas' },
+  { id: 'com-tutor', rotulo: 'Com tutor' },
 ] as const satisfies readonly { id: FiltroDeDisciplinas; rotulo: string }[];
 
 /** Espera o texto parar de mudar antes de buscar, para não chamar a API a cada tecla. */
@@ -22,6 +23,17 @@ function useTextoEstavel(texto: string, esperaEmMs = 250): string {
   return estavel;
 }
 
+function mensagemDeLista(aba: FiltroDeDisciplinas, comBusca: boolean): string {
+  if (comBusca) return 'Nenhuma disciplina encontrada.';
+  if (aba === 'favoritas') {
+    return 'Você ainda não tem disciplinas favoritas. Use a estrela, na aba Todas, para marcar.';
+  }
+  if (aba === 'com-tutor') {
+    return 'Nenhuma disciplina com material pronto para o tutor ainda.';
+  }
+  return 'Nenhuma disciplina encontrada.';
+}
+
 function rotuloDeQuantidade(quantidade: number): string {
   return `${quantidade} ${quantidade === 1 ? 'disciplina' : 'disciplinas'}`;
 }
@@ -29,7 +41,7 @@ function rotuloDeQuantidade(quantidade: number): string {
 export function PaginaDisciplinas() {
   const [digitado, setDigitado] = useState('');
   const [visao, setVisao] = useState<Visao>('grade');
-  const [aba, setAba] = useState<'todas' | 'favoritas'>('todas');
+  const [aba, setAba] = useState<FiltroDeDisciplinas>('todas');
   const disciplinas = useDisciplinas(useTextoEstavel(digitado), aba);
   const favoritar = useDefinirFavorito();
 
@@ -92,11 +104,7 @@ export function PaginaDisciplinas() {
                 {rotuloDeQuantidade(disciplinas.data.length)}
               </p>
               {disciplinas.data.length === 0 ? (
-                <p className="mt-2 text-ink">
-                  {aba === 'favoritas' && !digitado.trim()
-                    ? 'Você ainda não tem disciplinas favoritas. Use a estrela, na aba Todas, para marcar.'
-                    : 'Nenhuma disciplina encontrada.'}
-                </p>
+                <p className="mt-2 text-ink">{mensagemDeLista(aba, digitado.trim() !== '')}</p>
               ) : (
                 <ul
                   aria-label="Disciplinas"
