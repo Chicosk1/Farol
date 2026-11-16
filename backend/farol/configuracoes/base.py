@@ -73,6 +73,16 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Tarefas em segundo plano: Celery com a fila no Redis (docs/arquitetura.md).
+CELERY_BROKER_URL = ambiente.opcional("REDIS_URL", "redis://localhost:6379/0")
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_IGNORE_RESULT = True
+
+# E-mail: no desenvolvimento, o Mailpit captura tudo (ADR 0008).
+EMAIL_HOST = ambiente.opcional("EMAIL_HOST", "localhost")
+EMAIL_PORT = int(ambiente.opcional("EMAIL_PORT", "1025"))
+DEFAULT_FROM_EMAIL = ambiente.opcional("DEFAULT_FROM_EMAIL", "Farol <nao-responda@farol.local>")
+
 # API: sessão do Django na mesma origem, sem JWT (ADR 0007). Toda rota exige login,
 # a não ser que diga o contrário, como a rota de saúde.
 REST_FRAMEWORK = {

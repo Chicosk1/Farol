@@ -1,0 +1,115 @@
+# Ambiente completo de desenvolvimento do Farol (ADR 0008).
+#
+#   docker compose up --build
+#
+# Front-end: http://localhost:5173 · API: http://localhost:8000/api/saude · E-mails: http://localhost:8025
+# O passo a passo está em docs/desenvolvimento.md. O arquivo .env é opcional: sem ele,
+# valem os padrões de desenvolvimento abaixo (o modelo é o .env.exemplo).
+name: farol
+
+# Configuração comum aos serviços que usam a imagem do back-end (Django e Celery).
+x-backend: &backend
+  build:
+    context: ./backend
+    args:
+      UID: ${FAROL_UID:-1000}
+  image: farol-backend
+  env_file:
+    - path: .env
+      required: false
+  environment:
+    POSTGRES_HOST: db
+    REDIS_URL: redis://redis:6379/0
+    EMAIL_HOST: mailpit
+    EMAIL_PORT: "1025"
+  volumes:
+    - ./backend:/app
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-farol}
+      POSTGRES_USER: ${POSTGRES_USER:-farol}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-farol}
+    volumes:
+      - dados-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    <<: *backend
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/saude')"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  worker:
+    <<: *backend
+    command: celery -A farol worker --loglevel=info
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A farol inspect ping --destination celery@$$HOSTNAME --timeout 5"]
+      interval: 20s
+      timeout: 20s
+      retries: 10
+      start_period: 30s
+
+  beat:
+    <<: *backend
+    command: celery -A farol beat --loglevel=info --schedule /tmp/celerybeat-schedule
+
+  frontend:
+    build:
+      context: ./frontend
+    image: farol-frontend
+    environment:
+      # O Vite encaminha /api para o Django: o navegador vê uma só origem.
+      FAROL_API_ALVO: http://backend:8000
+    volumes:
+      - ./frontend:/app
+      # O node_modules fica na imagem, e não na pasta do computador.
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:5173/').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  mailpit:
+    image: axllent/mailpit:v1.33.1
+    ports:
+      - "8025:8025"
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  dados-db:

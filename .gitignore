@@ -1,3 +1,6 @@
+# Configurações locais e segredos (o modelo é o .env.exemplo)
+.env
+
 # Python
 __pycache__/
 *.py[cod]

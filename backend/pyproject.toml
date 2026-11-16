@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "Back-end do Farol, tutor de estudos com IA da UNIMATER."
 requires-python = ">=3.13"
 dependencies = [
+    "celery[redis]~=5.7.0",
     "Django~=5.2.19",
     "djangorestframework~=3.18.3",
     "psycopg[binary]~=3.3.9",
