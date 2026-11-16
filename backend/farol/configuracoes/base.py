@@ -10,6 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
+    "django.contrib.postgres",
     "django.contrib.sessions",
     "django.contrib.staticfiles",
     "rest_framework",
@@ -87,7 +88,7 @@ DEFAULT_FROM_EMAIL = ambiente.opcional("DEFAULT_FROM_EMAIL", "Farol <nao-respond
 # API: sessão do Django na mesma origem, sem JWT (ADR 0007). Toda rota exige login,
 # a não ser que diga o contrário, como a rota de saúde.
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework.authentication.SessionAuthentication"],
+    "DEFAULT_AUTHENTICATION_CLASSES": ["nucleo.api.autenticacao.AutenticacaoPorSessao"],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
@@ -101,4 +102,6 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,
+    # Um só nome para o conjunto de perfis, nos campos perfis, perfil_ativo e perfil.
+    "ENUM_NAME_OVERRIDES": {"PerfilEnum": "contas.models.Perfil.choices"},
 }

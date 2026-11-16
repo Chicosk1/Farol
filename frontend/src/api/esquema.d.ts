@@ -4,6 +4,57 @@
  */
 
 export interface paths {
+    "/api/eu": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A pessoa que está logada */
+        get: operations["eu_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/eu/perfil-ativo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Troca o perfil em uso, sem sair */
+        post: operations["eu_perfil_ativo_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sair": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Encerra a sessão */
+        post: operations["sair_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/saude": {
         parameters: {
             query?: never;
@@ -15,7 +66,7 @@ export interface paths {
          * Saúde da API
          * @description Diz que a API está no ar. Usada pelo Docker Compose e pelo monitoramento; não exige login.
          */
-        get: operations["api_saude_retrieve"];
+        get: operations["saude_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -28,9 +79,31 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description A pessoa que está usando o Farol, com os perfis dela e o perfil em uso. */
+        Eu: {
+            id: number;
+            /** Format: email */
+            email: string;
+            nome: string;
+            perfis: components["schemas"]["PerfilEnum"][];
+            perfil_ativo: (components["schemas"]["PerfilEnum"] | components["schemas"]["NullEnum"]) | null;
+        };
+        /** @enum {unknown} */
+        NullEnum: null;
+        /**
+         * @description * `aluno` - Aluno
+         *     * `professor` - Professor
+         *     * `coordenacao` - Coordenação
+         *     * `admin` - Administrador
+         * @enum {string}
+         */
+        PerfilEnum: "aluno" | "professor" | "coordenacao" | "admin";
         Saude: {
             /** @description Sempre "ok" quando a API está no ar. */
             status: string;
+        };
+        TrocaDePerfilRequest: {
+            perfil: components["schemas"]["PerfilEnum"];
         };
     };
     responses: never;
@@ -41,7 +114,69 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    api_saude_retrieve: {
+    eu_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Eu"];
+                };
+            };
+        };
+    };
+    eu_perfil_ativo_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TrocaDePerfilRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TrocaDePerfilRequest"];
+                "multipart/form-data": components["schemas"]["TrocaDePerfilRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Eu"];
+                };
+            };
+        };
+    };
+    sair_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    saude_retrieve: {
         parameters: {
             query?: never;
             header?: never;

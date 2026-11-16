@@ -4,9 +4,63 @@ info:
   version: 0.1.0
   description: API REST do Farol, tutor de estudos com IA da UNIMATER.
 paths:
+  /api/eu:
+    get:
+      operationId: eu_retrieve
+      summary: A pessoa que está logada
+      tags:
+      - contas
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Eu'
+          description: ''
+  /api/eu/perfil-ativo:
+    post:
+      operationId: eu_perfil_ativo_create
+      summary: Troca o perfil em uso, sem sair
+      tags:
+      - contas
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrocaDePerfilRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TrocaDePerfilRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TrocaDePerfilRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Eu'
+          description: ''
+  /api/sair:
+    post:
+      operationId: sair_create
+      summary: Encerra a sessão
+      tags:
+      - contas
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
   /api/saude:
     get:
-      operationId: api_saude_retrieve
+      operationId: saude_retrieve
       description: Diz que a API está no ar. Usada pelo Docker Compose e pelo monitoramento;
         não exige login.
       summary: Saúde da API
@@ -24,6 +78,48 @@ paths:
           description: ''
 components:
   schemas:
+    Eu:
+      type: object
+      description: A pessoa que está usando o Farol, com os perfis dela e o perfil
+        em uso.
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        nome:
+          type: string
+        perfis:
+          type: array
+          items:
+            $ref: '#/components/schemas/PerfilEnum'
+        perfil_ativo:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/PerfilEnum'
+          - $ref: '#/components/schemas/NullEnum'
+      required:
+      - email
+      - id
+      - nome
+      - perfil_ativo
+      - perfis
+    NullEnum:
+      enum:
+      - null
+    PerfilEnum:
+      enum:
+      - aluno
+      - professor
+      - coordenacao
+      - admin
+      type: string
+      description: |-
+        * `aluno` - Aluno
+        * `professor` - Professor
+        * `coordenacao` - Coordenação
+        * `admin` - Administrador
     Saude:
       type: object
       properties:
@@ -32,6 +128,13 @@ components:
           description: Sempre "ok" quando a API está no ar.
       required:
       - status
+    TrocaDePerfilRequest:
+      type: object
+      properties:
+        perfil:
+          $ref: '#/components/schemas/PerfilEnum'
+      required:
+      - perfil
   securitySchemes:
     cookieAuth:
       type: apiKey
