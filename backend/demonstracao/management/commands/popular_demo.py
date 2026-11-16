@@ -6,7 +6,8 @@ from demonstracao import servicos
 
 class Command(BaseCommand):
     help = (
-        "Cria as pessoas fictícias do protótipo (Ana Souza e Carlos Mendes). "
+        "Cria as pessoas, as disciplinas e as matrículas fictícias do protótipo "
+        "(a aluna Ana Souza, o professor Carlos Mendes e as seis disciplinas do 2º período). "
         "Pode ser rodado várias vezes. Só funciona em desenvolvimento e em teste."
     )
 
@@ -19,7 +20,7 @@ class Command(BaseCommand):
         relatorio = servicos.popular()
         self.stdout.write(
             self.style.SUCCESS(
-                f"Dados de demonstração prontos: {relatorio.criadas} criadas, "
+                f"Dados de demonstração prontos: {relatorio.criados} criados, "
                 f"{relatorio.existentes} já existiam."
             )
         )

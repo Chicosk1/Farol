@@ -38,3 +38,28 @@ def listar_disciplinas(
         return Disciplina.objects.none()
 
     return disciplinas.select_related("professor").order_by(Lower(Unaccent("nome")), "id")
+
+
+def garantir_disciplina(
+    codigo: str, nome: str, turma: str, semestre: str, professor
+) -> tuple[Disciplina, bool]:
+    """Cria a oferta da disciplina ou atualiza o nome e o professor. Devolve se foi criada.
+
+    A oferta é identificada pelo código, pela turma e pelo semestre. Serve à importação de
+    turmas (ACE-T41) e aos dados de demonstração.
+    """
+    disciplina, criada = Disciplina.objects.update_or_create(
+        codigo=codigo,
+        turma=turma,
+        semestre=semestre,
+        defaults={"nome": nome, "professor": professor},
+    )
+    return disciplina, criada
+
+
+def garantir_matricula(aluno, disciplina: Disciplina) -> tuple[Matricula, bool]:
+    """Garante a matrícula ativa do aluno na disciplina, reativando uma encerrada."""
+    matricula, criada = Matricula.objects.update_or_create(
+        aluno=aluno, disciplina=disciplina, defaults={"situacao": Matricula.Situacao.ATIVA}
+    )
+    return matricula, criada
