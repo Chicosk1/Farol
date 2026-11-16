@@ -25,7 +25,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Produto: fundação
 
-- [ ] TUT-T10 Acrescentar ao módulo `ia` a função `responder` (regras, trechos numerados e pergunta, em streaming) e o provedor falso para os testes; o `gerar_embedding` já veio com a MAT-T13
+- [x] TUT-T10 Acrescentar ao módulo `ia` a função `responder` (regras, trechos numerados e pergunta, em streaming) e o provedor falso para os testes; o `gerar_embedding` já veio com a MAT-T13
 - [ ] TUT-T11 [P] Modelos `Conversa`, `Mensagem`, `Citacao`, `ConfiguracaoTutor`, `JanelaProva`, `RegistroUso` e `RevisaoResposta`
 - [ ] TUT-T12 [P] Montar o conjunto de 100 perguntas de Estruturas de Dados com resposta e trecho esperados em `backend/tutor/avaliacao/`
 - [ ] TUT-T13 Script de avaliação que roda o conjunto e calcula a taxa de citação correta, ligado ao GitHub Actions (TUT-CS-01, TUT-CS-03, TUT-CS-04)
