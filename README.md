@@ -18,6 +18,7 @@ O Farol é desenvolvido de forma orientada por especificação (Spec-Driven Deve
 | [Arquitetura](docs/arquitetura.md) | Estilo arquitetural (monólito modular), stack, trade-offs, fluxos do tutor e do radar, segurança e LGPD |
 | [Decisões (ADR)](docs/adr/README.md) | Registro das decisões técnicas e das alternativas descartadas |
 | [Qualidade e testes](docs/qualidade-e-testes.md) | Níveis de teste, verificações automáticas e quando uma tarefa está pronta |
+| [Guia de desenvolvimento](docs/desenvolvimento.md) | Como subir o produto em Docker, rodar os testes, criar migrações e atualizar o contrato da API |
 | [Matriz de rastreabilidade](docs/rastreabilidade.md) | Cada requisito, o que o protótipo já cobre, onde está no código e as tarefas |
 | [Glossário](docs/glossario.md) | O sentido exato de cada termo usado nas specs |
 | [Como contribuir](CONTRIBUTING.md) | O fluxo issue, spec, plano, tarefas, código e pull request |
@@ -90,6 +91,10 @@ docs/                     visão, arquitetura, ADRs, glossário e matriz de rast
 scripts/
   verificar_specs.py      verifica as specs e gera a matriz de rastreabilidade
 .github/                  modelos de issue e pull request e a verificação automática
+backend/                  produto: Django, um app por módulo (guia em docs/desenvolvimento.md)
+frontend/                 produto: React + TypeScript + Vite
+docker-compose.yml        ambiente completo de desenvolvimento do produto
+.env.exemplo              modelo das variáveis de ambiente (o .env fica fora do Git)
 index.html                redireciona o endereço antigo para prototipo/
 prototipo/
   index.html              página única; carrega os estilos e os scripts na ordem

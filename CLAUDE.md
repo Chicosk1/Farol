@@ -29,8 +29,11 @@ Detalhes em `docs/qualidade-e-testes.md`.
 
 ## Comandos
 
-Os comandos do produto são criados pelas tarefas ACE-T11 a ACE-T17 e documentados em `docs/desenvolvimento.md`. Sempre disponíveis:
+Todos os comandos do produto estão em `docs/desenvolvimento.md`. Os mais usados:
 
+- `docker compose up --build`: sobe o ambiente completo.
+- `docker compose run --rm backend pytest`, `ruff check .`, `ruff format --check .` e `lint-imports`: testes e verificações do back-end.
+- `docker compose run --rm --no-deps frontend npm test`, `npm run lint`, `npm run typecheck` e `npm run build`: testes e verificações do front-end.
 - `python3 scripts/verificar_specs.py --gerar`: verifica specs, rastreabilidade e links, e regenera `docs/rastreabilidade.md`.
 
 ## Tarefas pequenas: uma tarefa, um commit, um push
