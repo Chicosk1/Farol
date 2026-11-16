@@ -94,6 +94,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/importacoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Envia um CSV de turmas e matrículas (só administrador)
+         * @description Guarda o arquivo e põe o processamento na fila. O relatório sai em GET /importacoes/{id}.
+         */
+        post: operations["importacoes_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/importacoes/{importacao_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Relatório de uma importação (só administrador) */
+        get: operations["importacoes_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sair": {
         parameters: {
             query?: never;
@@ -149,6 +186,13 @@ export interface components {
             /** Format: email */
             email: string;
         };
+        EnvioDeImportacaoRequest: {
+            /**
+             * Format: binary
+             * @description CSV em UTF-8, separado por vírgula, de até 5 MB.
+             */
+            arquivo: string;
+        };
         /** @description A pessoa que está usando o Farol, com os perfis dela e o perfil em uso. */
         Eu: {
             id: number;
@@ -157,6 +201,32 @@ export interface components {
             nome: string;
             perfis: components["schemas"]["PerfilEnum"][];
             perfil_ativo: (components["schemas"]["PerfilEnum"] | components["schemas"]["NullEnum"]) | null;
+        };
+        Importacao: {
+            readonly id: number;
+            readonly status: components["schemas"]["StatusEnum"];
+            /** Linhas aceitas */
+            readonly aceitas: number;
+            rejeitadas: components["schemas"]["LinhaRejeitada"][];
+            /** Matrículas encerradas */
+            readonly matriculas_encerradas: number;
+            /**
+             * Motivo da recusa
+             * @description Problema que impediu de importar o arquivo.
+             */
+            readonly erro: string;
+            readonly aviso: string;
+            /** Format: date-time */
+            readonly enviada_em: string;
+        };
+        ImportacaoCriada: {
+            id: number;
+            status: components["schemas"]["StatusEnum"];
+        };
+        LinhaRejeitada: {
+            /** @description Número da linha no arquivo; o cabeçalho é a linha 1. */
+            linha: number;
+            motivo: string;
         };
         /** @enum {unknown} */
         NullEnum: null;
@@ -172,6 +242,14 @@ export interface components {
             /** @description Sempre "ok" quando a API está no ar. */
             status: string;
         };
+        /**
+         * @description * `pendente` - Pendente
+         *     * `processando` - Processando
+         *     * `concluida` - Concluída
+         *     * `recusada` - Recusada
+         * @enum {string}
+         */
+        StatusEnum: "pendente" | "processando" | "concluida" | "recusada";
         TrocaDePerfilRequest: {
             perfil: components["schemas"]["PerfilEnum"];
         };
@@ -316,6 +394,50 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Eu"];
+                };
+            };
+        };
+    };
+    importacoes_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["EnvioDeImportacaoRequest"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportacaoCriada"];
+                };
+            };
+        };
+    };
+    importacoes_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                importacao_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Importacao"];
                 };
             };
         };

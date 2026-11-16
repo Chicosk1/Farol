@@ -1,17 +1,26 @@
 """Rotas de disciplinas. Só HTTP: as regras ficam em disciplinas/servicos.py (ADR 0007)."""
 
+from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, parser_classes, permission_classes
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from contas import servicos as contas
 from disciplinas import servicos
-from nucleo.permissoes import AcessoADisciplina
+from disciplinas.models import Importacao
+from nucleo.permissoes import AcessoADisciplina, exige_perfil_ativo
 
-from .serializers import ConsultaDeDisciplinasSerializer, DisciplinaSerializer
+from .serializers import (
+    ConsultaDeDisciplinasSerializer,
+    DisciplinaSerializer,
+    EnvioDeImportacaoSerializer,
+    ImportacaoCriadaSerializer,
+    ImportacaoSerializer,
+)
 
 
 @extend_schema(
@@ -49,3 +58,38 @@ def favorito(request: Request, disciplina_id: int) -> Response:
     else:
         servicos.desfavoritar(request.user, disciplina_id)
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@extend_schema(
+    summary="Envia um CSV de turmas e matrículas (só administrador)",
+    request={"multipart/form-data": EnvioDeImportacaoSerializer},
+    responses={202: ImportacaoCriadaSerializer},
+    tags=["importacoes"],
+)
+@api_view(["POST"])
+@parser_classes([MultiPartParser])
+@permission_classes([exige_perfil_ativo("admin")])
+def enviar_importacao(request: Request) -> Response:
+    """Guarda o arquivo e põe o processamento na fila. O relatório sai em GET /importacoes/{id}."""
+    entrada = EnvioDeImportacaoSerializer(data=request.data)
+    entrada.is_valid(raise_exception=True)
+    arquivo = entrada.validated_data["arquivo"]
+    importacao = servicos.criar_importacao(arquivo.read(), arquivo.name, request.user)
+    servicos.enfileirar_importacao(importacao.id)
+    importacao.refresh_from_db()
+    return Response(
+        ImportacaoCriadaSerializer({"id": importacao.id, "status": importacao.status}).data,
+        status=status.HTTP_202_ACCEPTED,
+    )
+
+
+@extend_schema(
+    summary="Relatório de uma importação (só administrador)",
+    responses=ImportacaoSerializer,
+    tags=["importacoes"],
+)
+@api_view(["GET"])
+@permission_classes([exige_perfil_ativo("admin")])
+def ver_importacao(request: Request, importacao_id: int) -> Response:
+    importacao = get_object_or_404(Importacao, pk=importacao_id)
+    return Response(ImportacaoSerializer(importacao).data)

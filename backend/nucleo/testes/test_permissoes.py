@@ -13,7 +13,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory, force_authenticate
 
-from nucleo.permissoes import AcessoADisciplina, acesso_a_disciplina
+from nucleo.permissoes import AcessoADisciplina, acesso_a_disciplina, exige_perfil_ativo
 
 PESSOA = SimpleNamespace(id=7, is_authenticated=True)
 CONSULTAS: list[tuple] = []
@@ -99,3 +99,27 @@ def test_rota_sem_o_parametro_disciplina_id_e_negada_em_vez_de_liberada():
     force_authenticate(requisicao, user=PESSOA)
 
     assert mal_configurada(requisicao).status_code == 403
+
+
+@api_view(["GET"])
+@permission_classes([exige_perfil_ativo("admin")])
+def so_admin(request):
+    return Response({"ok": True})
+
+
+def chamar_sem_disciplina(view, perfil, autenticado=True):
+    requisicao = APIRequestFactory().get("/x")
+    requisicao.session = {"perfil": perfil}
+    if autenticado:
+        force_authenticate(requisicao, user=PESSOA)
+    return view(requisicao)
+
+
+def test_rota_de_perfil_deixa_entrar_so_quem_usa_o_perfil_exigido():
+    assert chamar_sem_disciplina(so_admin, "admin").status_code == 200
+    assert chamar_sem_disciplina(so_admin, "aluno").status_code == 403
+    assert chamar_sem_disciplina(so_admin, None).status_code == 403
+
+
+def test_rota_de_perfil_exige_login():
+    assert chamar_sem_disciplina(so_admin, "admin", autenticado=False).status_code in (401, 403)

@@ -2,6 +2,7 @@
 
 from collections import defaultdict
 
+from celery import current_app
 from django.contrib.postgres.lookups import Unaccent
 from django.core.files.base import ContentFile
 from django.db import transaction
@@ -110,6 +111,15 @@ def criar_importacao(conteudo: bytes, nome_do_arquivo: str, enviada_por) -> Impo
     importacao.arquivo.save(nome_do_arquivo, ContentFile(conteudo), save=False)
     importacao.save()
     return importacao
+
+
+def enfileirar_importacao(importacao_id: int) -> None:
+    """Põe o processamento da importação na fila do Celery.
+
+    A tarefa é chamada pelo nome, porque a camada de serviços não pode importar a de tarefas
+    (que importa os serviços).
+    """
+    current_app.signature("disciplinas.processar_importacao", args=(importacao_id,)).apply_async()
 
 
 def processar_importacao(importacao_id: int) -> Importacao:

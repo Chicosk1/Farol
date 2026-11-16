@@ -148,6 +148,50 @@ paths:
               schema:
                 $ref: '#/components/schemas/Eu'
           description: ''
+  /api/importacoes:
+    post:
+      operationId: importacoes_create
+      description: Guarda o arquivo e põe o processamento na fila. O relatório sai
+        em GET /importacoes/{id}.
+      summary: Envia um CSV de turmas e matrículas (só administrador)
+      tags:
+      - importacoes
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EnvioDeImportacaoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportacaoCriada'
+          description: ''
+  /api/importacoes/{importacao_id}:
+    get:
+      operationId: importacoes_retrieve
+      summary: Relatório de uma importação (só administrador)
+      parameters:
+      - in: path
+        name: importacao_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - importacoes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Importacao'
+          description: ''
   /api/sair:
     post:
       operationId: sair_create
@@ -215,6 +259,15 @@ components:
           minLength: 1
       required:
       - email
+    EnvioDeImportacaoRequest:
+      type: object
+      properties:
+        arquivo:
+          type: string
+          format: binary
+          description: CSV em UTF-8, separado por vírgula, de até 5 MB.
+      required:
+      - arquivo
     Eu:
       type: object
       description: A pessoa que está usando o Farol, com os perfis dela e o perfil
@@ -242,6 +295,70 @@ components:
       - nome
       - perfil_ativo
       - perfis
+    Importacao:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          readOnly: true
+        aceitas:
+          type: integer
+          readOnly: true
+          title: Linhas aceitas
+        rejeitadas:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinhaRejeitada'
+        matriculas_encerradas:
+          type: integer
+          readOnly: true
+          title: Matrículas encerradas
+        erro:
+          type: string
+          readOnly: true
+          title: Motivo da recusa
+          description: Problema que impediu de importar o arquivo.
+        aviso:
+          type: string
+          readOnly: true
+        enviada_em:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - aceitas
+      - aviso
+      - enviada_em
+      - erro
+      - id
+      - matriculas_encerradas
+      - rejeitadas
+      - status
+    ImportacaoCriada:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+      required:
+      - id
+      - status
+    LinhaRejeitada:
+      type: object
+      properties:
+        linha:
+          type: integer
+          description: Número da linha no arquivo; o cabeçalho é a linha 1.
+        motivo:
+          type: string
+      required:
+      - linha
+      - motivo
     NullEnum:
       enum:
       - null
@@ -265,6 +382,18 @@ components:
           description: Sempre "ok" quando a API está no ar.
       required:
       - status
+    StatusEnum:
+      enum:
+      - pendente
+      - processando
+      - concluida
+      - recusada
+      type: string
+      description: |-
+        * `pendente` - Pendente
+        * `processando` - Processando
+        * `concluida` - Concluída
+        * `recusada` - Recusada
     TrocaDePerfilRequest:
       type: object
       properties:

@@ -38,3 +38,17 @@ def cliente_professor(professor) -> APIClient:
     cliente = APIClient()
     cliente.force_login(professor)
     return cliente
+
+
+@pytest.fixture
+def admin(db) -> Pessoa:
+    return Pessoa.objects.create_user(
+        email="equipe.ti@exemplo.edu.br", nome="Equipe de TI", perfis=[Perfil.ADMIN]
+    )
+
+
+@pytest.fixture
+def cliente_admin(admin) -> APIClient:
+    cliente = APIClient()
+    cliente.force_login(admin)
+    return cliente

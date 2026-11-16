@@ -44,3 +44,24 @@ class AcessoADisciplina(BasePermission):
 def acesso_a_disciplina(*papeis: str) -> type[AcessoADisciplina]:
     """Permissão que, além de exigir acesso à disciplina, só aceita os perfis indicados."""
     return type("AcessoADisciplinaRestrito", (AcessoADisciplina,), {"papeis": tuple(papeis)})
+
+
+class ExigePerfilAtivo(BasePermission):
+    """Nega, com 403, quem não está usando um dos perfis permitidos (por exemplo, o administrador).
+
+    Vale o perfil em uso na sessão, e não todos os que a pessoa tem: quem é administrador e aluno
+    precisa trocar para administrador para usar as rotas dele.
+    """
+
+    perfis: tuple[str, ...] = ()
+
+    def has_permission(self, request, view) -> bool:
+        pessoa = request.user
+        if not pessoa or not pessoa.is_authenticated:
+            return False
+        return _funcao("PERFIL_ATIVO")(pessoa, request.session) in self.perfis
+
+
+def exige_perfil_ativo(*perfis: str) -> type[ExigePerfilAtivo]:
+    """Permissão para rotas de um perfil: `@permission_classes([exige_perfil_ativo("admin")])`."""
+    return type("ExigePerfilAtivoRestrito", (ExigePerfilAtivo,), {"perfis": tuple(perfis)})

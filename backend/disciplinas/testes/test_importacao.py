@@ -23,13 +23,6 @@ def arquivos_temporarios(settings, tmp_path):
     settings.MEDIA_ROOT = tmp_path
 
 
-@pytest.fixture
-def admin(db) -> Pessoa:
-    return Pessoa.objects.create_user(
-        email="equipe.ti@exemplo.edu.br", nome="Equipe de TI", perfis=[Perfil.ADMIN]
-    )
-
-
 def linha(numero: int, disciplina: str = ED, nome: str | None = None) -> str:
     return f"{numero:06d},{nome or f'Aluno {numero}'},aluno{numero}@exemplo.edu.br,{disciplina}"
 
