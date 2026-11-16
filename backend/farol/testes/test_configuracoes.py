@@ -16,6 +16,7 @@ VARIAVEIS_DE_PRODUCAO = {
     "POSTGRES_USER": "farol",
     "POSTGRES_PASSWORD": "senha-de-teste",
     "POSTGRES_HOST": "db",
+    "FAROL_ARQUIVOS": "/arquivos",
 }
 
 

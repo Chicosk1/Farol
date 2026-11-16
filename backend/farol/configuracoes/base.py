@@ -95,7 +95,7 @@ USE_TZ = True
 # Arquivos enviados (importações, e depois os PDFs dos professores). Em desenvolvimento e nos
 # testes ficam numa pasta local; em produção, o armazenamento é escolhido na fase 0 (ADR 0008).
 MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = Path(ambiente.opcional("FAROL_ARQUIVOS", str(BASE_DIR / "media")))
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"

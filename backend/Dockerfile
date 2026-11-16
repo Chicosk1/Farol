@@ -15,7 +15,10 @@ RUN pip install ".[dev]" && rm -rf build ./*.egg-info
 # Usuário sem privilégios, com o mesmo UID do usuário da máquina, para que os arquivos criados
 # na pasta montada (migrações, por exemplo) não fiquem com dono root.
 ARG UID=1000
-RUN useradd --uid "${UID}" --create-home farol
+# A pasta /arquivos guarda os PDFs e as importações; o volume do Compose herda este dono.
+RUN useradd --uid "${UID}" --create-home farol \
+    && mkdir /arquivos \
+    && chown farol /arquivos
 COPY --chown=farol . .
 USER farol
 
