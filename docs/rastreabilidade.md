@@ -10,7 +10,7 @@ A coluna Testes mostra os testes do produto que citam o requisito com `@pytest.m
 
 | Spec | Requisitos funcionais | Com teste | Coberto | Simulado | Parcial | Não coberto | Tarefas feitas | Pontos a esclarecer |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [001 Acesso e turmas](../specs/001-acesso-e-turmas/spec.md) | 11 | 2 de 11 | 2 | 3 | 1 | 5 | 16 de 37 | 3 |
+| [001 Acesso e turmas](../specs/001-acesso-e-turmas/spec.md) | 11 | 2 de 11 | 2 | 3 | 1 | 5 | 16 de 39 | 3 |
 | [002 Materiais da disciplina](../specs/002-materiais-da-disciplina/spec.md) | 11 | 0 de 11 | 2 | 5 | 1 | 3 | 4 de 21 | 2 |
 | [003 Tutor da disciplina](../specs/003-tutor-da-disciplina/spec.md) | 14 | 0 de 14 | 6 | 5 | 2 | 1 | 8 de 35 | 0 |
 | [004 Dúvidas ao professor](../specs/004-duvidas-ao-professor/spec.md) | 9 | 0 de 9 | 5 | 0 | 1 | 3 | 4 de 14 | 1 |
@@ -35,7 +35,7 @@ Tarefas já especificadas que aproximam o protótipo do comportamento descrito n
 | `ACE-RF-01` | O sistema DEVE permitir a entrada somente com conta institucional, via OpenID Connect. [PRECISA ESCLARECER: Google Workspace ou Microsoft 365] | Simulado | [entrar.js](../prototipo/js/screens/entrar.js) |  | ACE-T01 | ACE-T20, ACE-T21, ACE-T23 |
 | `ACE-RF-02` | O sistema NÃO DEVE criar nem guardar senhas próprias. | Coberto | [entrar.js](../prototipo/js/screens/entrar.js) | [contas/testes/test_modelos.py](../backend/contas/testes/test_modelos.py) (3) | ACE-T01 | ACE-T20, ACE-T21 |
 | `ACE-RF-03` | O sistema DEVE atribuir a cada pessoa um ou mais perfis entre aluno, professor, coordenação e administrador, e permitir trocar de perfil sem sair. | Parcial | [shell.js](../prototipo/js/shell.js) | [contas/testes/test_api_eu.py](../backend/contas/testes/test_api_eu.py) (6) | ACE-T04, ACE-T22 | ACE-T23 |
-| `ACE-RF-04` | O sistema DEVE mostrar ao aluno só as disciplinas em que está matriculado e ao professor só as que leciona. | Simulado | [data.js](../prototipo/js/data.js) |  |  | ACE-T25, ACE-T30 |
+| `ACE-RF-04` | O sistema DEVE mostrar ao aluno só as disciplinas em que está matriculado e ao professor só as que leciona. | Simulado | [data.js](../prototipo/js/data.js) |  |  | ACE-T25, ACE-T27, ACE-T30 |
 | `ACE-RF-05` | O sistema DEVE verificar no servidor, em toda operação, se a pessoa tem permissão na disciplina envolvida. | Não coberto |  |  |  | ACE-T31 |
 | `ACE-RF-06` | O sistema DEVE importar disciplinas, turmas e matrículas de um CSV exportado do sistema acadêmico e mostrar um relatório de linhas aceitas e rejeitadas. [PRECISA ESCLARECER: a importação é feita só pela TI ou cada professor também pode importar a própria turma?] | Simulado | [prof-disciplina.js](../prototipo/js/screens/prof-disciplina.js) |  | ACE-T05 | ACE-T40, ACE-T41, ACE-T42 |
 | `ACE-RF-07` | A importação DEVE ser idempotente: importar o mesmo arquivo duas vezes não duplica registros, e matrículas ausentes no arquivo novo são encerradas. | Não coberto |  |  |  | ACE-T40, ACE-T41 |

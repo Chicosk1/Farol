@@ -22,7 +22,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Primeira fatia: arquitetura de pé
 
-A primeira entrega do produto prova a arquitetura em todas as camadas com uma funcionalidade pequena: entrar (com o login de desenvolvimento) e ver as próprias disciplinas. Ela é formada pelas tarefas ACE-T10 a ACE-T19, ACE-T22, ACE-T24, ACE-T25, ACE-T30 a ACE-T33 e ACE-T35, nesta ordem. Cada tarefa leva os próprios testes, escritos antes do código, e vira um commit e um push. O login institucional (ACE-T20 e ACE-T21) fica para quando o provedor for definido.
+A primeira entrega do produto prova a arquitetura em todas as camadas com uma funcionalidade pequena: entrar (com o login de desenvolvimento) e ver as próprias disciplinas. Ela é formada pelas tarefas ACE-T10 a ACE-T19, ACE-T22, ACE-T24, ACE-T25, ACE-T26, ACE-T30, ACE-T27, ACE-T31 a ACE-T33 e ACE-T35, nesta ordem. Cada tarefa leva os próprios testes, escritos antes do código, e vira um commit e um push. O login institucional (ACE-T20 e ACE-T21) fica para quando o provedor for definido.
 
 ## Produto: fundação do repositório
 
@@ -43,8 +43,10 @@ A primeira entrega do produto prova a arquitetura em todas as camadas com uma fu
 - [ ] ACE-T21 [H1] Login OpenID Connect com django-allauth, restrito ao domínio institucional (ACE-RF-01, ACE-RF-02)
 - [x] ACE-T22 [H1] Perfis da `Pessoa` e rotas `GET /api/eu`, `POST /api/eu/perfil-ativo` e `POST /api/sair`, com testes (ACE-RF-03)
 - [ ] ACE-T23 [H1] Tela de entrada com o login institucional e troca de perfil no front-end (ACE-RF-01, ACE-RF-03)
-- [ ] ACE-T24 [H1] Login de desenvolvimento: rota `POST /api/dev/entrar`, botões "Entrar como aluna" e "Entrar como professor" e teste de que a rota não existe com as configurações de produção (ACE-RNF-03)
-- [ ] ACE-T25 [H2] Comando `popular_demo` com as pessoas, disciplinas e matrículas fictícias do protótipo, com teste (ACE-RF-04)
+- [ ] ACE-T24 [H1] Login de desenvolvimento no back-end: rota `POST /api/dev/entrar` e teste de que a rota não existe com as configurações de produção (ACE-RNF-03)
+- [ ] ACE-T25 [H2] Comando `popular_demo` com as pessoas fictícias do protótipo (Ana Souza e Carlos Mendes), com teste (ACE-RF-04)
+- [ ] ACE-T26 [H1] Cliente de sessão no front-end (`/api/eu`, entrar, sair, token CSRF) e tela de entrada com os botões "Entrar como aluna" e "Entrar como professor", só em desenvolvimento (ACE-RNF-03)
+- [ ] ACE-T27 [H2] Acrescentar ao `popular_demo` as seis disciplinas do 2º período e as matrículas, depois da ACE-T30, com teste (ACE-RF-04)
 
 ## Produto: História 2, ver só as minhas disciplinas (P1)
 
