@@ -141,7 +141,7 @@ Toda dependência nova precisa de justificativa no `plan.md` da spec ou de um AD
 
 ### Popular os dados de demonstração
 
-A partir da tarefa ACE-T25, o comando `popular_demo` cria as pessoas, as disciplinas e as matrículas fictícias do protótipo:
+O comando `popular_demo` cria as pessoas fictícias do protótipo (a aluna Ana Souza e o professor Carlos Mendes); as disciplinas e as matrículas entram a partir da tarefa ACE-T27. Pode ser rodado várias vezes e só funciona em desenvolvimento e em teste. Com ele, o login de desenvolvimento (`POST /api/dev/entrar`) entra como `ana.souza@exemplo.edu.br` ou `carlos.mendes@exemplo.edu.br`:
 
 ```bash
 docker compose run --rm backend python manage.py popular_demo

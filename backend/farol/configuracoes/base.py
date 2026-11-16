@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     # Módulos do Farol (ADR 0007)
     "nucleo",
     "contas",
+    "demonstracao",
 ]
 
 MIDDLEWARE = [

@@ -2,6 +2,7 @@
 
 from collections.abc import MutableMapping
 
+from .models import Perfil as Perfil  # reexportado: os outros módulos usam o perfil pelo servicos
 from .models import Pessoa, normalizar_email
 
 CHAVE_PERFIL_ATIVO = "perfil_ativo"
@@ -21,6 +22,23 @@ def pessoa_ativa_por_email(email: str) -> Pessoa:
 
 class PerfilInvalido(ValueError):
     """A pessoa pediu um perfil que não tem."""
+
+
+def criar_ou_atualizar_pessoa(email: str, nome: str, perfis: list[str]) -> tuple[Pessoa, bool]:
+    """Garante uma pessoa ativa, com o nome e os perfis dados. Devolve a pessoa e se foi criada.
+
+    Serve à importação de turmas e aos dados de demonstração; nunca cria senha (ACE-RF-02).
+    """
+    email = normalizar_email(email)
+    try:
+        pessoa = Pessoa.objects.get(email=email)
+    except Pessoa.DoesNotExist:
+        return Pessoa.objects.create_user(email=email, nome=nome, perfis=perfis), True
+    pessoa.nome = nome
+    pessoa.perfis = list(perfis)
+    pessoa.is_active = True
+    pessoa.save()
+    return pessoa, False
 
 
 def perfil_ativo(pessoa: Pessoa, sessao: MutableMapping) -> str | None:
