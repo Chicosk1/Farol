@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "farol-backend"
+version = "0.1.0"
+description = "Back-end do Farol, tutor de estudos com IA da UNIMATER."
+requires-python = ">=3.13"
+dependencies = [
+    "Django~=5.2.19",
+    "djangorestframework~=3.18.3",
+    "psycopg[binary]~=3.3.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest~=9.2.0",
+    "pytest-django~=4.14.0",
+]
+
+[tool.setuptools]
+# Este arquivo só descreve as dependências: o código roda direto da pasta backend/, pelo manage.py.
+packages = []
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "farol.configuracoes.teste"
+python_files = ["test_*.py"]
+addopts = "-ra"

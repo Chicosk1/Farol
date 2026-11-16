@@ -27,7 +27,7 @@ A primeira entrega do produto prova a arquitetura em todas as camadas com uma fu
 ## Produto: fundação do repositório
 
 - [x] ACE-T10 Mover o protótipo para `prototipo/`, criar na raiz um `index.html` que redireciona para lá, atualizar os caminhos em README, specs, matriz e `scripts/verificar_specs.py`, e conferir o GitHub Pages
-- [ ] ACE-T11 Criar o projeto Django 5.2 em `backend/`, com configurações por ambiente lidas de variáveis, o modelo `contas.Pessoa` como usuário desde a primeira migração, a rota `GET /api/saude` e o `backend/Dockerfile`
+- [x] ACE-T11 Criar o projeto Django 5.2 em `backend/`, com configurações por ambiente lidas de variáveis, o modelo `contas.Pessoa` como usuário desde a primeira migração, a rota `GET /api/saude` e o `backend/Dockerfile`
 - [ ] ACE-T12 [P] Criar o projeto React + TypeScript + Vite em `frontend/`, com React Router, TanStack Query, Vitest, Testing Library, axe, ESLint, Prettier e o `frontend/Dockerfile`
 - [ ] ACE-T19 Configurar o Tailwind CSS com os tokens do design system Farol (temas claro e escuro) e a fonte Nunito Sans em `frontend/src/estilos/`
 - [ ] ACE-T13 Criar `docker-compose.yml`, o `.env.exemplo` e a configuração do Celery, com os serviços `db`, `redis`, `backend`, `worker`, `beat`, `frontend` e `mailpit`
