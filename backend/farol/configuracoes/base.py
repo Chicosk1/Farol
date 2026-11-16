@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "nucleo",
     "contas",
     "disciplinas",
+    "materiais",
     "demonstracao",
 ]
 
@@ -40,6 +41,10 @@ FAROL_ACESSO = {
     "PERFIL_ATIVO": "contas.servicos.perfil_ativo",
     "ACESSO_A_DISCIPLINA": "disciplinas.servicos.tem_acesso",
 }
+
+# Tamanho dos vetores de busca dos trechos. É fixo no banco: trocar o modelo de embeddings por
+# um de outro tamanho exige uma migração (docs/arquitetura.md).
+FAROL_DIMENSAO_DO_VETOR = 256
 
 # Atalho para entrar sem o login institucional (POST /api/dev/entrar). Desligado por padrão:
 # só as configurações de desenvolvimento e de teste ligam (ACE-RNF-03).

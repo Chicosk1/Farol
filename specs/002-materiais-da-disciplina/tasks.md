@@ -17,7 +17,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Produto: fundação
 
-- [ ] MAT-T10 Habilitar a extensão pgvector e criar os modelos `Material` e `Trecho` com migrações
+- [x] MAT-T10 Habilitar a extensão pgvector e criar os modelos `Material` e `Trecho` com migrações
 - [ ] MAT-T11 [P] Configurar o armazenamento de arquivos pela API do Django: pasta indicada por variável de ambiente, em volume do Docker compartilhado pelo `backend` e pelo `worker`; S3 opcional em produção fica para a fase 0
 - [ ] MAT-T12 [P] Gerar por código os PDFs de exemplo (texto, escaneado, misto, protegido e grande) em `backend/materiais/testes/pdfs.py`, sem binários no repositório
 - [ ] MAT-T13 Módulo `ia` com `gerar_embedding` e o adaptador falso, que devolve vetores previsíveis para os testes (parte da TUT-T10, usada pelo processamento dos PDFs)
