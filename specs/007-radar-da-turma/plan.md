@@ -15,7 +15,7 @@ Uma tarefa do Celery roda toda madrugada para cada disciplina: reúne os registr
 
 | Item | Valor |
 | --- | --- |
-| Linguagens | Python 3.12, TypeScript 5 |
+| Linguagens | Python 3.13, TypeScript 5 |
 | Dependências principais | scikit-learn (agrupamento), Celery beat, e-mail transacional |
 | Armazenamento | PostgreSQL |
 | Testes | pytest com registros sintéticos, incluindo grupos de 4 e de 5 alunos |

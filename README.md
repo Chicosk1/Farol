@@ -15,8 +15,9 @@ O Farol é desenvolvido de forma orientada por especificação (Spec-Driven Deve
 | [Visão do produto](docs/visao-do-produto.md) | Problema, público, jornadas, métricas de sucesso, roteiro e riscos |
 | [Constituição](.specify/memory/constitution.md) | Os princípios que valem para todas as funcionalidades |
 | [Especificações](specs/README.md) | Uma pasta por funcionalidade, com `spec.md` (o quê), `plan.md` (como) e `tasks.md` (em que ordem) |
-| [Arquitetura](docs/arquitetura.md) | Stack, trade-offs, fluxos do tutor e do radar, segurança e LGPD |
+| [Arquitetura](docs/arquitetura.md) | Estilo arquitetural (monólito modular), stack, trade-offs, fluxos do tutor e do radar, segurança e LGPD |
 | [Decisões (ADR)](docs/adr/README.md) | Registro das decisões técnicas e das alternativas descartadas |
+| [Qualidade e testes](docs/qualidade-e-testes.md) | Níveis de teste, verificações automáticas e quando uma tarefa está pronta |
 | [Matriz de rastreabilidade](docs/rastreabilidade.md) | Cada requisito, o que o protótipo já cobre, onde está no código e as tarefas |
 | [Glossário](docs/glossario.md) | O sentido exato de cada termo usado nas specs |
 | [Como contribuir](CONTRIBUTING.md) | O fluxo issue, spec, plano, tarefas, código e pull request |

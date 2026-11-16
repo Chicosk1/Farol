@@ -15,7 +15,7 @@ Cada questão publicada gera um cartão por aluno matriculado. O agendamento usa
 
 | Item | Valor |
 | --- | --- |
-| Linguagens | Python 3.12, TypeScript 5 |
+| Linguagens | Python 3.13, TypeScript 5 |
 | Dependências principais | Celery beat para tarefas periódicas; e-mail transacional; Web Push para notificações |
 | Armazenamento | PostgreSQL |
 | Testes | pytest com casos de tabela para o SM-2 |

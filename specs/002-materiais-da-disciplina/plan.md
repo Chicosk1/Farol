@@ -5,19 +5,19 @@
 | Spec | [spec.md](./spec.md) |
 | Branch | `002-materiais-da-disciplina` |
 | Status | Em revisão |
-| Atualizado em | 2026-11-13 |
+| Atualizado em | 2026-11-16 |
 
 ## Resumo
 
-O front-end envia o PDF ao armazenamento S3 por uma URL assinada, o Django cria o registro do material e enfileira uma tarefa no Celery. A tarefa extrai o texto com pypdf, divide em trechos de cerca de 500 tokens com sobreposição, gera os vetores pelo módulo `ia/` e grava tudo no PostgreSQL com pgvector. O status de cada etapa é gravado no banco e lido pelo front-end.
+O front-end envia o PDF ao Django (upload multipart), que grava o arquivo pela API de armazenamento, cria o registro do material e enfileira uma tarefa no Celery ([ADR 0008](../../docs/adr/0008-ambiente-local-em-docker.md)). A tarefa extrai o texto com pypdf, divide em trechos de cerca de 500 tokens com sobreposição, gera os vetores pelo módulo `ia/` e grava tudo no PostgreSQL com pgvector. O status de cada etapa é gravado no banco e lido pelo front-end.
 
 ## Contexto técnico
 
 | Item | Valor |
 | --- | --- |
-| Linguagens | Python 3.12, TypeScript 5 |
-| Dependências principais | pypdf, django-storages, Celery, pgvector (extensão e pacote Python) |
-| Armazenamento | S3 para arquivos, PostgreSQL com pgvector para trechos |
+| Linguagens | Python 3.13, TypeScript 5 |
+| Dependências principais | pypdf, Celery, pgvector (extensão e pacote Python); django-storages só se a produção usar S3 |
+| Armazenamento | Arquivos pela API de armazenamento do Django (volume em desenvolvimento; disco ou S3 em produção), PostgreSQL com pgvector para trechos |
 | Testes | pytest com PDFs de exemplo (texto, escaneado, misto, protegido) |
 | Metas de desempenho | 40 páginas em até 2 minutos (MAT-RNF-01) |
 | Restrições | Arquivos e banco na região de São Paulo |
@@ -39,17 +39,16 @@ O front-end envia o PDF ao armazenamento S3 por uma URL assinada, o Django cria 
 
 | Entidade | Campos | Observações |
 | --- | --- | --- |
-| `Material` | `disciplina`, `aula_numero`, `aula_titulo`, `arquivo` (chave no S3), `paginas`, `status` (processando, pronto, atencao, erro, retirado), `etapa`, `versao`, `substitui` (FK Material, opcional), `paginas_sem_texto` (lista) | Índice por `disciplina` + `status` |
+| `Material` | `disciplina`, `aula_numero`, `aula_titulo`, `arquivo` (FileField), `paginas`, `status` (processando, pronto, atencao, erro, retirado), `etapa`, `versao`, `substitui` (FK Material, opcional), `paginas_sem_texto` (lista) | Índice por `disciplina` + `status` |
 | `Trecho` | `material`, `pagina`, `ordem`, `texto`, `inicio`, `fim`, `vetor` (vector) | Índice HNSW no `vetor`; filtro por disciplina via `material` |
 
 ## Contratos
 
 | Método e caminho | Entrada | Saída | Erros |
 | --- | --- | --- | --- |
-| `POST /api/disciplinas/{id}/materiais` | `{ aula_numero, aula_titulo, nome_arquivo, tamanho }` | `{ material_id, url_envio }` (URL assinada do S3) | 400 se não for PDF ou passar do limite, 403 |
-| `POST /api/materiais/{id}/enviado` | | 202; enfileira o processamento | 409 se já processado |
+| `POST /api/disciplinas/{id}/materiais` | Multipart: `arquivo`, `aula_numero`, `aula_titulo` | `{ material_id, status }` (202); enfileira o processamento | 400 se não for PDF ou passar do limite, 403 |
 | `GET /api/disciplinas/{id}/materiais` | | Lista com status e etapa (professor vê todos; aluno só os prontos) | 403 |
-| `GET /api/materiais/{id}/arquivo?pagina=N` | | URL temporária do PDF e posição do trecho a destacar | 403, 404 |
+| `GET /api/materiais/{id}/arquivo?pagina=N` | | O PDF, servido pelo Django só para quem tem acesso à disciplina, e a posição do trecho a destacar | 403, 404 |
 | `DELETE /api/materiais/{id}` | | 204; status passa a retirado | 403 |
 
 Tarefa assíncrona `materiais.processar(material_id)`: atualiza `etapa` ao fim de cada passo, grava `Trecho`s numa transação e, no fim, cria a notificação para o professor.
@@ -73,7 +72,7 @@ Tarefa assíncrona `materiais.processar(material_id)`: atualiza `etapa` ao fim d
 ## Decisões e pesquisa
 
 - **pypdf** e não PyMuPDF: licença permissiva (PyMuPDF é AGPL) e extração página a página, suficiente para PDFs com texto.
-- **Envio direto ao S3 por URL assinada:** o arquivo não passa pelo Django, o que evita travar o servidor com arquivos grandes.
+- **Envio pelo Django, e não por URL assinada no S3:** funciona igual em desenvolvimento e em produção, sem serviço extra ([ADR 0008](../../docs/adr/0008-ambiente-local-em-docker.md)). O limite de tamanho fica no Nginx e no Django. Se a produção usar S3 e os arquivos crescerem, a URL assinada pode voltar sem mudar a spec.
 - **Trechos de cerca de 500 tokens com sobreposição de 50:** valor inicial; o conjunto de 100 perguntas de teste (spec 003) decide o ajuste.
 - **Detecção de página sem texto:** página com menos de 20 caracteres extraídos conta como sem texto. Mais da metade das páginas assim marca o material como "Precisa de atenção".
 

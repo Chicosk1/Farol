@@ -4,7 +4,7 @@
 | --- | --- |
 | Spec | [spec.md](./spec.md) |
 | Plano | [plan.md](./plan.md) |
-| Atualizado em | 2026-11-13 |
+| Atualizado em | 2026-11-16 |
 
 Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a tarefa pode ser feita em paralelo com outras `[P]` do mesmo bloco.
 
@@ -18,13 +18,13 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 ## Produto: fundação
 
 - [ ] MAT-T10 Habilitar a extensão pgvector e criar os modelos `Material` e `Trecho` com migrações
-- [ ] MAT-T11 [P] Configurar django-storages com S3 e URLs assinadas
-- [ ] MAT-T12 [P] Reunir PDFs de exemplo (texto, escaneado, misto, protegido) em `backend/materiais/tests/arquivos/`
+- [ ] MAT-T11 [P] Configurar o armazenamento de arquivos pela API do Django: volume em desenvolvimento e testes, S3 opcional em produção
+- [ ] MAT-T12 [P] Reunir PDFs de exemplo (texto, escaneado, misto, protegido) em `backend/materiais/testes/arquivos/`
 
 ## Produto: História 1, publicar o PDF de uma aula (P1)
 
 - [ ] MAT-T20 [P] [H1] Testes de envio, validação e etapas (MAT-RF-01, MAT-RF-02, MAT-RF-03)
-- [ ] MAT-T21 [H1] Rotas de criação de material e confirmação de envio (MAT-RF-01, MAT-RF-02)
+- [ ] MAT-T21 [H1] Rota de envio do PDF (multipart), com validação de tipo e tamanho (MAT-RF-01, MAT-RF-02)
 - [ ] MAT-T22 [H1] Tarefa `materiais.processar`: extração por página, divisão em trechos e vetores (MAT-RF-03, MAT-RF-04)
 - [ ] MAT-T23 [H1] Notificação ao professor quando o material fica pronto ou falha (MAT-RF-06)
 - [ ] MAT-T24 [H1] Tela de materiais do professor com status ao vivo (MAT-RF-03)

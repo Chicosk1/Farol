@@ -15,7 +15,7 @@ A dúvida é um registro separado da conversa: guarda só o texto filtrado, a di
 
 | Item | Valor |
 | --- | --- |
-| Linguagens | Python 3.12, TypeScript 5 |
+| Linguagens | Python 3.13, TypeScript 5 |
 | Dependências principais | Django REST Framework; o filtro de dados pessoais da spec 003 (TUT-RF-11) |
 | Armazenamento | PostgreSQL |
 | Testes | pytest, incluindo testes que garantem que nenhuma rota do professor devolve dados do aluno |

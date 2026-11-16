@@ -15,7 +15,7 @@ RAG (geração aumentada por recuperação) com o PostgreSQL e o pgvector: a per
 
 | Item | Valor |
 | --- | --- |
-| Linguagens | Python 3.12, TypeScript 5 |
+| Linguagens | Python 3.13, TypeScript 5 |
 | Dependências principais | Django REST Framework, pgvector, Redis (contador do limite), SDK oficial do provedor de IA |
 | Armazenamento | PostgreSQL com pgvector; Redis para contadores diários |
 | Testes | pytest; conjunto de 100 perguntas por disciplina (avaliação automática); Vitest no front-end |

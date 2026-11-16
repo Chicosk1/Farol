@@ -48,11 +48,12 @@ Se, ao planejar, aparecer uma regra nova, ela volta para a spec primeiro.
 
 ### 5. Quebre em tarefas
 
-Copie [`.specify/templates/tasks-template.md`](.specify/templates/tasks-template.md) para `tasks.md`. Cada tarefa tem um identificador (`TUT-T21`), a história a que pertence e os requisitos que atende entre parênteses. Os testes vêm antes da implementação. Tarefas grandes podem virar issues no GitHub.
+Copie [`.specify/templates/tasks-template.md`](.specify/templates/tasks-template.md) para `tasks.md`. Cada tarefa tem um identificador (`TUT-T21`), a história a que pertence e os requisitos que atende entre parênteses. Cada tarefa é pequena e leva os próprios testes (veja [Tarefas pequenas](#tarefas-pequenas-uma-tarefa-um-commit-um-push)). Tarefas podem virar issues no GitHub.
 
 ### 6. Implemente
 
-- Cite os requisitos no código. No protótipo, cada arquivo de tela começa com um comentário `/* Specs: TUT-RF-02, TUT-RF-04. ... */`. No produto, os testes de aceite levam o identificador no nome (`test_tut_rf_04_nao_encontrei_sem_chamar_o_modelo`).
+- Cite os requisitos no código. No protótipo, cada arquivo de tela começa com um comentário `/* Specs: TUT-RF-02, TUT-RF-04. ... */`. No produto, cada teste de aceite leva o marcador `@pytest.mark.requisito("TUT-RF-04")`, como explica [docs/qualidade-e-testes.md](docs/qualidade-e-testes.md).
+- Respeite as camadas e as fronteiras entre módulos da [ADR 0007](docs/adr/0007-monolito-modular-em-camadas.md). O CI verifica.
 - Se o código precisar se comportar diferente do que a spec diz, pare e atualize a spec. Código e spec divergentes não entram.
 
 ### 7. Abra o pull request
@@ -75,6 +76,16 @@ python3 scripts/verificar_specs.py --gerar
 
 Marque as tarefas concluídas em `tasks.md` (`- [x]`) no mesmo PR e, quando todas as de uma etapa estiverem feitas, atualize o status da spec.
 
+## Tarefas pequenas: uma tarefa, um commit, um push
+
+Regra do projeto, para humanos e para assistentes de IA:
+
+- Cada tarefa de `tasks.md` vira **um commit**, enviado (push) para o branch da spec logo em seguida. Assim o GitHub Actions testa cada passo, e um erro aparece perto de onde nasceu.
+- Uma tarefa é pequena quando o commit pode ser revisado em poucos minutos: um assunto só, de preferência uma camada ou um módulo, e algumas centenas de linhas no máximo, sem contar arquivos gerados (migrações, OpenAPI, lockfiles).
+- Tarefa grande demais é dividida **antes** de começar: as novas tarefas entram em `tasks.md` com os números livres do mesmo bloco, num commit só com essa divisão.
+- Cada tarefa leva os próprios testes, no mesmo commit, para o CI do branch nunca ficar vermelho. Nas specs que ainda não começaram, as tarefas de teste separadas são reorganizadas assim quando a spec começar.
+- Nunca junte duas tarefas no mesmo commit. Push vai só para o branch da spec, nunca para a `main`. A `main` só muda por pull request aprovado.
+
 ## Convenções
 
 | Item | Convenção | Exemplo |
@@ -82,6 +93,7 @@ Marque as tarefas concluídas em `tasks.md` (`- [x]`) no mesmo PR e, quando toda
 | Branch de funcionalidade | Nome da pasta da spec | `005-questoes-e-quizzes` |
 | Branch de documentação | `docs/assunto` | `docs/adota-sdd` |
 | Mensagem de commit | Verbo no presente, em português, com os IDs no fim | `Adiciona pré-visualização da dúvida (DUV-T05, DUV-RF-02)` |
+| Tamanho | Uma tarefa por commit e um push por commit | `ACE-T31` num commit, `ACE-T32` no seguinte |
 | Pull request | Título curto e, no corpo, os requisitos e tarefas atendidos | `Fecha DUV-T05` |
 | Idioma | Português do Brasil em documentos, telas e nomes de domínio do código | `Duvida`, `RadarSemanal` |
 
