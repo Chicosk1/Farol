@@ -33,7 +33,7 @@ def test_rodar_de_novo_nao_duplica_nem_desfaz_nada():
 
     saida = popular()
 
-    assert Pessoa.objects.count() == 7  # a aluna e os 6 professores
+    assert Pessoa.objects.count() == 8  # a aluna, os 6 professores e a equipe de TI
     assert Pessoa.objects.get(email="ana.souza@exemplo.edu.br").id == ana.id
     assert "já existiam" in saida
 
@@ -134,3 +134,14 @@ def test_o_login_de_desenvolvimento_mostra_6_disciplinas_para_a_ana_e_1_para_o_c
 
     assert {d["nome"] for d in da_ana} == NOMES_DAS_DISCIPLINAS
     assert [d["nome"] for d in do_carlos] == ["Estruturas de Dados"]
+
+
+@pytest.mark.requisito("ACE-RF-06")
+@pytest.mark.django_db
+def test_cria_a_equipe_de_ti_que_importa_turmas_pelo_painel():
+    popular()
+
+    ti = Pessoa.objects.get(email="ti@exemplo.edu.br")
+    assert ti.perfis == [Perfil.ADMIN]
+    assert ti.is_staff
+    assert not ti.has_usable_password()

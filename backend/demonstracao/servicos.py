@@ -15,6 +15,14 @@ SEMESTRE = "2026/2"
 
 ALUNA = {"email": f"ana.souza@{DOMINIO}", "nome": "Ana Souza", "perfis": [Perfil.ALUNO]}
 
+# Quem importa turmas pelo painel administrativo (disciplinas/admin.py).
+EQUIPE_DE_TI = {
+    "email": f"ti@{DOMINIO}",
+    "nome": "Equipe de TI",
+    "perfis": [Perfil.ADMIN],
+    "equipe": True,
+}
+
 # As seis disciplinas do 2º período de Sistemas de Informação, cada uma com o seu professor.
 DISCIPLINAS = [
     ("SINF201", "Estruturas de Dados", "carlos.mendes", "Carlos Mendes"),
@@ -42,6 +50,8 @@ def popular() -> Relatorio:
     """Cria o que falta e restaura o que mudou, sem duplicar nada ao rodar de novo."""
     relatorio = Relatorio()
     aluna, criada = contas.criar_ou_atualizar_pessoa(**ALUNA)
+    relatorio.contar(criada)
+    _, criada = contas.criar_ou_atualizar_pessoa(**EQUIPE_DE_TI)
     relatorio.contar(criada)
     for codigo, nome, usuario, nome_do_professor in DISCIPLINAS:
         professor, criado = contas.criar_ou_atualizar_pessoa(
