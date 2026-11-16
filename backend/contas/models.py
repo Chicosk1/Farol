@@ -7,7 +7,7 @@ from django.utils import timezone
 
 
 def normalizar_email(email: str) -> str:
-    """E-mail institucional sem espaços e em minúsculas, para não haver duas contas da mesma pessoa."""
+    """E-mail sem espaços e em minúsculas, para não haver duas contas da mesma pessoa."""
     return (email or "").strip().lower()
 
 
@@ -15,7 +15,7 @@ class GerenciadorDePessoas(BaseUserManager):
     use_in_migrations = True
 
     def create_user(self, email: str, nome: str, **campos) -> "Pessoa":
-        """Cria uma pessoa sem senha utilizável: a entrada é pela conta institucional (ACE-RF-02)."""
+        """Cria uma pessoa sem senha utilizável: entra pela conta institucional (ACE-RF-02)."""
         email = normalizar_email(email)
         if not email:
             raise ValueError("A pessoa precisa de um e-mail institucional.")
@@ -25,8 +25,10 @@ class GerenciadorDePessoas(BaseUserManager):
         pessoa.save(using=self._db)
         return pessoa
 
-    def create_superuser(self, email: str, nome: str, password: str | None = None, **campos) -> "Pessoa":
-        """Cria uma pessoa da equipe com todas as permissões. A senha recebida é ignorada (ACE-RF-02)."""
+    def create_superuser(
+        self, email: str, nome: str, password: str | None = None, **campos
+    ) -> "Pessoa":
+        """Cria uma pessoa da equipe com todas as permissões, ignorando a senha (ACE-RF-02)."""
         campos.setdefault("is_staff", True)
         campos.setdefault("is_superuser", True)
         return self.create_user(email, nome, **campos)

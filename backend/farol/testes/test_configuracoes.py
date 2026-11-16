@@ -45,7 +45,9 @@ def test_producao_le_tudo_das_variaveis_de_ambiente(ambiente_de_producao):
     assert producao.DATABASES["default"]["PASSWORD"] == "senha-de-teste"
 
 
-@pytest.mark.parametrize("variavel", ["DJANGO_SECRET_KEY", "DJANGO_ALLOWED_HOSTS", "POSTGRES_PASSWORD"])
+@pytest.mark.parametrize(
+    "variavel", ["DJANGO_SECRET_KEY", "DJANGO_ALLOWED_HOSTS", "POSTGRES_PASSWORD"]
+)
 def test_producao_nao_sobe_sem_uma_variavel_obrigatoria(ambiente_de_producao, variavel):
     ambiente_de_producao.delenv(variavel)
 

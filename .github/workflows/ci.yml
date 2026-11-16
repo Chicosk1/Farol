@@ -83,6 +83,14 @@ jobs:
       - name: Instalar dependências
         run: pip install ".[dev]"
 
+      - name: Estilo e erros comuns (Ruff)
+        run: |
+          ruff check --output-format=github .
+          ruff format --check .
+
+      - name: Fronteiras entre módulos (import-linter, ADR 0007)
+        run: lint-imports
+
       - name: Migrações esquecidas
         run: python manage.py makemigrations --check --dry-run
 
