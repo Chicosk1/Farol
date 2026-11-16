@@ -18,20 +18,22 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 ## Produto: fundação
 
 - [ ] MAT-T10 Habilitar a extensão pgvector e criar os modelos `Material` e `Trecho` com migrações
-- [ ] MAT-T11 [P] Configurar o armazenamento de arquivos pela API do Django: volume em desenvolvimento e testes, S3 opcional em produção
-- [ ] MAT-T12 [P] Reunir PDFs de exemplo (texto, escaneado, misto, protegido) em `backend/materiais/testes/arquivos/`
+- [ ] MAT-T11 [P] Configurar o armazenamento de arquivos pela API do Django: pasta indicada por variável de ambiente, em volume do Docker compartilhado pelo `backend` e pelo `worker`; S3 opcional em produção fica para a fase 0
+- [ ] MAT-T12 [P] Gerar por código os PDFs de exemplo (texto, escaneado, misto, protegido e grande) em `backend/materiais/testes/pdfs.py`, sem binários no repositório
+- [ ] MAT-T13 Módulo `ia` com `gerar_embedding` e o adaptador falso, que devolve vetores previsíveis para os testes (parte da TUT-T10, usada pelo processamento dos PDFs)
 
 ## Produto: História 1, publicar o PDF de uma aula (P1)
 
-- [ ] MAT-T20 [P] [H1] Testes de envio, validação e etapas (MAT-RF-01, MAT-RF-02, MAT-RF-03)
+- [x] MAT-T20 [H1] Testes de envio, validação e etapas, entregues junto das MAT-T21 e MAT-T22 (MAT-RF-01, MAT-RF-02, MAT-RF-03)
 - [ ] MAT-T21 [H1] Rota de envio do PDF (multipart), com validação de tipo e tamanho (MAT-RF-01, MAT-RF-02)
 - [ ] MAT-T22 [H1] Tarefa `materiais.processar`: extração por página, divisão em trechos e vetores (MAT-RF-03, MAT-RF-04)
-- [ ] MAT-T23 [H1] Notificação ao professor quando o material fica pronto ou falha (MAT-RF-06)
+- [ ] MAT-T23 [H1] Módulo `notificacoes` com o modelo `Notificacao`, o serviço `notificar` e as rotas `GET /api/notificacoes` e `POST /api/notificacoes/{id}/lida`; a tarefa de processamento avisa o professor quando o material fica pronto ou falha (MAT-RF-06)
+- [ ] MAT-T25 [H1] Sino de notificações no cabeçalho do front-end (MAT-RF-06)
 - [ ] MAT-T24 [H1] Tela de materiais do professor com status ao vivo (MAT-RF-03)
 
 ## Produto: História 2, consultar os materiais (P1)
 
-- [ ] MAT-T30 [P] [H2] Testes de visibilidade: aluno só vê material pronto (MAT-RF-07)
+- [x] MAT-T30 [H2] Testes de visibilidade: aluno só vê material pronto, entregues junto da MAT-T31 (MAT-RF-07)
 - [ ] MAT-T31 [H2] Lista de materiais do aluno e visualizador de PDF com página inicial (MAT-RF-08, MAT-RF-09)
 - [ ] MAT-T32 [H2] Destaque do trecho citado no visualizador (MAT-RF-09)
 
@@ -41,7 +43,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Produto: História 4, retirar ou substituir (P2)
 
-- [ ] MAT-T50 [P] [H4] Teste: material retirado não é usado na pergunta seguinte (MAT-RF-10, MAT-CS-03)
+- [x] MAT-T50 [H4] Teste: material retirado não é usado na pergunta seguinte, entregue junto da MAT-T51 e completado pela spec 003 (MAT-RF-10, MAT-CS-03)
 - [ ] MAT-T51 [H4] Retirada de material e marcação das questões de origem (MAT-RF-10)
 - [ ] MAT-T52 [H4] Envio de nova versão com troca atômica ao ficar pronta (MAT-RF-11)
 
