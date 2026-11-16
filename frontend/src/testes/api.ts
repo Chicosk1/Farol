@@ -75,3 +75,8 @@ export const DISCIPLINAS = [
   professor_nome,
   favorita: false,
 }));
+
+/** A página inicial pede as disciplinas favoritas; testes que não tratam delas usam esta rota. */
+export const FAVORITAS_VAZIAS = {
+  'GET /api/disciplinas?filtro=favoritas': { corpo: [] },
+} as const;

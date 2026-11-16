@@ -55,7 +55,7 @@ A primeira entrega do produto prova a arquitetura em todas as camadas com uma fu
 - [x] ACE-T32 [H2] Favoritos: modelo `Favorito`, rotas `PUT` e `DELETE /api/disciplinas/{id}/favorito` e filtro Favoritas, com testes do cenário 3 (ACE-RF-10)
 - [x] ACE-T33 [H2] Tela de disciplinas com lista, busca e alternância entre grade e lista, com testes de tela e de acessibilidade (ACE-RF-10)
 - [x] ACE-T35 [H2] Abas Todas e Favoritas e botão de favoritar na tela de disciplinas, com testes (ACE-RF-10)
-- [ ] ACE-T36 [H2] Disciplinas favoritas no topo da tela inicial, com testes do cenário 3 (ACE-RF-10)
+- [x] ACE-T36 [H2] Disciplinas favoritas no topo da tela inicial, com testes do cenário 3 (ACE-RF-10)
 - [ ] ACE-T34 [H2] Ligar a aba "Com tutor" ao serviço de materiais, depois da História 1 da spec 002, com testes do cenário 4 (ACE-RF-10)
 
 ## Produto: História 3, importar turmas (P2)

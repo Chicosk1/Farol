@@ -1,6 +1,7 @@
 import { useEu } from '../funcionalidades/contas/sessao';
+import { FavoritasNaInicial } from '../funcionalidades/disciplinas/FavoritasNaInicial';
 
-/** Página provisória da primeira fatia: mostra quem entrou. Os favoritos chegam na ACE-T35. */
+/** Tela inicial: as disciplinas favoritas no topo e, abaixo, quem entrou. */
 export function PaginaInicial() {
   const eu = useEu();
 
@@ -8,6 +9,7 @@ export function PaginaInicial() {
     <main id="conteudo" className="mx-auto max-w-2xl p-4">
       <h1 className="text-2xl font-extrabold text-ink">Farol</h1>
       <p className="mt-2 text-ink-muted">Tutor de estudos com IA da UNIMATER.</p>
+      <FavoritasNaInicial />
       {eu.data && (
         <section aria-label="Sessão" className="mt-6">
           <p className="font-bold text-ink">Olá, {eu.data.nome}</p>

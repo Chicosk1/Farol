@@ -2,7 +2,7 @@ import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { violacoesDeAcessibilidade } from '../../testes/acessibilidade';
-import { ANA, CARLOS, simularApi } from '../../testes/api';
+import { ANA, CARLOS, FAVORITAS_VAZIAS, simularApi } from '../../testes/api';
 import { renderizarApp } from '../../testes/renderizar';
 
 const SEM_SESSAO = { status: 401, corpo: { detail: 'Credenciais não foram fornecidas.' } };
@@ -86,14 +86,14 @@ describe('entrada e sessão (ACE-T26)', () => {
   });
 
   it('quem já entrou e abre a tela de entrada vai direto para a página inicial', async () => {
-    simularApi({ 'GET /api/eu': { corpo: ANA } });
+    simularApi({ 'GET /api/eu': { corpo: ANA }, ...FAVORITAS_VAZIAS });
     const { roteador } = renderizarApp('/entrar');
 
     await waitFor(() => expect(roteador.state.location.pathname).toBe('/'));
   });
 
   it('a página inicial mostra a pessoa e o perfil em uso', async () => {
-    simularApi({ 'GET /api/eu': { corpo: ANA } });
+    simularApi({ 'GET /api/eu': { corpo: ANA }, ...FAVORITAS_VAZIAS });
     renderizarApp('/');
 
     expect(await screen.findByText('Olá, Ana Souza')).toBeInTheDocument();
@@ -103,6 +103,7 @@ describe('entrada e sessão (ACE-T26)', () => {
   it('sair encerra a sessão e volta para a tela de entrada', async () => {
     const { chamadas } = simularApi({
       'GET /api/eu': { corpo: ANA },
+      ...FAVORITAS_VAZIAS,
       'POST /api/sair': { status: 204 },
     });
     const { roteador } = renderizarApp('/');
