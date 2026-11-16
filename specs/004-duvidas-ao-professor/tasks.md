@@ -10,14 +10,14 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Protótipo navegável
 
-- [x] DUV-T01 [H1] Botão "Enviar dúvida ao professor" e bloqueio de reenvio em `js/screens/aluno-tutor.js` (DUV-RF-01, DUV-RF-03, DUV-RF-04)
-- [x] DUV-T02 [H2] Seção de dúvidas no radar com a marca "Nova" em `js/screens/prof-radar.js` (DUV-RF-05)
-- [x] DUV-T03 [H2] Sino de notificações do professor em `js/shell.js` (DUV-RF-06)
-- [x] DUV-T04 [H3] Ação "Respondida em aula" em `js/screens/prof-radar.js` (DUV-RF-07)
+- [x] DUV-T01 [H1] Botão "Enviar dúvida ao professor" e bloqueio de reenvio em `prototipo/js/screens/aluno-tutor.js` (DUV-RF-01, DUV-RF-03, DUV-RF-04)
+- [x] DUV-T02 [H2] Seção de dúvidas no radar com a marca "Nova" em `prototipo/js/screens/prof-radar.js` (DUV-RF-05)
+- [x] DUV-T03 [H2] Sino de notificações do professor em `prototipo/js/shell.js` (DUV-RF-06)
+- [x] DUV-T04 [H3] Ação "Respondida em aula" em `prototipo/js/screens/prof-radar.js` (DUV-RF-07)
 
 ### Pendências do protótipo
 
-- [ ] DUV-T05 [H1] Modal de pré-visualização antes do envio, com o aviso de anonimato, em `js/screens/aluno-tutor.js` (DUV-RF-02)
+- [ ] DUV-T05 [H1] Modal de pré-visualização antes do envio, com o aviso de anonimato, em `prototipo/js/screens/aluno-tutor.js` (DUV-RF-02)
 
 ## Produto: História 1, enviar a dúvida (P1)
 

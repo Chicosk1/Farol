@@ -71,20 +71,20 @@ def responder(regras: str, trechos: list[TrechoNumerado], pergunta: str) -> Iter
 
 | Requisito | Cobertura | Como o protótipo faz |
 | --- | --- | --- |
-| TUT-RF-01 | Simulado | `js/tutor.js` escolhe uma resposta pronta de `tutor` em `js/data.js` por palavras-chave |
-| TUT-RF-02 | Coberto | Cada resposta pronta tem citação clicável que abre o trecho destacado (`js/ui.js`) |
+| TUT-RF-01 | Simulado | `prototipo/js/tutor.js` escolhe uma resposta pronta de `tutor` em `prototipo/js/data.js` por palavras-chave |
+| TUT-RF-02 | Coberto | Cada resposta pronta tem citação clicável que abre o trecho destacado (`prototipo/js/ui.js`) |
 | TUT-RF-03 | Coberto | Toda resposta da base tem citação; o que não está na base cai em "não encontrei" |
 | TUT-RF-04 | Simulado | Perguntas sem palavra-chave conhecida ou com termos administrativos recebem "Não encontrei" e o botão de envio |
 | TUT-RF-05 | Simulado | Pedidos com palavras como "resposta" ou "exercício" recebem a versão `pistas` da resposta, marcada "Modo pistas" |
-| TUT-RF-06 | Coberto | Chave "Modo pistas" em `js/screens/prof-disciplina.js` |
+| TUT-RF-06 | Coberto | Chave "Modo pistas" em `prototipo/js/screens/prof-disciplina.js` |
 | TUT-RF-07 | Parcial | Liga e desliga na hora; não há agendamento de janelas |
-| TUT-RF-08 | Coberto | Contador, escolha entre 20, 40 e 60 e bloqueio ao atingir o limite (`js/screens/aluno-tutor.js`) |
+| TUT-RF-08 | Coberto | Contador, escolha entre 20, 40 e 60 e bloqueio ao atingir o limite (`prototipo/js/screens/aluno-tutor.js`) |
 | TUT-RF-09 | Parcial | Só "Útil" e "Incorreta"; falta "Não útil" (tarefa TUT-T07) |
-| TUT-RF-10 | Coberto | Política editável em `js/screens/prof-disciplina.js` e exibida no tutor |
+| TUT-RF-10 | Coberto | Política editável em `prototipo/js/screens/prof-disciplina.js` e exibida no tutor |
 | TUT-RF-11 | Não coberto | |
 | TUT-RF-12 | Simulado | O histórico fica só no navegador de quem usa |
 | TUT-RF-13 | Simulado | Efeito de digitação na resposta pronta |
-| TUT-RF-14 | Coberto | Sugestões de pergunta em `sugestoesTutor` (`js/data.js`) |
+| TUT-RF-14 | Coberto | Sugestões de pergunta em `sugestoesTutor` (`prototipo/js/data.js`) |
 
 ## Decisões e pesquisa
 

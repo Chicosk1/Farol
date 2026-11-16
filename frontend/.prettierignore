@@ -1,0 +1,6 @@
+dist/
+package-lock.json
+# Gerado do contrato da API: npm run api:gerar
+src/api/esquema.d.ts
+# Cópia fiel de prototipo/css/tokens.css, para as duas versões continuarem fáceis de comparar.
+src/estilos/tokens.css

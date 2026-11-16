@@ -118,16 +118,16 @@ Formato proposto do CSV (UTF-8, separador vírgula): `ra,nome,email,codigo_disci
 
 | Requisito | Cobertura | Como o protótipo faz |
 | --- | --- | --- |
-| ACE-RF-01 | Simulado | A tela de entrada (`js/screens/entrar.js`) oferece "Entrar como aluna" e "Entrar como professor", sem login real |
+| ACE-RF-01 | Simulado | A tela de entrada (`prototipo/js/screens/entrar.js`) oferece "Entrar como aluna" e "Entrar como professor", sem login real |
 | ACE-RF-02 | Coberto | Não há senha em lugar nenhum |
-| ACE-RF-03 | Parcial | Só os perfis aluno e professor, trocados pela barra de demonstração (`js/shell.js`) |
-| ACE-RF-04 | Simulado | As disciplinas vêm fixas de `js/data.js` |
+| ACE-RF-03 | Parcial | Só os perfis aluno e professor, trocados pela barra de demonstração (`prototipo/js/shell.js`) |
+| ACE-RF-04 | Simulado | As disciplinas vêm fixas de `prototipo/js/data.js` |
 | ACE-RF-05 | Não coberto | Não há servidor |
-| ACE-RF-06 | Simulado | O botão "Importar CSV" em `js/screens/prof-disciplina.js` só mostra um aviso |
+| ACE-RF-06 | Simulado | O botão "Importar CSV" em `prototipo/js/screens/prof-disciplina.js` só mostra um aviso |
 | ACE-RF-07 | Não coberto | |
 | ACE-RF-08 | Não coberto | Pendência do protótipo: tarefa ACE-T06 |
 | ACE-RF-09 | Não coberto | |
-| ACE-RF-10 | Coberto | Busca, abas, favoritos e grade ou lista em `js/screens/aluno-disciplinas.js` e `js/screens/aluno-inicio.js` |
+| ACE-RF-10 | Coberto | Busca, abas, favoritos e grade ou lista em `prototipo/js/screens/aluno-disciplinas.js` e `prototipo/js/screens/aluno-inicio.js` |
 | ACE-RF-11 | Não coberto | O protótipo não tem manifesto de app |
 
 ## Decisões e pesquisa

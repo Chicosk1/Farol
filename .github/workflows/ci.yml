@@ -1,0 +1,174 @@
+name: Integração contínua
+
+# Roda a cada push em qualquer branch (regra "uma tarefa, um commit, um push")
+# e em todo pull request. Um push novo no mesmo branch cancela a execução anterior.
+# Os jobs estão descritos em docs/qualidade-e-testes.md.
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  specs:
+    name: Specs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Testes do script de verificação
+        run: python3 -m unittest discover -s scripts
+
+      - name: Specs, rastreabilidade e links
+        run: python3 scripts/verificar_specs.py
+
+      - name: Sintaxe do protótipo
+        run: |
+          for arquivo in prototipo/js/*.js prototipo/js/screens/*.js; do
+            node --check "$arquivo"
+          done
+
+  backend:
+    name: Back-end
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    # As mesmas imagens de banco e de Redis do docker-compose.yml (ADR 0008).
+    services:
+      db:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: farol
+          POSTGRES_USER: farol
+          POSTGRES_PASSWORD: farol
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U farol -d farol"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      DJANGO_SETTINGS_MODULE: farol.configuracoes.teste
+      POSTGRES_HOST: localhost
+      POSTGRES_DB: farol
+      POSTGRES_USER: farol
+      POSTGRES_PASSWORD: farol
+      REDIS_URL: redis://localhost:6379/0
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+
+      - name: Instalar dependências
+        run: pip install ".[dev]"
+
+      - name: Estilo e erros comuns (Ruff)
+        run: |
+          ruff check --output-format=github .
+          ruff format --check .
+
+      - name: Fronteiras entre módulos (import-linter, ADR 0007)
+        run: lint-imports
+
+      - name: Migrações esquecidas
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Testes (pytest)
+        run: pytest
+
+  contrato:
+    name: Contrato
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+
+      - name: Instalar dependências do back-end
+        working-directory: backend
+        run: pip install ".[dev]"
+
+      - name: Gerar o OpenAPI
+        working-directory: backend
+        env:
+          DJANGO_SETTINGS_MODULE: farol.configuracoes.teste
+        run: python manage.py spectacular --file openapi.yaml --validate --fail-on-warn
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependências do front-end
+        working-directory: frontend
+        run: npm ci
+
+      - name: Gerar os tipos do front-end
+        working-directory: frontend
+        run: npm run api:gerar
+
+      - name: Conferir se o contrato versionado está atualizado
+        run: |
+          if ! git diff --exit-code -- backend/openapi.yaml frontend/src/api/esquema.d.ts; then
+            echo "::error::O contrato da API mudou. Rode 'python manage.py spectacular --file openapi.yaml --validate --fail-on-warn' no back-end e 'npm run api:gerar' no front-end, e faça o commit dos dois arquivos."
+            exit 1
+          fi
+
+  frontend:
+    name: Front-end
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: ESLint e Prettier
+        run: npm run lint
+
+      - name: Tipos (TypeScript estrito)
+        run: npm run typecheck
+
+      - name: Testes (Vitest)
+        run: npm test
+
+      - name: Build de produção
+        run: npm run build

@@ -10,11 +10,11 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Protótipo navegável
 
-- [x] RAD-T01 [H4] Indicadores da semana e seletor de semana em `js/screens/prof-radar.js` (RAD-RF-01, RAD-RF-02, RAD-RF-09)
-- [x] RAD-T02 [H1] Tópicos com mais dúvidas, exemplos e atalho para o material em `js/screens/prof-radar.js` (RAD-RF-03, RAD-RF-04, RAD-RF-06)
-- [x] RAD-T03 [H2] Acerto nos quizzes por tópico em `js/screens/prof-radar.js` (RAD-RF-07)
-- [x] RAD-T04 [H3] Sugestão para a próxima aula e atalho para gerar questões em `js/screens/prof-radar.js` (RAD-RF-08, RAD-RF-11)
-- [x] RAD-T05 [H5] Chave do resumo semanal em `js/screens/prof-disciplina.js` (RAD-RF-10)
+- [x] RAD-T01 [H4] Indicadores da semana e seletor de semana em `prototipo/js/screens/prof-radar.js` (RAD-RF-01, RAD-RF-02, RAD-RF-09)
+- [x] RAD-T02 [H1] Tópicos com mais dúvidas, exemplos e atalho para o material em `prototipo/js/screens/prof-radar.js` (RAD-RF-03, RAD-RF-04, RAD-RF-06)
+- [x] RAD-T03 [H2] Acerto nos quizzes por tópico em `prototipo/js/screens/prof-radar.js` (RAD-RF-07)
+- [x] RAD-T04 [H3] Sugestão para a próxima aula e atalho para gerar questões em `prototipo/js/screens/prof-radar.js` (RAD-RF-08, RAD-RF-11)
+- [x] RAD-T05 [H5] Chave do resumo semanal em `prototipo/js/screens/prof-disciplina.js` (RAD-RF-10)
 
 ## Produto: fundação
 

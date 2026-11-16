@@ -1,0 +1,85 @@
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "farol-backend"
+version = "0.1.0"
+description = "Back-end do Farol, tutor de estudos com IA da UNIMATER."
+requires-python = ">=3.13"
+dependencies = [
+    "celery[redis]~=5.7.0",
+    "Django~=5.2.19",
+    "djangorestframework~=3.18.3",
+    "drf-spectacular~=0.30.0",
+    "psycopg[binary]~=3.3.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "import-linter~=2.16",
+    "pytest~=9.2.0",
+    "pytest-django~=4.14.0",
+    "ruff~=0.17.5",
+]
+
+[tool.setuptools]
+# Este arquivo só descreve as dependências: o código roda direto da pasta backend/, pelo manage.py.
+packages = []
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "farol.configuracoes.teste"
+python_files = ["test_*.py"]
+addopts = "-ra --strict-markers"
+markers = [
+    # Lido por scripts/verificar_specs.py para a coluna Testes da matriz de rastreabilidade.
+    "requisito(*ids): requisitos da spec que o teste verifica, por exemplo requisito(\"ACE-RF-04\")",
+]
+
+# Estilo e erros comuns: ruff check . && ruff format --check .
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+# pycodestyle, Pyflakes, ordem dos imports, bugbear, sintaxe moderna, Django e simplificações
+select = ["E", "F", "W", "I", "B", "UP", "DJ", "SIM"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["farol", "nucleo", "contas"]
+
+# Fronteiras entre módulos da ADR 0007: lint-imports
+# Ao criar um módulo (por exemplo, disciplinas), acrescente-o em root_packages, nos contratos
+# 1, 2 e 4 e num contrato 3 próprio, copiado do de contas.
+[tool.importlinter]
+root_packages = ["farol", "nucleo", "contas"]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "1. nucleo não depende de nenhum outro módulo do Farol"
+type = "forbidden"
+source_modules = ["nucleo"]
+forbidden_modules = ["farol", "contas"]
+
+[[tool.importlinter.contracts]]
+name = "2. Camadas de cada módulo: api e tarefas usam servicos, que usa models"
+type = "layers"
+containers = ["nucleo", "contas"]
+layers = ["(api) | (tarefas)", "(servicos)", "(models)"]
+
+[[tool.importlinter.contracts]]
+name = "3. Os outros módulos usam contas só pelo contas.servicos"
+type = "protected"
+protected_modules = ["contas.*"]
+allowed_importers = ["contas", "farol"]
+ignore_imports = ["** -> contas.servicos"]
+unmatched_ignore_imports_alerting = "none"
+
+# O provedor ainda não foi escolhido (ADR 0005): a lista traz os SDKs mais comuns. Quando o módulo
+# ia existir, ele fica de fora de source_modules. O import-linter só aceita o pacote de primeiro nível.
+[[tool.importlinter.contracts]]
+name = "4. Só o módulo ia fala com o provedor de IA"
+type = "forbidden"
+source_modules = ["farol", "nucleo", "contas"]
+forbidden_modules = ["anthropic", "openai", "mistralai", "cohere"]

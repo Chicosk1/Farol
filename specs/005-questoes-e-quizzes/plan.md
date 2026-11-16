@@ -60,11 +60,11 @@ O gabarito só é enviado ao aluno depois que ele responde.
 
 | Requisito | Cobertura | Como o protótipo faz |
 | --- | --- | --- |
-| QUE-RF-01 | Parcial | Escolha da aula e da quantidade (2, 3 ou 5) em `js/screens/prof-questoes.js`; o banco de exemplo limita a quantidade |
-| QUE-RF-02 | Simulado | Os rascunhos saem de `bancoGeracao` em `js/data.js`, após uma espera simulada |
+| QUE-RF-01 | Parcial | Escolha da aula e da quantidade (2, 3 ou 5) em `prototipo/js/screens/prof-questoes.js`; o banco de exemplo limita a quantidade |
+| QUE-RF-02 | Simulado | Os rascunhos saem de `bancoGeracao` em `prototipo/js/data.js`, após uma espera simulada |
 | QUE-RF-03 | Não coberto | O banco de exemplo só tem questões válidas |
-| QUE-RF-04 | Coberto | A aluna só recebe questões com status aprovada (`js/screens/aluno-pratica.js`) |
-| QUE-RF-05 | Coberto | Aprovar, editar, descartar e voltar para pendentes em `js/screens/prof-questoes.js` |
+| QUE-RF-04 | Coberto | A aluna só recebe questões com status aprovada (`prototipo/js/screens/aluno-pratica.js`) |
+| QUE-RF-05 | Coberto | Aprovar, editar, descartar e voltar para pendentes em `prototipo/js/screens/prof-questoes.js` |
 | QUE-RF-06 | Coberto | Abas com contagem |
 | QUE-RF-07 | Parcial | A questão aprovada entra no quiz da aula; a revisão do dia ainda usa um conjunto fixo |
 | QUE-RF-08 | Coberto | Retorno imediato com justificativa e link para o trecho |

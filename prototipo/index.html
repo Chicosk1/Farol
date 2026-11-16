@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Farol · protótipo</title>
+  <meta name="description" content="Protótipo navegável do Farol, tutor de estudos com IA, com dados fictícios do curso de Sistemas de Informação.">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/app.css">
+  <script>
+    /* Aplica o tema salvo antes de desenhar a página, para não piscar. */
+    try {
+      var saved = JSON.parse(localStorage.getItem('farol-prototipo-v1') || '{}');
+      var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.dataset.theme = saved.theme || (dark ? 'dark' : 'light');
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <div id="app"></div>
+  <div id="demo-bar-host"></div>
+  <noscript><p class="noscript">O protótipo precisa de JavaScript ativado.</p></noscript>
+
+  <script src="js/icons.js" defer></script>
+  <script src="js/ui.js" defer></script>
+  <script src="js/data.js" defer></script>
+  <script src="js/store.js" defer></script>
+  <script src="js/tutor.js" defer></script>
+  <script src="js/shell.js" defer></script>
+  <script src="js/screens/entrar.js" defer></script>
+  <script src="js/screens/aluno-inicio.js" defer></script>
+  <script src="js/screens/aluno-disciplinas.js" defer></script>
+  <script src="js/screens/aluno-disciplina.js" defer></script>
+  <script src="js/screens/aluno-tutor.js" defer></script>
+  <script src="js/screens/aluno-pratica.js" defer></script>
+  <script src="js/screens/prof-radar.js" defer></script>
+  <script src="js/screens/prof-materiais.js" defer></script>
+  <script src="js/screens/prof-questoes.js" defer></script>
+  <script src="js/screens/prof-disciplina.js" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>

@@ -10,18 +10,18 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Protótipo navegável
 
-- [x] TUT-T01 [H1] Tela do tutor com conversa, efeito de digitação e sugestões em `js/screens/aluno-tutor.js` (TUT-RF-13, TUT-RF-14)
-- [x] TUT-T02 [H1] Tutor simulado por palavras-chave com base de respostas citadas em `js/tutor.js` e `js/data.js` (TUT-RF-01, TUT-RF-02, TUT-RF-03)
-- [x] TUT-T03 [H2] Resposta "Não encontrei" para perguntas fora da base em `js/tutor.js` (TUT-RF-04)
-- [x] TUT-T04 [H3] Respostas em modo pistas e chave no painel do professor em `js/tutor.js` e `js/screens/prof-disciplina.js` (TUT-RF-05, TUT-RF-06)
-- [x] TUT-T05 [H4] Modo prova imediato, com tutor pausado para a aluna, em `js/screens/prof-disciplina.js` e `js/screens/aluno-tutor.js` (TUT-RF-07)
-- [x] TUT-T06 [H5] Limite diário configurável, contador e bloqueio em `js/screens/aluno-tutor.js` (TUT-RF-08)
+- [x] TUT-T01 [H1] Tela do tutor com conversa, efeito de digitação e sugestões em `prototipo/js/screens/aluno-tutor.js` (TUT-RF-13, TUT-RF-14)
+- [x] TUT-T02 [H1] Tutor simulado por palavras-chave com base de respostas citadas em `prototipo/js/tutor.js` e `prototipo/js/data.js` (TUT-RF-01, TUT-RF-02, TUT-RF-03)
+- [x] TUT-T03 [H2] Resposta "Não encontrei" para perguntas fora da base em `prototipo/js/tutor.js` (TUT-RF-04)
+- [x] TUT-T04 [H3] Respostas em modo pistas e chave no painel do professor em `prototipo/js/tutor.js` e `prototipo/js/screens/prof-disciplina.js` (TUT-RF-05, TUT-RF-06)
+- [x] TUT-T05 [H4] Modo prova imediato, com tutor pausado para a aluna, em `prototipo/js/screens/prof-disciplina.js` e `prototipo/js/screens/aluno-tutor.js` (TUT-RF-07)
+- [x] TUT-T06 [H5] Limite diário configurável, contador e bloqueio em `prototipo/js/screens/aluno-tutor.js` (TUT-RF-08)
 - [x] TUT-T08 [H7] Política de uso de IA editável e exibida no tutor (TUT-RF-10)
-- [x] TUT-T09 [H1] Histórico de conversa salvo só no navegador em `js/store.js` (TUT-RF-12)
+- [x] TUT-T09 [H1] Histórico de conversa salvo só no navegador em `prototipo/js/store.js` (TUT-RF-12)
 
 ### Pendências do protótipo
 
-- [ ] TUT-T07 [H6] Acrescentar a avaliação "Não útil" ao lado de "Útil" e "Incorreta" em `js/screens/aluno-tutor.js` (TUT-RF-09)
+- [ ] TUT-T07 [H6] Acrescentar a avaliação "Não útil" ao lado de "Útil" e "Incorreta" em `prototipo/js/screens/aluno-tutor.js` (TUT-RF-09)
 
 ## Produto: fundação
 

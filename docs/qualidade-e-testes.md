@@ -24,7 +24,7 @@ Este documento diz como o Farol é testado e o que precisa estar verdadeiro para
        ...
    ```
 
-   O script `scripts/verificar_specs.py` passará a ler esses marcadores e a mostrar os testes de cada requisito na matriz de rastreabilidade (tarefa ACE-T18).
+   O script `scripts/verificar_specs.py` lê esses marcadores nos arquivos `backend/<modulo>/testes/test_*.py`, acusa erro se um marcador cita um requisito que não existe e mostra, na coluna Testes da [matriz de rastreabilidade](rastreabilidade.md), os testes de cada requisito. O pytest roda com `--strict-markers`, então um marcador escrito errado também falha. Para rodar só os testes ligados a requisitos: `pytest -m requisito`.
 3. **A IA é sempre falsa nos testes.** Os testes usam o adaptador falso do módulo `ia`, que devolve respostas previsíveis. Nenhum teste acessa a internet nem gera custo.
 4. **Banco de verdade.** Os testes de API rodam contra o PostgreSQL com pgvector do Docker, e não contra SQLite, para que a busca vetorial e as restrições do banco sejam testadas de fato.
 5. **Dados fictícios.** Os dados de teste e de demonstração são inventados, como no protótipo. Nenhum dado real de aluno entra no repositório.
@@ -47,7 +47,7 @@ O GitHub Actions roda a cada push, em qualquer branch, e em todo pull request:
 
 | Job | Passos |
 | --- | --- |
-| Specs | Verificação das specs, da rastreabilidade e dos links; sintaxe do protótipo |
+| Specs | Verificação das specs, da rastreabilidade (inclusive os marcadores `requisito` dos testes) e dos links; testes do script; sintaxe do protótipo |
 | Back-end | Ruff, import-linter, verificação de migrações, pytest com PostgreSQL e Redis como serviços do job |
 | Contrato | Gera o OpenAPI e confere se o arquivo versionado e os tipos do front-end estão atualizados |
 | Front-end | ESLint, verificação de tipos, Vitest e build de produção |

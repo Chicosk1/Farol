@@ -23,7 +23,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Protótipo navegável
 
-- [ ] [XXX]-T01 [H1] [...] em `js/screens/[arquivo].js` ([XXX]-RF-01)
+- [ ] [XXX]-T01 [H1] [...] em `prototipo/js/screens/[arquivo].js` ([XXX]-RF-01)
 
 ### Pendências do protótipo
 

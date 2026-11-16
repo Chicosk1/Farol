@@ -57,15 +57,15 @@ Tarefa assíncrona `materiais.processar(material_id)`: atualiza `etapa` ao fim d
 
 | Requisito | Cobertura | Como o protótipo faz |
 | --- | --- | --- |
-| MAT-RF-01 | Coberto | `js/screens/prof-materiais.js` confere o tipo do arquivo e mostra a mensagem |
+| MAT-RF-01 | Coberto | `prototipo/js/screens/prof-materiais.js` confere o tipo do arquivo e mostra a mensagem |
 | MAT-RF-02 | Parcial | A aula é deduzida pelo próximo número livre; o título vem do nome do arquivo |
-| MAT-RF-03 | Simulado | As etapas avançam por temporizador, com os textos de `etapasProcessamento` em `js/data.js` |
-| MAT-RF-04 | Simulado | Os trechos citáveis são fixos em `citations`, em `js/data.js` |
+| MAT-RF-03 | Simulado | As etapas avançam por temporizador, com os textos de `etapasProcessamento` em `prototipo/js/data.js` |
+| MAT-RF-04 | Simulado | Os trechos citáveis são fixos em `citations`, em `prototipo/js/data.js` |
 | MAT-RF-05 | Não coberto | |
 | MAT-RF-06 | Simulado | Um aviso aparece quando o processamento simulado termina |
-| MAT-RF-07 | Simulado | O material novo aparece para a aluna só depois de "Pronto para o tutor" (`js/screens/aluno-disciplina.js`) |
-| MAT-RF-08 | Coberto | Lista de materiais por aula em `js/screens/aluno-disciplina.js` |
-| MAT-RF-09 | Simulado | `F.openCitation` em `js/ui.js` mostra uma página de papel com o trecho destacado, no lugar do PDF real |
+| MAT-RF-07 | Simulado | O material novo aparece para a aluna só depois de "Pronto para o tutor" (`prototipo/js/screens/aluno-disciplina.js`) |
+| MAT-RF-08 | Coberto | Lista de materiais por aula em `prototipo/js/screens/aluno-disciplina.js` |
+| MAT-RF-09 | Simulado | `F.openCitation` em `prototipo/js/ui.js` mostra uma página de papel com o trecho destacado, no lugar do PDF real |
 | MAT-RF-10 | Não coberto | |
 | MAT-RF-11 | Não coberto | |
 

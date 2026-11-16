@@ -10,31 +10,32 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Protótipo navegável
 
-- [x] ACE-T01 [H1] Tela de entrada com escolha de perfil em `js/screens/entrar.js` (ACE-RF-01, ACE-RF-02)
-- [x] ACE-T02 [H2] Lista de disciplinas com busca, abas, favoritos e grade ou lista em `js/screens/aluno-disciplinas.js` (ACE-RF-10)
-- [x] ACE-T03 [H2] Disciplinas favoritas no topo da tela inicial em `js/screens/aluno-inicio.js` (ACE-RF-10)
-- [x] ACE-T04 [H1] Troca de perfil na barra de demonstração em `js/shell.js` (ACE-RF-03)
-- [x] ACE-T05 [H3] Botão de importação simulada de CSV em `js/screens/prof-disciplina.js` (ACE-RF-06)
+- [x] ACE-T01 [H1] Tela de entrada com escolha de perfil em `prototipo/js/screens/entrar.js` (ACE-RF-01, ACE-RF-02)
+- [x] ACE-T02 [H2] Lista de disciplinas com busca, abas, favoritos e grade ou lista em `prototipo/js/screens/aluno-disciplinas.js` (ACE-RF-10)
+- [x] ACE-T03 [H2] Disciplinas favoritas no topo da tela inicial em `prototipo/js/screens/aluno-inicio.js` (ACE-RF-10)
+- [x] ACE-T04 [H1] Troca de perfil na barra de demonstração em `prototipo/js/shell.js` (ACE-RF-03)
+- [x] ACE-T05 [H3] Botão de importação simulada de CSV em `prototipo/js/screens/prof-disciplina.js` (ACE-RF-06)
 
 ### Pendências do protótipo
 
-- [ ] ACE-T06 [H4] Aviso de privacidade na primeira entrada da aluna, com botão "Entendi", em `js/screens/aluno-inicio.js` (ACE-RF-08)
+- [ ] ACE-T06 [H4] Aviso de privacidade na primeira entrada da aluna, com botão "Entendi", em `prototipo/js/screens/aluno-inicio.js` (ACE-RF-08)
 
 ## Primeira fatia: arquitetura de pé
 
-A primeira entrega do produto prova a arquitetura em todas as camadas com uma funcionalidade pequena: entrar (com o login de desenvolvimento) e ver as próprias disciplinas. Ela é formada pelas tarefas ACE-T10 a ACE-T18, ACE-T22, ACE-T24, ACE-T25, ACE-T30 a ACE-T33 e ACE-T35, nesta ordem. Cada tarefa leva os próprios testes, escritos antes do código, e vira um commit e um push. O login institucional (ACE-T20 e ACE-T21) fica para quando o provedor for definido.
+A primeira entrega do produto prova a arquitetura em todas as camadas com uma funcionalidade pequena: entrar (com o login de desenvolvimento) e ver as próprias disciplinas. Ela é formada pelas tarefas ACE-T10 a ACE-T19, ACE-T22, ACE-T24, ACE-T25, ACE-T30 a ACE-T33 e ACE-T35, nesta ordem. Cada tarefa leva os próprios testes, escritos antes do código, e vira um commit e um push. O login institucional (ACE-T20 e ACE-T21) fica para quando o provedor for definido.
 
 ## Produto: fundação do repositório
 
-- [ ] ACE-T10 Mover o protótipo para `prototipo/`, criar na raiz um `index.html` que redireciona para lá, atualizar os caminhos em README, specs, matriz e `scripts/verificar_specs.py`, e conferir o GitHub Pages
-- [ ] ACE-T11 Criar o projeto Django 5.2 em `backend/`, com configurações por ambiente lidas de variáveis, o modelo `contas.Pessoa` como usuário desde a primeira migração e a rota `GET /api/saude`
-- [ ] ACE-T12 [P] Criar o projeto React + TypeScript + Vite + Tailwind em `frontend/`, com os tokens do design system Farol, React Router, TanStack Query, Vitest, Testing Library e axe
-- [ ] ACE-T13 [P] Criar `docker-compose.yml`, os Dockerfiles e o `.env.exemplo` com os serviços `db`, `redis`, `backend`, `worker`, `beat`, `frontend` e `mailpit`
-- [ ] ACE-T14 Acrescentar ao GitHub Actions os jobs Back-end, Contrato e Front-end, com PostgreSQL com pgvector e Redis como serviços
-- [ ] ACE-T15 [P] Gerar o OpenAPI com drf-spectacular, versionar o arquivo e gerar os tipos do front-end com openapi-typescript
-- [ ] ACE-T16 [P] Configurar Ruff e os contratos do import-linter com as regras da ADR 0007
-- [ ] ACE-T17 Escrever `docs/desenvolvimento.md`: pré-requisitos, como subir o ambiente, rodar os testes, criar migrações e popular os dados de demonstração
-- [ ] ACE-T18 Marcador `requisito` no pytest e coluna "Testes" na matriz de rastreabilidade, lida por `scripts/verificar_specs.py`
+- [x] ACE-T10 Mover o protótipo para `prototipo/`, criar na raiz um `index.html` que redireciona para lá, atualizar os caminhos em README, specs, matriz e `scripts/verificar_specs.py`, e conferir o GitHub Pages
+- [x] ACE-T11 Criar o projeto Django 5.2 em `backend/`, com configurações por ambiente lidas de variáveis, o modelo `contas.Pessoa` como usuário desde a primeira migração, a rota `GET /api/saude` e o `backend/Dockerfile`
+- [x] ACE-T12 [P] Criar o projeto React + TypeScript + Vite em `frontend/`, com React Router, TanStack Query, Vitest, Testing Library, axe, ESLint, Prettier e o `frontend/Dockerfile`
+- [x] ACE-T19 Configurar o Tailwind CSS com os tokens do design system Farol (temas claro e escuro) e a fonte Nunito Sans em `frontend/src/estilos/`
+- [x] ACE-T13 Criar `docker-compose.yml`, o `.env.exemplo` e a configuração do Celery, com os serviços `db`, `redis`, `backend`, `worker`, `beat`, `frontend` e `mailpit`
+- [x] ACE-T14 Acrescentar ao GitHub Actions os jobs Back-end (migrações e pytest) e Front-end (ESLint, tipos, Vitest e build), com PostgreSQL com pgvector e Redis como serviços
+- [x] ACE-T15 [P] Gerar o OpenAPI com drf-spectacular, versionar o arquivo, gerar os tipos do front-end com openapi-typescript e acrescentar o job Contrato ao GitHub Actions
+- [x] ACE-T16 [P] Configurar Ruff e os contratos do import-linter com as regras da ADR 0007 e acrescentar os dois ao job Back-end do GitHub Actions
+- [x] ACE-T17 Escrever `docs/desenvolvimento.md`: pré-requisitos, como subir o ambiente, rodar os testes, criar migrações e popular os dados de demonstração
+- [x] ACE-T18 Marcador `requisito` no pytest e coluna "Testes" na matriz de rastreabilidade, lida por `scripts/verificar_specs.py`
 
 ## Produto: História 1, entrar com a conta institucional (P1)
 
@@ -77,4 +78,4 @@ A primeira entrega do produto prova a arquitetura em todas as camadas com uma fu
 
 ## Dependências
 
-A fundação (ACE-T10 a ACE-T18) vem antes de tudo. O login de desenvolvimento (ACE-T24) permite fazer a História 2 antes do login institucional (ACE-T20 e ACE-T21). Todas as outras specs dependem das Histórias 1 e 2.
+A fundação (ACE-T10 a ACE-T19) vem antes de tudo. Dentro dela, a ordem é ACE-T10, ACE-T11, ACE-T12, ACE-T19, ACE-T13 e depois ACE-T14 a ACE-T18. O login de desenvolvimento (ACE-T24) permite fazer a História 2 antes do login institucional (ACE-T20 e ACE-T21). Todas as outras specs dependem das Histórias 1 e 2.

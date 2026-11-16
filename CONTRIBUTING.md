@@ -106,4 +106,4 @@ Os arquivos seguem a estrutura do [GitHub Spec Kit](https://github.com/github/sp
 
 ## Protótipo navegável
 
-O protótipo na raiz do repositório segue as mesmas regras. Antes de mudar uma tela, veja a spec e a tarefa correspondente. As pendências do protótipo estão listadas na [matriz de rastreabilidade](docs/rastreabilidade.md#pendências-do-protótipo).
+O protótipo, na pasta `prototipo/`, segue as mesmas regras. Antes de mudar uma tela, veja a spec e a tarefa correspondente. As pendências do protótipo estão listadas na [matriz de rastreabilidade](docs/rastreabilidade.md#pendências-do-protótipo).

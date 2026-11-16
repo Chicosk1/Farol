@@ -59,13 +59,13 @@ Tarefas periódicas: `revisao.montar_sessoes` às 6h; `revisao.enviar_lembretes`
 
 | Requisito | Cobertura | Como o protótipo faz |
 | --- | --- | --- |
-| REV-RF-01 | Simulado | A revisão usa um conjunto fixo de 8 cartões (`revisao` em `js/data.js`), não as questões aprovadas |
+| REV-RF-01 | Simulado | A revisão usa um conjunto fixo de 8 cartões (`revisao` em `prototipo/js/data.js`), não as questões aprovadas |
 | REV-RF-02 | Simulado | 8 cartões fixos, abaixo do máximo de 10 |
-| REV-RF-03 | Coberto | Mesmo motor do quiz em `js/screens/aluno-pratica.js` |
+| REV-RF-03 | Coberto | Mesmo motor do quiz em `prototipo/js/screens/aluno-pratica.js` |
 | REV-RF-04 | Parcial | Botões Difícil, Bom e Fácil com intervalos fixos (amanhã, 3 dias, 7 dias), sem SM-2 |
 | REV-RF-05 | Coberto | Aviso "Este cartão volta em ..." |
-| REV-RF-06 | Coberto | Cartão da revisão com progresso e "Continuar" em `js/screens/aluno-inicio.js` |
-| REV-RF-07 | Coberto | Cartão de sequência com os últimos 7 dias em `js/screens/aluno-inicio.js` |
+| REV-RF-06 | Coberto | Cartão da revisão com progresso e "Continuar" em `prototipo/js/screens/aluno-inicio.js` |
+| REV-RF-07 | Coberto | Cartão de sequência com os últimos 7 dias em `prototipo/js/screens/aluno-inicio.js` |
 | REV-RF-08 | Simulado | Texto "A próxima revisão fica pronta amanhã às 6h" |
 | REV-RF-09 | Não coberto | |
 | REV-RF-10 | Coberto | Resumo final com acertos e atalhos para o tutor |

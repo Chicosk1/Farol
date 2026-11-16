@@ -10,16 +10,16 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Protótipo navegável
 
-- [x] QUE-T01 [H1] Gerador de rascunhos com escolha de aula e quantidade em `js/screens/prof-questoes.js` (QUE-RF-01, QUE-RF-02)
-- [x] QUE-T02 [H2] Aprovar, editar, descartar e voltar para pendentes, com abas e contagens, em `js/screens/prof-questoes.js` (QUE-RF-05, QUE-RF-06)
-- [x] QUE-T03 [H2] Questão aprovada aparece no quiz da aula em `js/screens/aluno-disciplina.js` (QUE-RF-04, QUE-RF-07)
-- [x] QUE-T04 [H3] Motor do quiz com retorno imediato, justificativa e link para o trecho em `js/screens/aluno-pratica.js` (QUE-RF-08)
-- [x] QUE-T05 [H3] Resumo final com acertos e atalhos para o tutor em `js/screens/aluno-pratica.js` (QUE-RF-09, QUE-RF-10)
-- [x] QUE-T06 [H1] Atalho "Gerar 5 questões de revisão" a partir do radar em `js/screens/prof-radar.js` (QUE-RF-01)
+- [x] QUE-T01 [H1] Gerador de rascunhos com escolha de aula e quantidade em `prototipo/js/screens/prof-questoes.js` (QUE-RF-01, QUE-RF-02)
+- [x] QUE-T02 [H2] Aprovar, editar, descartar e voltar para pendentes, com abas e contagens, em `prototipo/js/screens/prof-questoes.js` (QUE-RF-05, QUE-RF-06)
+- [x] QUE-T03 [H2] Questão aprovada aparece no quiz da aula em `prototipo/js/screens/aluno-disciplina.js` (QUE-RF-04, QUE-RF-07)
+- [x] QUE-T04 [H3] Motor do quiz com retorno imediato, justificativa e link para o trecho em `prototipo/js/screens/aluno-pratica.js` (QUE-RF-08)
+- [x] QUE-T05 [H3] Resumo final com acertos e atalhos para o tutor em `prototipo/js/screens/aluno-pratica.js` (QUE-RF-09, QUE-RF-10)
+- [x] QUE-T06 [H1] Atalho "Gerar 5 questões de revisão" a partir do radar em `prototipo/js/screens/prof-radar.js` (QUE-RF-01)
 
 ### Pendências do protótipo
 
-- [ ] QUE-T07 [H3] Botão "Perguntar ao tutor sobre isso" no retorno de cada questão errada em `js/screens/aluno-pratica.js` (QUE-RF-09)
+- [ ] QUE-T07 [H3] Botão "Perguntar ao tutor sobre isso" no retorno de cada questão errada em `prototipo/js/screens/aluno-pratica.js` (QUE-RF-09)
 
 ## Produto: fundação
 
