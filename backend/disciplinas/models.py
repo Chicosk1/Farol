@@ -95,3 +95,43 @@ class Favorito(models.Model):
 
     def __str__(self) -> str:
         return f"{self.pessoa_id} favoritou {self.disciplina_id}"
+
+
+class Importacao(models.Model):
+    """Um arquivo CSV de turmas e matrículas enviado por um administrador, com o seu relatório."""
+
+    class Status(models.TextChoices):
+        PENDENTE = "pendente", "Pendente"
+        PROCESSANDO = "processando", "Processando"
+        CONCLUIDA = "concluida", "Concluída"
+        RECUSADA = "recusada", "Recusada"
+
+    arquivo = models.FileField("arquivo", upload_to="importacoes/")
+    enviada_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="enviada por",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="importacoes",
+    )
+    enviada_em = models.DateTimeField("enviada em", auto_now_add=True)
+    status = models.CharField(
+        "status", max_length=12, choices=Status.choices, default=Status.PENDENTE
+    )
+    aceitas = models.PositiveIntegerField("linhas aceitas", default=0)
+    rejeitadas = models.JSONField(
+        "linhas rejeitadas", default=list, blank=True, help_text="Lista de {linha, motivo}."
+    )
+    matriculas_encerradas = models.PositiveIntegerField("matrículas encerradas", default=0)
+    erro = models.TextField(
+        "motivo da recusa", blank=True, help_text="Problema que impediu de importar o arquivo."
+    )
+    aviso = models.TextField("aviso", blank=True)
+
+    class Meta:
+        verbose_name = "importação"
+        verbose_name_plural = "importações"
+        ordering = ["-enviada_em", "-id"]
+
+    def __str__(self) -> str:
+        return f"Importação {self.pk} ({self.status})"

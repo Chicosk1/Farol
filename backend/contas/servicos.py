@@ -55,3 +55,27 @@ def trocar_perfil_ativo(pessoa: Pessoa, sessao: MutableMapping, perfil: str | No
         raise PerfilInvalido(f"A pessoa não tem o perfil {perfil!r}.")
     sessao[CHAVE_PERFIL_ATIVO] = perfil
     return perfil
+
+
+def garantir_pessoa_com_perfil(
+    email: str, perfil: str, nome: str | None = None
+) -> tuple[Pessoa, bool]:
+    """Garante uma pessoa com o perfil dado, sem tirar os perfis que ela já tem.
+
+    Serve à importação de turmas: o mesmo e-mail pode ser professor numa disciplina e aluno em
+    outra. O nome só muda se for informado, e uma pessoa desativada continua desativada.
+    Devolve a pessoa e se foi criada.
+    """
+    email = normalizar_email(email)
+    try:
+        pessoa = Pessoa.objects.get(email=email)
+    except Pessoa.DoesNotExist:
+        nome = nome or email.split("@")[0].replace(".", " ").replace("_", " ").title()
+        return Pessoa.objects.create_user(email=email, nome=nome, perfis=[perfil]), True
+    if perfil not in pessoa.perfis or (nome and nome != pessoa.nome):
+        if perfil not in pessoa.perfis:
+            pessoa.perfis = [*pessoa.perfis, perfil]
+        if nome:
+            pessoa.nome = nome
+        pessoa.save()
+    return pessoa, False
