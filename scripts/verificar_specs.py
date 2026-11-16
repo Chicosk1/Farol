@@ -28,7 +28,8 @@ RAIZ = Path(__file__).resolve().parent.parent
 PASTA_SPECS = RAIZ / "specs"
 MATRIZ = RAIZ / "docs" / "rastreabilidade.md"
 ARQUIVOS_DA_SPEC = ("spec.md", "plan.md", "tasks.md")
-PASTAS_DE_CODIGO = ("js",)
+PROTOTIPO = RAIZ / "prototipo"
+PASTAS_DE_CODIGO = (PROTOTIPO / "js",)
 COBERTURAS = ("Coberto", "Simulado", "Parcial", "Não coberto")
 
 RE_PASTA = re.compile(r"^(\d{3})-[a-z0-9-]+$")
@@ -155,9 +156,16 @@ def arquivos_markdown() -> list[Path]:
 
 
 def arquivos_de_codigo() -> list[Path]:
-    arquivos = [RAIZ / "index.html"]
+    """Arquivos do protótipo em que o script procura os comentários `Specs:`."""
+    pagina = PROTOTIPO / "index.html"
+    if not pagina.is_file():
+        erro(f"{rel(pagina)} não existe: o protótipo deve ficar na pasta {rel(PROTOTIPO)}/")
+    arquivos = [pagina]
     for pasta in PASTAS_DE_CODIGO:
-        arquivos.extend(sorted((RAIZ / pasta).rglob("*.js")))
+        if not pasta.is_dir():
+            erro(f"{rel(pasta)}/ não existe: o código do protótipo deve ficar em {rel(PROTOTIPO)}/")
+            continue
+        arquivos.extend(sorted(pasta.rglob("*.js")))
     return [a for a in arquivos if a.is_file()]
 
 

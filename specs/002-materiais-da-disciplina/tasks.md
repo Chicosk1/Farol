@@ -10,10 +10,10 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Protótipo navegável
 
-- [x] MAT-T01 [H1] Tela de materiais com área de arrastar e soltar e validação de PDF em `js/screens/prof-materiais.js` (MAT-RF-01, MAT-RF-02)
-- [x] MAT-T02 [H1] Etapas de processamento simuladas e aviso de material pronto em `js/screens/prof-materiais.js` (MAT-RF-03, MAT-RF-06)
-- [x] MAT-T03 [H2] Lista de materiais da disciplina para a aluna em `js/screens/aluno-disciplina.js` (MAT-RF-07, MAT-RF-08)
-- [x] MAT-T04 [H2] Página do material com trecho destacado em `js/ui.js` e trechos em `js/data.js` (MAT-RF-04, MAT-RF-09)
+- [x] MAT-T01 [H1] Tela de materiais com área de arrastar e soltar e validação de PDF em `prototipo/js/screens/prof-materiais.js` (MAT-RF-01, MAT-RF-02)
+- [x] MAT-T02 [H1] Etapas de processamento simuladas e aviso de material pronto em `prototipo/js/screens/prof-materiais.js` (MAT-RF-03, MAT-RF-06)
+- [x] MAT-T03 [H2] Lista de materiais da disciplina para a aluna em `prototipo/js/screens/aluno-disciplina.js` (MAT-RF-07, MAT-RF-08)
+- [x] MAT-T04 [H2] Página do material com trecho destacado em `prototipo/js/ui.js` e trechos em `prototipo/js/data.js` (MAT-RF-04, MAT-RF-09)
 
 ## Produto: fundação
 

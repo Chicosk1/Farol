@@ -55,12 +55,12 @@ A dúvida é um registro separado da conversa: guarda só o texto filtrado, a di
 
 | Requisito | Cobertura | Como o protótipo faz |
 | --- | --- | --- |
-| DUV-RF-01 | Coberto | Botão "Enviar dúvida ao professor" em toda resposta "não encontrei" (`js/screens/aluno-tutor.js`) |
+| DUV-RF-01 | Coberto | Botão "Enviar dúvida ao professor" em toda resposta "não encontrei" (`prototipo/js/screens/aluno-tutor.js`) |
 | DUV-RF-02 | Não coberto | O envio é imediato, sem pré-visualização (tarefa DUV-T05) |
 | DUV-RF-03 | Coberto | A dúvida guarda só o texto e "há quanto tempo" |
 | DUV-RF-04 | Coberto | Depois do envio, o botão é trocado pela nota "Dúvida enviada ao professor, sem o seu nome." |
-| DUV-RF-05 | Coberto | Lista com a marca "Nova" em `js/screens/prof-radar.js` |
-| DUV-RF-06 | Coberto | Sino de notificações com ponto em `js/shell.js` |
+| DUV-RF-05 | Coberto | Lista com a marca "Nova" em `prototipo/js/screens/prof-radar.js` |
+| DUV-RF-06 | Coberto | Sino de notificações com ponto em `prototipo/js/shell.js` |
 | DUV-RF-07 | Parcial | "Respondida em aula" existe; ocultar não existe |
 | DUV-RF-08 | Não coberto | |
 | DUV-RF-09 | Não coberto | O resumo semanal é só uma chave de configuração |

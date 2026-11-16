@@ -10,10 +10,10 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Protótipo navegável
 
-- [x] REV-T01 [H1] Sessão de revisão com 8 cartões fixos em `js/screens/aluno-pratica.js` e `js/data.js` (REV-RF-01, REV-RF-02, REV-RF-03)
+- [x] REV-T01 [H1] Sessão de revisão com 8 cartões fixos em `prototipo/js/screens/aluno-pratica.js` e `prototipo/js/data.js` (REV-RF-01, REV-RF-02, REV-RF-03)
 - [x] REV-T02 [H1] Avaliação Difícil, Bom e Fácil com aviso de quando o cartão volta (REV-RF-04, REV-RF-05)
-- [x] REV-T03 [H1] Cartão da revisão na tela inicial, com progresso e "Continuar", em `js/screens/aluno-inicio.js` (REV-RF-06)
-- [x] REV-T04 [H3] Cartão de sequência dos últimos 7 dias em `js/screens/aluno-inicio.js` (REV-RF-07)
+- [x] REV-T03 [H1] Cartão da revisão na tela inicial, com progresso e "Continuar", em `prototipo/js/screens/aluno-inicio.js` (REV-RF-06)
+- [x] REV-T04 [H3] Cartão de sequência dos últimos 7 dias em `prototipo/js/screens/aluno-inicio.js` (REV-RF-07)
 - [x] REV-T05 [H1] Resumo final com acertos, atalhos para o tutor e horário da próxima revisão (REV-RF-08, REV-RF-10)
 
 ### Pendências do protótipo

@@ -195,12 +195,12 @@ O protótipo navegável deste repositório não tem servidor: ele roda inteiro n
 
 | Peça do produto | Substituto no protótipo |
 | --- | --- |
-| React + design system | HTML, CSS e JavaScript puros, com os tokens e componentes do design system Farol (`css/tokens.css`, `css/components.css`) |
-| Django API e PostgreSQL | Estado em memória salvo no `localStorage` (`js/store.js`) |
-| Busca nos trechos e modelo de linguagem | Respostas prontas escolhidas por palavras-chave (`js/tutor.js`, base em `js/data.js`) |
-| Celery processando PDFs | Etapas de processamento simuladas com temporizador (`js/screens/prof-materiais.js`) |
-| Geração de questões | Banco fixo de questões por aula (`bancoGeracao` em `js/data.js`) |
-| Radar calculado de madrugada | Números fixos por semana (`radar` em `js/data.js`) |
-| Login institucional | Escolha de perfil (`js/screens/entrar.js`) |
+| React + design system | HTML, CSS e JavaScript puros, com os tokens e componentes do design system Farol (`prototipo/css/tokens.css`, `prototipo/css/components.css`) |
+| Django API e PostgreSQL | Estado em memória salvo no `localStorage` (`prototipo/js/store.js`) |
+| Busca nos trechos e modelo de linguagem | Respostas prontas escolhidas por palavras-chave (`prototipo/js/tutor.js`, base em `prototipo/js/data.js`) |
+| Celery processando PDFs | Etapas de processamento simuladas com temporizador (`prototipo/js/screens/prof-materiais.js`) |
+| Geração de questões | Banco fixo de questões por aula (`bancoGeracao` em `prototipo/js/data.js`) |
+| Radar calculado de madrugada | Números fixos por semana (`radar` em `prototipo/js/data.js`) |
+| Login institucional | Escolha de perfil (`prototipo/js/screens/entrar.js`) |
 
 A [matriz de rastreabilidade](rastreabilidade.md) mostra, requisito por requisito, o que o protótipo já cobre.

@@ -58,8 +58,8 @@ Tarefas periódicas: `radar.calcular` às 3h, para todas as disciplinas; `radar.
 
 | Requisito | Cobertura | Como o protótipo faz |
 | --- | --- | --- |
-| RAD-RF-01 | Simulado | Os números de cada semana são fixos em `radar` (`js/data.js`) |
-| RAD-RF-02 | Coberto | Quatro indicadores no topo de `js/screens/prof-radar.js`; perguntas ao tutor e dúvidas reagem ao uso da aluna |
+| RAD-RF-01 | Simulado | Os números de cada semana são fixos em `radar` (`prototipo/js/data.js`) |
+| RAD-RF-02 | Coberto | Quatro indicadores no topo de `prototipo/js/screens/prof-radar.js`; perguntas ao tutor e dúvidas reagem ao uso da aluna |
 | RAD-RF-03 | Coberto | Cinco tópicos com barra, número de alunos, exemplos e "Ver o material da aula" |
 | RAD-RF-04 | Simulado | Todos os tópicos de exemplo têm 6 ou mais alunos, e a nota de privacidade explica a regra |
 | RAD-RF-05 | Não coberto | Os exemplos fictícios já não têm dados pessoais; não há como ocultar |
@@ -67,7 +67,7 @@ Tarefas periódicas: `radar.calcular` às 3h, para todas as disciplinas; `radar.
 | RAD-RF-07 | Parcial | Acerto por tópico; não há acerto por questão |
 | RAD-RF-08 | Coberto | Sugestão de 3 tópicos para a próxima aula |
 | RAD-RF-09 | Coberto | Seletor entre a semana 17 (atual) e a 16 |
-| RAD-RF-10 | Simulado | Só a chave "Resumo semanal por e-mail" em `js/screens/prof-disciplina.js` |
+| RAD-RF-10 | Simulado | Só a chave "Resumo semanal por e-mail" em `prototipo/js/screens/prof-disciplina.js` |
 | RAD-RF-11 | Coberto | "Gerar 5 questões de revisão" leva à tela de Questões com rascunhos novos |
 
 ## Decisões e pesquisa

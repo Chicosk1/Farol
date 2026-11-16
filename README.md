@@ -27,9 +27,9 @@ O Farol é desenvolvido de forma orientada por especificação (Spec-Driven Deve
 O protótipo não precisa de instalação, servidor nem internet: as fontes e os ícones estão dentro do repositório.
 
 1. Baixe o repositório (botão **Code → Download ZIP**) ou clone com `git clone https://github.com/Chicosk1/farol`.
-2. Abra o arquivo `index.html` no Chrome, Edge ou Firefox.
+2. Abra o arquivo `prototipo/index.html` no Chrome, Edge ou Firefox.
 
-Para ter um link público, ative o GitHub Pages em **Settings → Pages → Build and deployment**, escolhendo a branch `main` e a pasta `/ (root)`. O endereço aparece na própria página de configuração.
+Para ter um link público, ative o GitHub Pages em **Settings → Pages → Build and deployment**, escolhendo a branch `main` e a pasta `/ (root)`. O protótipo fica em `https://<usuário>.github.io/Farol/prototipo/`, e o endereço da raiz redireciona para lá, para os links antigos continuarem funcionando.
 
 ## Roteiro de apresentação (cerca de 5 minutos)
 
@@ -90,28 +90,30 @@ docs/                     visão, arquitetura, ADRs, glossário e matriz de rast
 scripts/
   verificar_specs.py      verifica as specs e gera a matriz de rastreabilidade
 .github/                  modelos de issue e pull request e a verificação automática
-index.html                página única; carrega os estilos e os scripts na ordem
-css/
-  fonts.css               Nunito Sans embutida, para funcionar sem internet
-  tokens.css              cores, espaços e tamanhos do design system Farol (temas claro e escuro)
-  components.css          componentes do design system (classes fr-)
-  app.css                 layout das telas e peças do protótipo (modal, toast, switch)
-js/
-  data.js                 dados fictícios: disciplinas, materiais, trechos citados, respostas do tutor, questões e radar
-  store.js                estado do protótipo, salvo no localStorage
-  tutor.js                tutor simulado: escolhe a resposta por palavras-chave
-  ui.js                   utilitários: ícones, modais, toasts, cartões
-  shell.js                cabeçalho, menu lateral, barra inferior no celular e barra de demonstração
-  main.js                 rotas (#/aluno/..., #/professor/...) e eventos
-  icons.js                ícones Tabler usados no protótipo
-  screens/                uma tela por arquivo; cada arquivo cita no topo os requisitos que implementa
-assets/fonts/             arquivo original da fonte e a licença
+index.html                redireciona o endereço antigo para prototipo/
+prototipo/
+  index.html              página única; carrega os estilos e os scripts na ordem
+  css/
+    fonts.css             Nunito Sans embutida, para funcionar sem internet
+    tokens.css            cores, espaços e tamanhos do design system Farol (temas claro e escuro)
+    components.css        componentes do design system (classes fr-)
+    app.css               layout das telas e peças do protótipo (modal, toast, switch)
+  js/
+    data.js               dados fictícios: disciplinas, materiais, trechos citados, respostas do tutor, questões e radar
+    store.js              estado do protótipo, salvo no localStorage
+    tutor.js              tutor simulado: escolhe a resposta por palavras-chave
+    ui.js                 utilitários: ícones, modais, toasts, cartões
+    shell.js              cabeçalho, menu lateral, barra inferior no celular e barra de demonstração
+    main.js               rotas (#/aluno/..., #/professor/...) e eventos
+    icons.js              ícones Tabler usados no protótipo
+    screens/              uma tela por arquivo; cada arquivo cita no topo os requisitos que implementa
+  assets/fonts/           arquivo original da fonte e a licença
 docs/telas/               capturas de tela deste README
 ```
 
 ## Como mudar o cenário
 
-Quase tudo o que aparece na tela vem de `js/data.js`:
+Quase tudo o que aparece na tela vem de `prototipo/js/data.js`:
 
 - **Outra disciplina ou outro curso:** edite `disciplinas`, `materiais` e `curso`.
 - **Nova resposta do tutor:** acrescente um item em `tutor.ed`, com as palavras-chave (`keys`, sem acento), a resposta direta, a versão do modo pistas e a citação.
@@ -138,5 +140,5 @@ A [matriz de rastreabilidade](docs/rastreabilidade.md) mostra, requisito por req
 ## Créditos
 
 - Ícones: [Tabler Icons](https://tabler.io/icons) v3.51.0, licença MIT.
-- Fonte: [Nunito Sans](https://github.com/googlefonts/NunitoSans), licença SIL Open Font License 1.1 (veja `assets/fonts/OFL.txt`).
+- Fonte: [Nunito Sans](https://github.com/googlefonts/NunitoSans), licença SIL Open Font License 1.1 (veja `prototipo/assets/fonts/OFL.txt`).
 - Nomes, turmas, notas e conteúdos são fictícios.

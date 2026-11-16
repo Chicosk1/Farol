@@ -28,6 +28,6 @@ jobs:
 
       - name: Sintaxe do protótipo
         run: |
-          for arquivo in js/*.js js/screens/*.js; do
+          for arquivo in prototipo/js/*.js prototipo/js/screens/*.js; do
             node --check "$arquivo"
           done
