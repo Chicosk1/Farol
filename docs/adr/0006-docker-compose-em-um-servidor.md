@@ -2,6 +2,7 @@
 
 - **Status:** Proposta
 - **Data:** 12/11/2026
+- **Revisão:** o armazenamento de arquivos passou a seguir a [ADR 0008](0008-ambiente-local-em-docker.md)
 
 ## Contexto
 
@@ -9,7 +10,7 @@ O piloto atende cerca de 400 alunos. A TI da instituição precisa conseguir ope
 
 ## Decisão
 
-Nginx, Django, Celery, Redis e PostgreSQL rodam com Docker Compose em uma máquina virtual na região de São Paulo (4 vCPU e 8 GB), com HTTPS e backup diário. Os PDFs ficam em armazenamento compatível com S3.
+Nginx, Django, Celery, Redis e PostgreSQL rodam com Docker Compose em uma máquina virtual na região de São Paulo (4 vCPU e 8 GB), com HTTPS e backup diário. Os PDFs ficam no disco do servidor, com backup, ou em armazenamento compatível com S3 (ADR 0008).
 
 ## Alternativas consideradas
 

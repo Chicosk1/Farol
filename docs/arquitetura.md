@@ -2,7 +2,7 @@
 
 Este documento descreve a arquitetura do produto Farol, os fluxos principais e o porquê de cada escolha. As decisões com mais alternativas em jogo têm um registro próprio em [docs/adr](adr/README.md). O que cada funcionalidade faz está nas [especificações](../specs/README.md).
 
-A stack foi escolhida pelo critério "qualquer desenvolvedor pleno do mercado consegue manter": são cinco peças em um servidor, mais três serviços externos conhecidos.
+A stack foi escolhida pelo critério "qualquer desenvolvedor pleno do mercado consegue manter": são cinco peças em um servidor, mais dois serviços externos conhecidos. Tudo o que é nosso roda em Docker, sem plataforma gerenciada ([ADR 0008](adr/0008-ambiente-local-em-docker.md)).
 
 ## Visão geral
 
@@ -16,9 +16,9 @@ flowchart LR
         redis[("Redis<br/>fila e cache")]
         celery["Celery worker<br/>PDFs, questões e radar"]
         pg[("PostgreSQL + pgvector<br/>dados e vetores dos trechos")]
+        arquivos[("Arquivos<br/>PDFs do professor")]
     end
     ia["API de IA<br/>modelo de linguagem e embeddings"]
-    s3[("Armazenamento S3<br/>PDFs do professor")]
 
     user --> nginx --> django
     django --> sso
@@ -27,11 +27,66 @@ flowchart LR
     celery --> pg
     django -- "respostas do tutor em tempo real" --> ia
     celery --> ia
-    django --> s3
-    celery --> s3
+    django --> arquivos
+    celery --> arquivos
 ```
 
-O navegador fala só com o Nginx. O Django atende as telas e o chat do tutor. Tudo o que demora (ler PDFs, gerar questões, montar o radar) entra na fila do Redis e é executado pelo Celery. O upload do professor é gravado no S3, de onde o Celery lê o arquivo.
+O navegador fala só com o Nginx. O Django atende as telas e o chat do tutor. Tudo o que demora (ler PDFs, gerar questões, montar o radar) entra na fila do Redis e é executado pelo Celery. O PDF enviado pelo professor é gravado pelo Django no armazenamento de arquivos, de onde o Celery o lê.
+
+## Estilo arquitetural: monólito modular
+
+O Farol é um **monólito modular em camadas** ([ADR 0007](adr/0007-monolito-modular-em-camadas.md)): um único back-end Django, implantado como processo web e workers do Celery com o mesmo código, dividido em módulos que seguem as specs. Os adaptadores (portas e adaptadores) existem só nas fronteiras que realmente podem ser trocadas: a IA, os arquivos e o e-mail.
+
+```mermaid
+flowchart TB
+    subgraph front["frontend: React, organizado por funcionalidade"]
+        telas["src/funcionalidades/*"] --> cliente["src/api<br/>cliente tipado gerado do OpenAPI"]
+    end
+    cliente -- "REST e SSE, mesma origem" --> api
+    subgraph modulo["cada módulo do back-end"]
+        api["api/<br/>views e serializers"] --> servicos["servicos.py<br/>regras das specs"]
+        tarefas["tarefas.py<br/>Celery"] --> servicos
+        servicos --> models["models.py<br/>ORM do Django"]
+    end
+    servicos -- "só pela API pública" --> outros["servicos.py<br/>de outro módulo"]
+    servicos --> nucleo["nucleo<br/>permissões, pseudônimo,<br/>filtro de dados pessoais"]
+    servicos --> porta
+    subgraph ia["módulo ia"]
+        porta["porta única"] --> real["adaptador do provedor"]
+        porta --> falso["adaptador falso<br/>usado nos testes"]
+    end
+```
+
+| Módulo | Specs | Responsabilidade |
+| --- | --- | --- |
+| `nucleo` | todas | Permissões por disciplina, identificador pseudônimo, filtro de dados pessoais |
+| `contas` | 001 | Pessoas, perfis, login, aviso de privacidade |
+| `disciplinas` | 001 | Disciplinas, matrículas, favoritos, importação de turmas |
+| `materiais` | 002 | Envio e processamento de PDFs, trechos |
+| `tutor` | 003 | Conversas, busca nos trechos, configuração do tutor, janelas de prova |
+| `duvidas` | 004 | Dúvidas enviadas ao professor |
+| `pratica` | 005, 006 | Questões, quizzes, revisão do dia |
+| `radar` | 007 | Cálculo e leitura do radar semanal |
+| `ia` | 003, 005, 007 | Porta para o provedor de IA |
+
+Regras que o CI verifica com o import-linter:
+
+1. A camada `api` não contém regra de negócio: ela valida a entrada, chama um serviço e formata a saída.
+2. Um módulo usa outro só pelo `servicos.py` dele. A exceção é a chave estrangeira para `Pessoa` e `Disciplina`.
+3. `nucleo` não depende de nenhum módulo.
+4. Só o módulo `ia` fala com o provedor de IA.
+
+No front-end, cada pasta de `src/funcionalidades/` corresponde a um módulo, os componentes do design system ficam em `src/componentes/`, e as telas só falam com a API por `src/api/`.
+
+### Estrutura do repositório
+
+```
+backend/            Django: um app por módulo, configurações em farol/
+frontend/           React + TypeScript + Vite
+prototipo/          protótipo navegável (HTML, CSS e JavaScript puros)
+specs/ docs/        especificações e documentação
+docker-compose.yml  ambiente completo de desenvolvimento
+```
 
 ## Escolhas e trade-offs
 
@@ -46,9 +101,12 @@ O navegador fala só com o Nginx. O Django atende as telas e o chat do tutor. Tu
 | Orquestração da IA | Código próprio e enxuto com o SDK oficial do provedor ([ADR 0005](adr/0005-ia-via-api-com-modulo-proprio.md)) | LangChain, LlamaIndex | O fluxo é curto: buscar trechos, montar o prompt, chamar o modelo. Menos camadas, depuração mais fácil | Escrever à mão utilitários que essas bibliotecas dão prontos |
 | Leitura de PDF | pypdf | PyMuPDF (licença AGPL), serviços de OCR | Licença permissiva e extração página a página, que permite citar a página | Não lê PDF escaneado; OCR fica para a expansão |
 | Login | OpenID Connect com Google Workspace ou Microsoft 365, via django-allauth | Usuário e senha próprios | O aluno entra com a conta que já tem, e a TI não administra senhas | Depende de conta institucional ativa; link mágico por e-mail como plano B |
-| Arquivos | Armazenamento compatível com S3, via django-storages | Disco do próprio servidor | Backup e troca de máquina triviais | Mais um serviço contratado, de custo baixo |
-| Infraestrutura | Docker Compose em uma máquina virtual em São Paulo, com Nginx e HTTPS ([ADR 0006](adr/0006-docker-compose-em-um-servidor.md)) | Kubernetes; Render, Railway, Heroku | O mesmo arquivo sobe o sistema no notebook e em produção | Ponto único de falha, aceitável no piloto com backup diário |
-| Qualidade e operação | GitHub + GitHub Actions, pytest e Vitest, Sentry para erros | GitLab CI, Jenkins | Padrão de mercado e gratuito para começar | Dependência de serviços de terceiros |
+| Arquivos | API de armazenamento do Django: volume do Docker em desenvolvimento; disco com backup ou S3 compatível em produção, via django-storages ([ADR 0008](adr/0008-ambiente-local-em-docker.md)) | Supabase Storage, MinIO, S3 desde o início | O mesmo código serve aos dois destinos, sem serviço extra no desenvolvimento | A escolha de produção fica para a fase 0 |
+| Infraestrutura | Docker Compose em uma máquina virtual em São Paulo, com Nginx e HTTPS ([ADR 0006](adr/0006-docker-compose-em-um-servidor.md), [ADR 0008](adr/0008-ambiente-local-em-docker.md)) | Kubernetes; Render, Railway, Heroku | O mesmo arquivo sobe o sistema no notebook e em produção | Ponto único de falha, aceitável no piloto com backup diário |
+| Contrato da API | OpenAPI gerado pelo drf-spectacular; tipos TypeScript gerados com openapi-typescript ([ADR 0007](adr/0007-monolito-modular-em-camadas.md)) | Escrever os tipos à mão; GraphQL | O contrato do `plan.md` vira um arquivo verificável, e o front-end quebra na compilação se a API mudar | Um passo de geração a mais |
+| Dados no front-end | TanStack Query | Redux, Context com fetch manual | Cache, recarga e estados de carregamento prontos para dados que vêm da API | Mais uma biblioteca para aprender |
+| Autenticação na API | Sessão do Django (cookie HttpOnly e CSRF), na mesma origem | JWT | Mais simples e mais seguro para um SPA servido pelo mesmo domínio | Exige proxy na mesma origem, já previsto com Vite e Nginx |
+| Qualidade e operação | GitHub + GitHub Actions, pytest, Vitest, Ruff, ESLint e import-linter, Sentry para erros ([estratégia de testes](qualidade-e-testes.md)) | GitLab CI, Jenkins | Padrão de mercado e gratuito para começar | Dependência de serviços de terceiros |
 
 Regra para todas as camadas: versões com suporte de longo prazo (LTS) sempre que existirem.
 
@@ -58,7 +116,7 @@ O tutor usa RAG (geração aumentada por recuperação): antes de responder, bus
 
 ### 1. O professor publica um PDF (spec [002](../specs/002-materiais-da-disciplina/spec.md))
 
-1. O arquivo vai para o S3 e uma tarefa entra na fila.
+1. O Django grava o arquivo no armazenamento e coloca uma tarefa na fila.
 2. O Celery extrai o texto página por página com o pypdf.
 3. O texto é dividido em trechos de cerca de 500 tokens, com pequena sobreposição. Cada trecho guarda a aula, o arquivo e a página de origem.
 4. Cada trecho vira um vetor (embedding) e é salvo no PostgreSQL com pgvector.

@@ -109,6 +109,7 @@ Como aluno, quero instalar o Farol na tela inicial do celular, para abrir como u
 
 - **ACE-RNF-01**: Todas as telas desta spec atendem à WCAG 2.1 nível AA.
 - **ACE-RNF-02**: Toda comunicação usa HTTPS, e a sessão expira após um período sem uso definido com a TI (sugestão inicial: 12 horas).
+- **ACE-RNF-03**: Em produção, a única forma de entrar é o login institucional. Atalhos de entrada usados para desenvolver e demonstrar só existem nos ambientes de desenvolvimento e de teste.
 
 ### Entidades principais
 
@@ -144,3 +145,4 @@ Como aluno, quero instalar o Farol na tela inicial do celular, para abrir como u
 | Data | Mudança |
 | --- | --- |
 | 2026-11-13 | Criação da spec a partir da idealização e do protótipo |
+| 2026-11-16 | Inclusão de ACE-RNF-03, por causa do login de desenvolvimento usado enquanto o provedor institucional não é definido |

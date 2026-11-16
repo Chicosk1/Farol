@@ -12,6 +12,8 @@ ADRs não são apagados. Quando uma decisão muda, um ADR novo substitui o antig
 | [0004](0004-postgresql-com-pgvector.md) | Guardar dados e vetores no PostgreSQL com pgvector | Proposta |
 | [0005](0005-ia-via-api-com-modulo-proprio.md) | Usar IA via API de provedor, com módulo próprio e sem framework de orquestração | Proposta |
 | [0006](0006-docker-compose-em-um-servidor.md) | Rodar tudo com Docker Compose em um servidor em São Paulo | Proposta |
+| [0007](0007-monolito-modular-em-camadas.md) | Organizar o sistema como monólito modular em camadas, com adaptadores nas fronteiras externas | Proposta |
+| [0008](0008-ambiente-local-em-docker.md) | Rodar todos os serviços em Docker, sem plataforma gerenciada como o Supabase | Proposta |
 
 "Proposta" significa que a decisão vem da idealização e será confirmada no fim da fase 0, com a TI e o professor orientador.
 

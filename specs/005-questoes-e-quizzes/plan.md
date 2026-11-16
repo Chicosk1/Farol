@@ -15,7 +15,7 @@ O pedido de geração vira uma tarefa no Celery, que envia os trechos da aula ao
 
 | Item | Valor |
 | --- | --- |
-| Linguagens | Python 3.12, TypeScript 5 |
+| Linguagens | Python 3.13, TypeScript 5 |
 | Dependências principais | Celery, validação de JSON com Pydantic, módulo `ia/` |
 | Armazenamento | PostgreSQL |
 | Testes | pytest com provedor falso que devolve JSON válido, inválido e sem trecho |

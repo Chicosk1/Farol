@@ -52,7 +52,8 @@ Copie [`.specify/templates/tasks-template.md`](.specify/templates/tasks-template
 
 ### 6. Implemente
 
-- Cite os requisitos no código. No protótipo, cada arquivo de tela começa com um comentário `/* Specs: TUT-RF-02, TUT-RF-04. ... */`. No produto, os testes de aceite levam o identificador no nome (`test_tut_rf_04_nao_encontrei_sem_chamar_o_modelo`).
+- Cite os requisitos no código. No protótipo, cada arquivo de tela começa com um comentário `/* Specs: TUT-RF-02, TUT-RF-04. ... */`. No produto, cada teste de aceite leva o marcador `@pytest.mark.requisito("TUT-RF-04")`, como explica [docs/qualidade-e-testes.md](docs/qualidade-e-testes.md).
+- Respeite as camadas e as fronteiras entre módulos da [ADR 0007](docs/adr/0007-monolito-modular-em-camadas.md). O CI verifica.
 - Se o código precisar se comportar diferente do que a spec diz, pare e atualize a spec. Código e spec divergentes não entram.
 
 ### 7. Abra o pull request
