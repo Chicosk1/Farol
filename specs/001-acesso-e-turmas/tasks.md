@@ -32,7 +32,7 @@ A primeira entrega do produto prova a arquitetura em todas as camadas com uma fu
 - [x] ACE-T19 Configurar o Tailwind CSS com os tokens do design system Farol (temas claro e escuro) e a fonte Nunito Sans em `frontend/src/estilos/`
 - [x] ACE-T13 Criar `docker-compose.yml`, o `.env.exemplo` e a configuração do Celery, com os serviços `db`, `redis`, `backend`, `worker`, `beat`, `frontend` e `mailpit`
 - [x] ACE-T14 Acrescentar ao GitHub Actions os jobs Back-end (migrações e pytest) e Front-end (ESLint, tipos, Vitest e build), com PostgreSQL com pgvector e Redis como serviços
-- [ ] ACE-T15 [P] Gerar o OpenAPI com drf-spectacular, versionar o arquivo, gerar os tipos do front-end com openapi-typescript e acrescentar o job Contrato ao GitHub Actions
+- [x] ACE-T15 [P] Gerar o OpenAPI com drf-spectacular, versionar o arquivo, gerar os tipos do front-end com openapi-typescript e acrescentar o job Contrato ao GitHub Actions
 - [ ] ACE-T16 [P] Configurar Ruff e os contratos do import-linter com as regras da ADR 0007 e acrescentar os dois ao job Back-end do GitHub Actions
 - [ ] ACE-T17 Escrever `docs/desenvolvimento.md`: pré-requisitos, como subir o ambiente, rodar os testes, criar migrações e popular os dados de demonstração
 - [ ] ACE-T18 Marcador `requisito` no pytest e coluna "Testes" na matriz de rastreabilidade, lida por `scripts/verificar_specs.py`

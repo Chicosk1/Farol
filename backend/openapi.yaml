@@ -1,0 +1,39 @@
+openapi: 3.0.3
+info:
+  title: API do Farol
+  version: 0.1.0
+  description: API REST do Farol, tutor de estudos com IA da UNIMATER.
+paths:
+  /api/saude:
+    get:
+      operationId: api_saude_retrieve
+      description: Diz que a API está no ar. Usada pelo Docker Compose e pelo monitoramento;
+        não exige login.
+      summary: Saúde da API
+      tags:
+      - nucleo
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Saude'
+          description: ''
+components:
+  schemas:
+    Saude:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Sempre "ok" quando a API está no ar.
+      required:
+      - status
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

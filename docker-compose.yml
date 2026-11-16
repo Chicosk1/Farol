@@ -90,6 +90,8 @@ services:
       - ./frontend:/app
       # O node_modules fica na imagem, e não na pasta do computador.
       - /app/node_modules
+      # Só leitura: o contrato da API (backend/openapi.yaml) gera os tipos do front-end.
+      - ./backend:/backend:ro
     ports:
       - "5173:5173"
     depends_on:

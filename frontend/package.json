@@ -15,7 +15,8 @@
     "typecheck": "tsc -b",
     "test": "vitest run",
     "test:watch": "vitest",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "api:gerar": "openapi-typescript ../backend/openapi.yaml --output src/api/esquema.d.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "5.107.1",
@@ -40,6 +41,7 @@
     "eslint-plugin-react-refresh": "0.5.8",
     "globals": "17.14.0",
     "jsdom": "31.0.1",
+    "openapi-typescript": "7.13.0",
     "prettier": "3.10.1",
     "tailwindcss": "4.3.5",
     "typescript": "5.9.3",
