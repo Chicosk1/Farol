@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { entrarEmDesenvolvimento, obterEu, sair, type Eu } from '../../api/cliente';
+import {
+  confirmarCienciaDoAviso,
+  entrarEmDesenvolvimento,
+  obterEu,
+  sair,
+  type Eu,
+} from '../../api/cliente';
 
 const CHAVE_EU = ['eu'] as const;
 
@@ -14,6 +20,18 @@ export function useEntrarEmDesenvolvimento() {
   return useMutation({
     mutationFn: entrarEmDesenvolvimento,
     onSuccess: (eu: Eu) => clienteDeDados.setQueryData(CHAVE_EU, eu),
+  });
+}
+
+/** Registra a leitura do aviso de privacidade e libera o uso (ACE-RF-08). */
+export function useConfirmarCienciaDoAviso() {
+  const clienteDeDados = useQueryClient();
+  return useMutation({
+    mutationFn: confirmarCienciaDoAviso,
+    onSuccess: () =>
+      clienteDeDados.setQueryData<Eu | null>(CHAVE_EU, (eu) =>
+        eu ? { ...eu, precisa_ver_aviso: false } : eu,
+      ),
   });
 }
 

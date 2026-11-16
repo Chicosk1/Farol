@@ -10,6 +10,7 @@ export type Saude = components['schemas']['Saude'];
 export type Eu = components['schemas']['Eu'];
 export type Perfil = components['schemas']['PerfilEnum'];
 export type Disciplina = components['schemas']['Disciplina'];
+export type AvisoDePrivacidade = components['schemas']['AvisoDePrivacidade'];
 export type FiltroDeDisciplinas = 'todas' | 'favoritas' | 'com-tutor';
 
 /** Resposta da API fora da faixa de sucesso (2xx), com o status e o corpo devolvidos. */
@@ -123,6 +124,16 @@ export async function definirFavorito(disciplinaId: number, favorita: boolean): 
     undefined,
     favorita ? 'PUT' : 'DELETE',
   );
+}
+
+/** GET /api/aviso-privacidade: a versão atual do aviso e o seu texto. */
+export function obterAvisoDePrivacidade(): Promise<AvisoDePrivacidade> {
+  return requisitar<AvisoDePrivacidade>('/api/aviso-privacidade');
+}
+
+/** POST /api/eu/ciencia-privacidade: registra que a pessoa leu esta versão do aviso. */
+export async function confirmarCienciaDoAviso(versao: string): Promise<void> {
+  await enviar<undefined>('/api/eu/ciencia-privacidade', { versao });
 }
 
 /** POST /api/sair: encerra a sessão. */

@@ -48,7 +48,11 @@ export const ANA = {
   nome: 'Ana Souza',
   perfis: ['aluno'],
   perfil_ativo: 'aluno',
+  precisa_ver_aviso: false,
 } as const;
+
+/** A Ana na primeira entrada, antes de ler o aviso de privacidade. */
+export const ANA_NOVA = { ...ANA, precisa_ver_aviso: true } as const;
 
 export const CARLOS = {
   id: 2,
@@ -56,6 +60,7 @@ export const CARLOS = {
   nome: 'Carlos Mendes',
   perfis: ['professor'],
   perfil_ativo: 'professor',
+  precisa_ver_aviso: false,
 } as const;
 
 /** As seis disciplinas do 2º período do protótipo, no formato de GET /api/disciplinas. */
@@ -80,3 +85,15 @@ export const DISCIPLINAS = [
 export const FAVORITAS_VAZIAS = {
   'GET /api/disciplinas?filtro=favoritas': { corpo: [] },
 } as const;
+
+/** GET /api/aviso-privacidade. */
+export const AVISO = {
+  versao: '1',
+  titulo: 'Como o Farol cuida dos seus dados',
+  itens: [
+    { titulo: 'O que é registrado', texto: 'O seu nome, o seu e-mail e as suas disciplinas.' },
+    { titulo: 'Para quê', texto: 'Para mostrar só as suas disciplinas.' },
+    { titulo: 'Por quanto tempo', texto: 'As perguntas são guardadas por 12 meses.' },
+    { titulo: 'Os seus direitos', texto: 'Você pode ver e apagar o seu histórico.' },
+  ],
+};
