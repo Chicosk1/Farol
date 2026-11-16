@@ -1,0 +1,84 @@
+@import 'tailwindcss';
+@import './fontes.css';
+@import './tokens.css';
+
+/*
+ * Liga os tokens do design system Farol às classes do Tailwind: bg-surface, text-ink, border-line etc.
+ * Com "inline", cada classe usa a variável do token, e o tema escuro troca as cores sozinho.
+ * A paleta padrão do Tailwind fica desligada: as telas só usam as cores do design system.
+ * Espaços, raios e a fonte vêm de tokens.css, que sobrepõe os valores padrão do Tailwind.
+ */
+@theme inline {
+  --color-*: initial;
+
+  --color-surface-page: var(--surface-page);
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-selected: var(--surface-selected);
+
+  --color-line: var(--line);
+  --color-line-control: var(--line-control);
+  --color-line-strong: var(--line-strong);
+
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-sky: var(--brand-sky);
+  --color-brand-yellow: var(--brand-yellow);
+  --color-on-brand: var(--on-brand);
+  --color-on-yellow: var(--on-yellow);
+
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+
+  --color-slate: var(--slate);
+  --color-on-slate: var(--on-slate);
+  --color-chrome: var(--chrome);
+  --color-chrome-field: var(--chrome-field);
+  --color-on-chrome: var(--on-chrome);
+
+  --color-success: var(--success);
+  --color-success-text: var(--success-text);
+  --color-success-soft: var(--success-soft);
+  --color-danger: var(--danger);
+  --color-danger-text: var(--danger-text);
+  --color-danger-soft: var(--danger-soft);
+  --color-warning-text: var(--warning-text);
+  --color-warning-soft: var(--warning-soft);
+
+  --color-progress-track: var(--progress-track);
+  --color-focus-ring: var(--focus-ring);
+}
+
+@layer base {
+  body {
+    font-size: 14px;
+    line-height: 22px;
+    background-color: var(--surface-page);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Foco sempre visível na navegação por teclado (princípio V). */
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+/* Respeita a preferência de reduzir animações (princípio V). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

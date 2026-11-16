@@ -1,2 +1,4 @@
 dist/
 package-lock.json
+# Cópia fiel de prototipo/css/tokens.css, para as duas versões continuarem fáceis de comparar.
+src/estilos/tokens.css

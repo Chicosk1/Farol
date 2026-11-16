@@ -1,0 +1,9 @@
+/* Nunito Sans, a fonte do design system Farol: subconjunto latino, pesos 400 a 800.
+   Licença SIL Open Font License 1.1, em fontes/OFL.txt. */
+@font-face {
+  font-family: 'Nunito Sans';
+  src: url('./fontes/NunitoSans-Variable.woff') format('woff');
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
