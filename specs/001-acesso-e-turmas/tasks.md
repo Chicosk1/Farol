@@ -60,9 +60,10 @@ A primeira entrega do produto prova a arquitetura em todas as camadas com uma fu
 
 ## Produto: História 3, importar turmas (P2)
 
-- [ ] ACE-T40 [P] [H3] Testes com CSVs de exemplo válidos e inválidos em `backend/disciplinas/testes/test_importacao.py` (ACE-RF-06, ACE-RF-07)
-- [ ] ACE-T41 [H3] Importação assíncrona idempotente com relatório (ACE-RF-06, ACE-RF-07)
-- [ ] ACE-T42 [H3] Tela de importação no painel administrativo do Django (ACE-RF-06)
+- [x] ACE-T40 [H3] Testes com CSVs de exemplo válidos e inválidos em `backend/disciplinas/testes/test_importacao.py`, entregues junto da ACE-T41 (ACE-RF-06, ACE-RF-07)
+- [ ] ACE-T41 [H3] Modelo `Importacao` e serviço de importação do CSV: validação sem importar nada pela metade, linhas aceitas e rejeitadas com o motivo, idempotência e encerramento das matrículas ausentes (ACE-RF-06, ACE-RF-07)
+- [ ] ACE-T43 [H3] Tarefa Celery de importação e rotas `POST /api/importacoes` e `GET /api/importacoes/{id}`, só para o perfil administrador (ACE-RF-06)
+- [ ] ACE-T42 [H3] Tela de importação no painel administrativo do Django, com o perfil administrador fictício no `popular_demo` (ACE-RF-06)
 
 ## Produto: História 4, saber o que é registrado (P2)
 
