@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react';
 
+import type { FiltroDeDisciplinas } from '../../api/cliente';
+import { Abas } from '../../componentes/Abas';
 import { Botao } from '../../componentes/Botao';
-import { useDisciplinas } from './consultas';
+import { useDefinirFavorito, useDisciplinas } from './consultas';
 
 type Visao = 'grade' | 'lista';
+
+const ABAS = [
+  { id: 'todas', rotulo: 'Todas' },
+  { id: 'favoritas', rotulo: 'Favoritas' },
+] as const satisfies readonly { id: FiltroDeDisciplinas; rotulo: string }[];
 
 /** Espera o texto parar de mudar antes de buscar, para não chamar a API a cada tecla. */
 function useTextoEstavel(texto: string, esperaEmMs = 250): string {
@@ -22,7 +29,9 @@ function rotuloDeQuantidade(quantidade: number): string {
 export function PaginaDisciplinas() {
   const [digitado, setDigitado] = useState('');
   const [visao, setVisao] = useState<Visao>('grade');
-  const disciplinas = useDisciplinas(useTextoEstavel(digitado));
+  const [aba, setAba] = useState<'todas' | 'favoritas'>('todas');
+  const disciplinas = useDisciplinas(useTextoEstavel(digitado), aba);
+  const favoritar = useDefinirFavorito();
 
   return (
     <main id="conteudo" className="mx-auto max-w-5xl p-4">
@@ -60,49 +69,76 @@ export function PaginaDisciplinas() {
         </div>
       </div>
 
-      {disciplinas.isError && (
-        <p role="alert" className="mt-4 text-danger-text">
-          Não foi possível carregar as disciplinas. Tente de novo em instantes.
-        </p>
-      )}
-      {disciplinas.isPending && (
-        <p role="status" className="mt-4 text-ink-muted">
-          Carregando disciplinas…
-        </p>
-      )}
-      {disciplinas.data && (
-        <>
-          <p role="status" className="mt-4 text-ink-muted">
-            {rotuloDeQuantidade(disciplinas.data.length)}
-          </p>
-          {disciplinas.data.length === 0 ? (
-            <p className="mt-2 text-ink">Nenhuma disciplina encontrada.</p>
-          ) : (
-            <ul
-              aria-label="Disciplinas"
-              data-visao={visao}
-              className={
-                visao === 'grade'
-                  ? 'mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3'
-                  : 'mt-2 flex flex-col gap-2'
-              }
-            >
-              {disciplinas.data.map((disciplina) => (
-                <li
-                  key={disciplina.id}
-                  className="rounded-lg border border-line bg-surface p-4 text-ink"
-                >
-                  <p className="font-bold">{disciplina.nome}</p>
-                  <p className="text-sm text-ink-muted">
-                    {disciplina.codigo} · {disciplina.turma}
-                  </p>
-                  <p className="text-sm text-ink-muted">Prof. {disciplina.professor_nome}</p>
-                </li>
-              ))}
-            </ul>
+      <div className="mt-4">
+        <Abas rotulo="Filtrar disciplinas" abas={ABAS} ativa={aba} aoMudar={setAba}>
+          {disciplinas.isError && (
+            <p role="alert" className="mt-4 text-danger-text">
+              Não foi possível carregar as disciplinas. Tente de novo em instantes.
+            </p>
           )}
-        </>
-      )}
+          {favoritar.isError && (
+            <p role="alert" className="mt-4 text-danger-text">
+              Não foi possível atualizar o favorito. Tente de novo.
+            </p>
+          )}
+          {disciplinas.isPending && (
+            <p role="status" className="mt-4 text-ink-muted">
+              Carregando disciplinas…
+            </p>
+          )}
+          {disciplinas.data && (
+            <>
+              <p role="status" className="mt-4 text-ink-muted">
+                {rotuloDeQuantidade(disciplinas.data.length)}
+              </p>
+              {disciplinas.data.length === 0 ? (
+                <p className="mt-2 text-ink">
+                  {aba === 'favoritas' && !digitado.trim()
+                    ? 'Você ainda não tem disciplinas favoritas. Use a estrela, na aba Todas, para marcar.'
+                    : 'Nenhuma disciplina encontrada.'}
+                </p>
+              ) : (
+                <ul
+                  aria-label="Disciplinas"
+                  data-visao={visao}
+                  className={
+                    visao === 'grade'
+                      ? 'mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3'
+                      : 'mt-2 flex flex-col gap-2'
+                  }
+                >
+                  {disciplinas.data.map((disciplina) => (
+                    <li
+                      key={disciplina.id}
+                      className="flex items-start justify-between gap-2 rounded-lg border border-line bg-surface p-4 text-ink"
+                    >
+                      <div>
+                        <p className="font-bold">{disciplina.nome}</p>
+                        <p className="text-sm text-ink-muted">
+                          {disciplina.codigo} · {disciplina.turma}
+                        </p>
+                        <p className="text-sm text-ink-muted">Prof. {disciplina.professor_nome}</p>
+                      </div>
+                      <button
+                        type="button"
+                        aria-label={`Favoritar ${disciplina.nome}`}
+                        aria-pressed={disciplina.favorita}
+                        disabled={favoritar.isPending}
+                        onClick={() =>
+                          favoritar.mutate({ id: disciplina.id, favorita: !disciplina.favorita })
+                        }
+                        className="min-h-12 min-w-12 rounded-lg text-2xl text-accent"
+                      >
+                        <span aria-hidden="true">{disciplina.favorita ? '★' : '☆'}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          )}
+        </Abas>
+      </div>
     </main>
   );
 }

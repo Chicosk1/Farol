@@ -66,9 +66,9 @@ async function requisitar<T>(caminho: string, opcoes: RequestInit = {}): Promise
   return corpo as T;
 }
 
-function enviar<T>(caminho: string, dados?: unknown): Promise<T> {
+function enviar<T>(caminho: string, dados?: unknown, metodo = 'POST'): Promise<T> {
   return requisitar<T>(caminho, {
-    method: 'POST',
+    method: metodo,
     body: dados === undefined ? undefined : JSON.stringify(dados),
   });
 }
@@ -114,6 +114,15 @@ export function listarDisciplinas(
   }
   const texto = consulta.toString();
   return requisitar<Disciplina[]>(texto ? `/api/disciplinas?${texto}` : '/api/disciplinas');
+}
+
+/** PUT ou DELETE /api/disciplinas/{id}/favorito: marca ou desmarca a disciplina como favorita. */
+export async function definirFavorito(disciplinaId: number, favorita: boolean): Promise<void> {
+  await enviar<undefined>(
+    `/api/disciplinas/${disciplinaId}/favorito`,
+    undefined,
+    favorita ? 'PUT' : 'DELETE',
+  );
 }
 
 /** POST /api/sair: encerra a sessão. */
