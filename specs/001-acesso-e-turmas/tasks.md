@@ -67,9 +67,10 @@ A primeira entrega do produto prova a arquitetura em todas as camadas com uma fu
 
 ## Produto: História 4, saber o que é registrado (P2)
 
-- [ ] ACE-T50 [P] [H4] Testes do aviso versionado e da exclusão de histórico (ACE-RF-08, ACE-RF-09)
-- [ ] ACE-T51 [H4] Aviso de privacidade versionado e registro da ciência (ACE-RF-08)
-- [ ] ACE-T52 [H4] Tela "Meus dados" com exclusão do histórico (ACE-RF-09)
+- [x] ACE-T50 [H4] Testes do aviso versionado, entregues junto da ACE-T51; os da exclusão de histórico vão com a ACE-T52 (ACE-RF-08, ACE-RF-09)
+- [ ] ACE-T51 [H4] Aviso de privacidade versionado no back-end: modelo `CienciaPrivacidade`, `GET /api/aviso-privacidade`, `POST /api/eu/ciencia-privacidade` e `precisa_ver_aviso` em `GET /api/eu` (ACE-RF-08)
+- [ ] ACE-T53 [H4] Tela do aviso de privacidade no front-end, que bloqueia o uso até o aluno confirmar que leu (ACE-RF-08)
+- [ ] ACE-T52 [H4] Tela "Meus dados" com exclusão do histórico, depois da spec 003, com os testes da exclusão (ACE-RF-09)
 
 ## Produto: História 5, usar como app (P3)
 
