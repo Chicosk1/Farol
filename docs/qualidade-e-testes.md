@@ -43,7 +43,7 @@ Este documento diz como o Farol é testado e o que precisa estar verdadeiro para
 
 ## Integração contínua
 
-Todo pull request roda, no GitHub Actions:
+O GitHub Actions roda a cada push, em qualquer branch, e em todo pull request:
 
 | Job | Passos |
 | --- | --- |
@@ -52,7 +52,7 @@ Todo pull request roda, no GitHub Actions:
 | Contrato | Gera o OpenAPI e confere se o arquivo versionado e os tipos do front-end estão atualizados |
 | Front-end | ESLint, verificação de tipos, Vitest e build de produção |
 
-Um pull request só pode ser mesclado com todos os jobs passando.
+Como cada tarefa é enviada assim que termina, o resultado aparece em minutos no branch da spec. Um pull request só pode ser mesclado com todos os jobs passando.
 
 ## Quando uma tarefa está pronta
 

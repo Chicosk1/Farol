@@ -1,9 +1,14 @@
 name: Verificação das specs
 
+# Roda a cada push em qualquer branch (regra "uma tarefa, um commit, um push")
+# e em todo pull request. Um push novo no mesmo branch cancela a execução anterior.
 on:
-  pull_request:
   push:
-    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
