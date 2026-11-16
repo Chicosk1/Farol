@@ -25,6 +25,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/disciplinas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Disciplinas da pessoa no perfil em uso */
+        get: operations["disciplinas_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/eu": {
         parameters: {
             query?: never;
@@ -100,6 +117,14 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Disciplina: {
+            id: number;
+            codigo: string;
+            nome: string;
+            turma: string;
+            semestre: string;
+            professor_nome: string;
+        };
         EntradaDeDesenvolvimentoRequest: {
             /** Format: email */
             email: string;
@@ -160,6 +185,33 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Eu"];
+                };
+            };
+        };
+    };
+    disciplinas_list: {
+        parameters: {
+            query?: {
+                busca?: string;
+                /**
+                 * @description * `todas` - todas
+                 *     * `favoritas` - favoritas
+                 *     * `com-tutor` - com-tutor
+                 */
+                filtro?: "todas" | "favoritas" | "com-tutor";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Disciplina"][];
                 };
             };
         };

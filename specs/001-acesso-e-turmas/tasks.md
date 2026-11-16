@@ -50,7 +50,7 @@ A primeira entrega do produto prova a arquitetura em todas as camadas com uma fu
 
 ## Produto: História 2, ver só as minhas disciplinas (P1)
 
-- [ ] ACE-T30 [H2] Modelos `Disciplina` e `Matricula`, serviço de listagem com busca e rota `GET /api/disciplinas`, com testes dos cenários 1, 2 e 5 (ACE-RF-04, ACE-RF-10)
+- [x] ACE-T30 [H2] Modelos `Disciplina` e `Matricula`, serviço de listagem com busca e rota `GET /api/disciplinas`, com testes dos cenários 1, 2 e 5 (ACE-RF-04, ACE-RF-10)
 - [ ] ACE-T31 [H2] Permissão por disciplina reutilizável em `backend/nucleo/`, com testes de acesso negado (ACE-RF-05)
 - [ ] ACE-T32 [H2] Favoritos: modelo `Favorito`, rotas `PUT` e `DELETE /api/disciplinas/{id}/favorito` e filtro Favoritas, com testes do cenário 3 (ACE-RF-10)
 - [ ] ACE-T33 [H2] Tela de disciplinas com lista, busca e alternância entre grade e lista, com testes de tela e de acessibilidade (ACE-RF-10)

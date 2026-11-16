@@ -134,6 +134,8 @@ Formato proposto do CSV (UTF-8, separador vírgula): `ra,nome,email,codigo_disci
 
 - **Filtro "Com tutor":** depende de saber se a disciplina tem material pronto, o que só existe com a spec 002. Até lá, a rota aceita o filtro e devolve uma lista vazia. A tarefa ACE-T34 liga o filtro ao serviço de materiais.
 
+- **Busca sem acentos:** usa a extensão `unaccent` do PostgreSQL (já incluída na imagem do banco), criada pela primeira migração de `disciplinas`. Em produção, a conta que aplica as migrações precisa poder criar extensões. É um recurso do próprio PostgreSQL, sem dependência nova.
+
 - **django-allauth** em vez de implementar OpenID Connect à mão: suporta Google e Microsoft com a mesma configuração e é a biblioteca mais usada para isso no Django.
 - **Importação assíncrona** (Celery): planilhas grandes não travam a tela, e o relatório fica guardado.
 - **Exclusão de histórico** apaga as conversas do aluno. Os registros pseudônimos usados no radar (spec 007) não guardam o texto ligado ao aluno e por isso não são afetados.

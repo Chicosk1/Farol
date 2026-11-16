@@ -35,6 +35,44 @@ paths:
               schema:
                 $ref: '#/components/schemas/Eu'
           description: ''
+  /api/disciplinas:
+    get:
+      operationId: disciplinas_list
+      summary: Disciplinas da pessoa no perfil em uso
+      parameters:
+      - in: query
+        name: busca
+        schema:
+          type: string
+          default: ''
+          maxLength: 100
+      - in: query
+        name: filtro
+        schema:
+          enum:
+          - todas
+          - favoritas
+          - com-tutor
+          type: string
+          default: todas
+          minLength: 1
+        description: |-
+          * `todas` - todas
+          * `favoritas` - favoritas
+          * `com-tutor` - com-tutor
+      tags:
+      - disciplinas
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Disciplina'
+          description: ''
   /api/eu:
     get:
       operationId: eu_retrieve
@@ -109,6 +147,28 @@ paths:
           description: ''
 components:
   schemas:
+    Disciplina:
+      type: object
+      properties:
+        id:
+          type: integer
+        codigo:
+          type: string
+        nome:
+          type: string
+        turma:
+          type: string
+        semestre:
+          type: string
+        professor_nome:
+          type: string
+      required:
+      - codigo
+      - id
+      - nome
+      - professor_nome
+      - semestre
+      - turma
     EntradaDeDesenvolvimentoRequest:
       type: object
       properties:

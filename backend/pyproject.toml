@@ -47,33 +47,41 @@ extend-exclude = ["*/migrations/*"]
 select = ["E", "F", "W", "I", "B", "UP", "DJ", "SIM"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["farol", "nucleo", "contas", "demonstracao"]
+known-first-party = ["farol", "nucleo", "contas", "disciplinas", "demonstracao"]
 
 # Fronteiras entre módulos da ADR 0007: lint-imports
-# Ao criar um módulo (por exemplo, disciplinas), acrescente-o em root_packages, nos contratos
-# 1, 2 e 4 e num contrato 3 próprio, copiado do de contas.
+# Ao criar um módulo (por exemplo, materiais), acrescente-o em root_packages, nos contratos
+# 1, 2 e 4 e num contrato 3 próprio, copiado do de disciplinas.
 [tool.importlinter]
-root_packages = ["farol", "nucleo", "contas", "demonstracao"]
+root_packages = ["farol", "nucleo", "contas", "disciplinas", "demonstracao"]
 include_external_packages = true
 
 [[tool.importlinter.contracts]]
 name = "1. nucleo não depende de nenhum outro módulo do Farol"
 type = "forbidden"
 source_modules = ["nucleo"]
-forbidden_modules = ["farol", "contas", "demonstracao"]
+forbidden_modules = ["farol", "contas", "disciplinas", "demonstracao"]
 
 [[tool.importlinter.contracts]]
 name = "2. Camadas de cada módulo: api e tarefas usam servicos, que usa models"
 type = "layers"
-containers = ["nucleo", "contas", "demonstracao"]
+containers = ["nucleo", "contas", "disciplinas", "demonstracao"]
 layers = ["(api) | (tarefas)", "(servicos)", "(models)"]
 
 [[tool.importlinter.contracts]]
-name = "3. Os outros módulos usam contas só pelo contas.servicos"
+name = "3a. Os outros módulos usam contas só pelo contas.servicos"
 type = "protected"
 protected_modules = ["contas.*"]
 allowed_importers = ["contas", "farol"]
 ignore_imports = ["** -> contas.servicos", "*.testes.** -> contas.**"]
+unmatched_ignore_imports_alerting = "none"
+
+[[tool.importlinter.contracts]]
+name = "3b. Os outros módulos usam disciplinas só pelo disciplinas.servicos"
+type = "protected"
+protected_modules = ["disciplinas.*"]
+allowed_importers = ["disciplinas", "farol"]
+ignore_imports = ["** -> disciplinas.servicos", "*.testes.** -> disciplinas.**"]
 unmatched_ignore_imports_alerting = "none"
 
 # O provedor ainda não foi escolhido (ADR 0005): a lista traz os SDKs mais comuns. Quando o módulo
@@ -81,5 +89,5 @@ unmatched_ignore_imports_alerting = "none"
 [[tool.importlinter.contracts]]
 name = "4. Só o módulo ia fala com o provedor de IA"
 type = "forbidden"
-source_modules = ["farol", "nucleo", "contas", "demonstracao"]
+source_modules = ["farol", "nucleo", "contas", "disciplinas", "demonstracao"]
 forbidden_modules = ["anthropic", "openai", "mistralai", "cohere"]

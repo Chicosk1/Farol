@@ -6,6 +6,7 @@ from django.urls import include, path
 urlpatterns = [
     path("api/", include("nucleo.api.urls")),
     path("api/", include("contas.api.urls")),
+    path("api/", include("disciplinas.api.urls")),
 ]
 
 # O atalho de login só existe onde a configuração o liga (desenvolvimento e teste): em produção,
