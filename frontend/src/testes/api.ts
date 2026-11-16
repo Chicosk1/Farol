@@ -57,3 +57,21 @@ export const CARLOS = {
   perfis: ['professor'],
   perfil_ativo: 'professor',
 } as const;
+
+/** As seis disciplinas do 2º período do protótipo, no formato de GET /api/disciplinas. */
+export const DISCIPLINAS = [
+  ['Álgebra Linear', 'SINF205', 'Rogério Lima'],
+  ['Banco de Dados I', 'SINF202', 'Marta Ribeiro'],
+  ['Engenharia de Software I', 'SINF206', 'Paulo Nunes'],
+  ['Estruturas de Dados', 'SINF201', 'Carlos Mendes'],
+  ['Matemática Discreta', 'SINF204', 'Luciana Alves'],
+  ['Programação Orientada a Objetos', 'SINF203', 'João Pereira'],
+].map(([nome, codigo, professor_nome], i) => ({
+  id: i + 1,
+  codigo,
+  nome,
+  turma: 'SINF2NA',
+  semestre: '2026/2',
+  professor_nome,
+  favorita: false,
+}));

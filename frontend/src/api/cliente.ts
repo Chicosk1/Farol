@@ -9,6 +9,8 @@ import type { components } from './esquema';
 export type Saude = components['schemas']['Saude'];
 export type Eu = components['schemas']['Eu'];
 export type Perfil = components['schemas']['PerfilEnum'];
+export type Disciplina = components['schemas']['Disciplina'];
+export type FiltroDeDisciplinas = 'todas' | 'favoritas' | 'com-tutor';
 
 /** Resposta da API fora da faixa de sucesso (2xx), com o status e o corpo devolvidos. */
 export class ErroDaApi extends Error {
@@ -96,6 +98,22 @@ export function entrarEmDesenvolvimento(email: string): Promise<Eu> {
 /** POST /api/eu/perfil-ativo: troca o perfil em uso, sem sair. */
 export function trocarPerfilAtivo(perfil: Perfil): Promise<Eu> {
   return enviar<Eu>('/api/eu/perfil-ativo', { perfil });
+}
+
+/** GET /api/disciplinas: as disciplinas da pessoa no perfil em uso, com busca e filtro. */
+export function listarDisciplinas(
+  opcoes: { busca?: string; filtro?: FiltroDeDisciplinas } = {},
+): Promise<Disciplina[]> {
+  const consulta = new URLSearchParams();
+  const busca = opcoes.busca?.trim();
+  if (busca) {
+    consulta.set('busca', busca);
+  }
+  if (opcoes.filtro && opcoes.filtro !== 'todas') {
+    consulta.set('filtro', opcoes.filtro);
+  }
+  const texto = consulta.toString();
+  return requisitar<Disciplina[]>(texto ? `/api/disciplinas?${texto}` : '/api/disciplinas');
 }
 
 /** POST /api/sair: encerra a sessão. */

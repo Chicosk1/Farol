@@ -2,6 +2,8 @@ import type { RouteObject } from 'react-router';
 
 import { ExigeLogin } from '../funcionalidades/contas/ExigeLogin';
 import { PaginaEntrar } from '../funcionalidades/contas/PaginaEntrar';
+import { PaginaDisciplinas } from '../funcionalidades/disciplinas/PaginaDisciplinas';
+import { Layout } from './Layout';
 import { PaginaInicial } from './PaginaInicial';
 import { PaginaNaoEncontrada } from './PaginaNaoEncontrada';
 
@@ -10,7 +12,15 @@ export const rotas: RouteObject[] = [
   { path: '/entrar', element: <PaginaEntrar /> },
   {
     element: <ExigeLogin />,
-    children: [{ path: '/', element: <PaginaInicial /> }],
+    children: [
+      {
+        element: <Layout />,
+        children: [
+          { path: '/', element: <PaginaInicial /> },
+          { path: '/disciplinas', element: <PaginaDisciplinas /> },
+        ],
+      },
+    ],
   },
   { path: '*', element: <PaginaNaoEncontrada /> },
 ];

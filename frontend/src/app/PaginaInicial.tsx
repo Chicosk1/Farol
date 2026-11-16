@@ -1,13 +1,8 @@
-import { useNavigate } from 'react-router';
+import { useEu } from '../funcionalidades/contas/sessao';
 
-import { Botao } from '../componentes/Botao';
-import { useEu, useSair } from '../funcionalidades/contas/sessao';
-
-/** Página provisória da primeira fatia: mostra quem entrou. As disciplinas chegam na ACE-T33. */
+/** Página provisória da primeira fatia: mostra quem entrou. Os favoritos chegam na ACE-T35. */
 export function PaginaInicial() {
   const eu = useEu();
-  const sair = useSair();
-  const navegar = useNavigate();
 
   return (
     <main id="conteudo" className="mx-auto max-w-2xl p-4">
@@ -17,13 +12,6 @@ export function PaginaInicial() {
         <section aria-label="Sessão" className="mt-6">
           <p className="font-bold text-ink">Olá, {eu.data.nome}</p>
           <p className="text-ink-muted">Perfil: {eu.data.perfil_ativo}</p>
-          <Botao
-            variante="secundario"
-            className="mt-3"
-            onClick={() => sair.mutate(undefined, { onSuccess: () => navegar('/entrar') })}
-          >
-            Sair
-          </Botao>
         </section>
       )}
     </main>
