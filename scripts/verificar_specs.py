@@ -14,8 +14,10 @@ O que é verificado:
     5. Todo identificador citado em documentos ou no código existe em alguma spec.
     6. Os links relativos dos arquivos Markdown apontam para arquivos e títulos que existem.
     7. docs/rastreabilidade.md está atualizada.
+    8. Os marcadores @pytest.mark.requisito("XXX-RF-01") dos testes do back-end citam requisitos
+       que existem. A matriz mostra, para cada requisito, os testes que o verificam.
 
-Só usa a biblioteca padrão do Python 3.
+Só usa a biblioteca padrão do Python 3. Os testes deste script estão em scripts/test_verificar_specs.py.
 """
 from __future__ import annotations
 
@@ -24,13 +26,30 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
-RAIZ = Path(__file__).resolve().parent.parent
-PASTA_SPECS = RAIZ / "specs"
-MATRIZ = RAIZ / "docs" / "rastreabilidade.md"
+RAIZ_DO_REPOSITORIO = Path(__file__).resolve().parent.parent
 ARQUIVOS_DA_SPEC = ("spec.md", "plan.md", "tasks.md")
-PROTOTIPO = RAIZ / "prototipo"
-PASTAS_DE_CODIGO = (PROTOTIPO / "js",)
 COBERTURAS = ("Coberto", "Simulado", "Parcial", "Não coberto")
+# Pastas que nunca são lidas: dependências, caches e builds.
+PASTAS_IGNORADAS = {".git", "node_modules", ".pytest_cache", ".ruff_cache", ".venv", "__pycache__", "dist", "build"}
+
+# Caminhos do repositório verificado. São definidos por usar_raiz(), no fim deste bloco.
+RAIZ = RAIZ_DO_REPOSITORIO
+PASTA_SPECS = MATRIZ = PROTOTIPO = PASTA_BACKEND = RAIZ
+PASTAS_DE_CODIGO: tuple[Path, ...] = ()
+
+
+def usar_raiz(raiz: Path) -> None:
+    """Aponta o script para um repositório. Os testes do script usam uma pasta temporária."""
+    global RAIZ, PASTA_SPECS, MATRIZ, PROTOTIPO, PASTAS_DE_CODIGO, PASTA_BACKEND
+    RAIZ = raiz
+    PASTA_SPECS = raiz / "specs"
+    MATRIZ = raiz / "docs" / "rastreabilidade.md"
+    PROTOTIPO = raiz / "prototipo"
+    PASTAS_DE_CODIGO = (PROTOTIPO / "js",)
+    PASTA_BACKEND = raiz / "backend"
+
+
+usar_raiz(RAIZ_DO_REPOSITORIO)
 
 RE_PASTA = re.compile(r"^(\d{3})-[a-z0-9-]+$")
 RE_CODIGO = re.compile(r"^\| Código \| `([A-Z]{3})` ", re.M)
@@ -40,6 +59,8 @@ RE_REQUISITO_RETIRADO = re.compile(r"^- ~~\*\*([A-Z]{3}-(?:RF|RNF|CS)-\d{2})\*\*
 RE_TAREFA = re.compile(r"^- \[( |x)\] ([A-Z]{3}-T\d{2}) (.+)$", re.M)
 RE_COBERTURA = re.compile(r"^\| ([A-Z]{3}-RF-\d{2}) \|([^|]*)\|(.*)\|$", re.M)
 RE_ID = re.compile(r"\b[A-Z]{3}-(?:RF|RNF|CS)-\d{2}\b|\b[A-Z]{3}-T\d{2}\b")
+RE_ID_REQUISITO = re.compile(r"\b[A-Z]{3}-(?:RF|RNF|CS)-\d{2}\b")
+RE_MARCADOR_REQUISITO = re.compile(r"pytest\.mark\.requisito\(([^)]*)\)")
 RE_LINK = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)|<img [^>]*src=\"([^\"]+)\"")
 RE_ESCLARECER = re.compile(r"\[PRECISA ESCLARECER")
 RE_TITULO_MD = re.compile(r"^(#{1,6}) (.+?)\s*$", re.M)
@@ -148,11 +169,48 @@ def verificar_specs(specs: list[Spec]) -> None:
 
 
 def arquivos_markdown() -> list[Path]:
-    ignorar = {".git", "node_modules"}
     return sorted(
         p for p in RAIZ.rglob("*.md")
-        if not ignorar.intersection(p.relative_to(RAIZ).parts) and "templates" not in p.parts
+        if not PASTAS_IGNORADAS.intersection(p.relative_to(RAIZ).parts) and "templates" not in p.parts
     )
+
+
+def arquivos_de_teste() -> list[Path]:
+    """Testes do back-end: backend/<modulo>/testes/test_*.py."""
+    if not PASTA_BACKEND.is_dir():
+        return []
+    return sorted(
+        p for p in PASTA_BACKEND.rglob("test_*.py")
+        if "testes" in p.relative_to(PASTA_BACKEND).parts
+        and not PASTAS_IGNORADAS.intersection(p.relative_to(RAIZ).parts)
+    )
+
+
+def ler_testes(specs: list[Spec]) -> dict[str, dict[str, int]]:
+    """Lê os marcadores @pytest.mark.requisito(...) dos testes do back-end.
+
+    Devolve, para cada requisito, quantos testes de cada arquivo o verificam.
+    """
+    requisitos: set[str] = set()
+    retirados: set[str] = set()
+    for spec in specs:
+        requisitos.update(spec.requisitos)
+        retirados.update(spec.retirados)
+    testes: dict[str, dict[str, int]] = {}
+    for arquivo in arquivos_de_teste():
+        for argumentos in RE_MARCADOR_REQUISITO.findall(arquivo.read_text(encoding="utf-8")):
+            idents = RE_ID_REQUISITO.findall(argumentos)
+            if not idents:
+                erro(f"{rel(arquivo)}: o marcador requisito({argumentos}) não cita nenhum requisito (XXX-RF-01)")
+            for ident in idents:
+                if ident in retirados:
+                    erro(f"{rel(arquivo)}: o marcador requisito cita {ident}, que foi retirado da spec")
+                elif ident not in requisitos:
+                    erro(f"{rel(arquivo)}: o marcador requisito cita {ident}, que não existe em nenhuma spec")
+                else:
+                    por_arquivo = testes.setdefault(ident, {})
+                    por_arquivo[rel(arquivo)] = por_arquivo.get(rel(arquivo), 0) + 1
+    return testes
 
 
 def arquivos_de_codigo() -> list[Path]:
@@ -236,26 +294,38 @@ def celula(texto: str) -> str:
     return texto.replace("|", "\\|")
 
 
-def gerar_matriz(specs: list[Spec], no_codigo: dict[str, list[str]]) -> str:
+def celula_de_testes(arquivos: dict[str, int]) -> str:
+    """Links para os arquivos de teste de um requisito, com a quantidade de testes de cada um."""
+    return ", ".join(
+        f"[{caminho.removeprefix('backend/')}](../{caminho}) ({quantidade})"
+        for caminho, quantidade in sorted(arquivos.items())
+    )
+
+
+def gerar_matriz(specs: list[Spec], no_codigo: dict[str, list[str]], testes: dict[str, dict[str, int]]) -> str:
     linhas = [
         "# Matriz de rastreabilidade",
         "",
-        "Gerada por `scripts/verificar_specs.py --gerar` a partir das specs, dos planos, das tarefas e dos comentários `Specs:` no código do protótipo. Não edite à mão: mude a fonte e rode o script de novo.",
+        "Gerada por `scripts/verificar_specs.py --gerar` a partir das specs, dos planos, das tarefas, dos comentários `Specs:` no código do protótipo e dos marcadores `requisito` nos testes do back-end. Não edite à mão: mude a fonte e rode o script de novo.",
         "",
         "Legenda da coluna Protótipo: **Coberto** funciona como no produto, com dados fictícios; **Simulado** a tela existe, mas o comportamento por trás é encenado com dados fixos; **Parcial** cobre parte do requisito; **Não coberto** ainda não existe no protótipo.",
         "",
+        "A coluna Testes mostra os testes do produto que citam o requisito com `@pytest.mark.requisito`, e quantos são em cada arquivo ([qualidade e testes](qualidade-e-testes.md)).",
+        "",
         "## Resumo",
         "",
-        "| Spec | Requisitos funcionais | Coberto | Simulado | Parcial | Não coberto | Tarefas feitas | Pontos a esclarecer |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| Spec | Requisitos funcionais | Com teste | Coberto | Simulado | Parcial | Não coberto | Tarefas feitas | Pontos a esclarecer |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for spec in specs:
         funcionais = [r for r in spec.requisitos if "-RF-" in r]
         contagem = {c: sum(1 for r in funcionais if spec.cobertura.get(r, ("",))[0] == c) for c in COBERTURAS}
+        com_teste = sum(1 for r in funcionais if r in testes)
         feitas = sum(1 for feita, _ in spec.tarefas.values() if feita)
         link = f"[{spec.numero} {spec.titulo}](../specs/{spec.pasta.name}/spec.md)"
         linhas.append(
-            f"| {link} | {len(funcionais)} | {contagem['Coberto']} | {contagem['Simulado']} | {contagem['Parcial']} "
+            f"| {link} | {len(funcionais)} | {com_teste} de {len(funcionais)} | {contagem['Coberto']} "
+            f"| {contagem['Simulado']} | {contagem['Parcial']} "
             f"| {contagem['Não coberto']} | {feitas} de {len(spec.tarefas)} | {spec.esclarecer} |"
         )
 
@@ -271,17 +341,20 @@ def gerar_matriz(specs: list[Spec], no_codigo: dict[str, list[str]]) -> str:
             "",
             f"## {spec.numero} {spec.titulo}",
             "",
-            "| Requisito | Descrição | Protótipo | Código do protótipo | Tarefas feitas | Tarefas pendentes |",
-            "| --- | --- | --- | --- | --- | --- |",
+            "| Requisito | Descrição | Protótipo | Código do protótipo | Testes | Tarefas feitas | Tarefas pendentes |",
+            "| --- | --- | --- | --- | --- | --- | --- |",
         ]
         for ident, texto in spec.requisitos.items():
             if "-RF-" not in ident:
                 continue
             cobertura = spec.cobertura.get(ident, ("?", ""))[0]
             codigo = ", ".join(f"[{Path(a).name}](../{a})" for a in no_codigo.get(ident, [])) or ""
+            de_teste = celula_de_testes(testes.get(ident, {}))
             feitas = ", ".join(t for t, (f, d) in spec.tarefas.items() if f and ident in d)
             pendentes = ", ".join(t for t, (f, d) in spec.tarefas.items() if not f and ident in d)
-            linhas.append(f"| `{ident}` | {celula(texto)} | {cobertura} | {codigo} | {feitas} | {pendentes} |")
+            linhas.append(
+                f"| `{ident}` | {celula(texto)} | {cobertura} | {codigo} | {de_teste} | {feitas} | {pendentes} |"
+            )
     return "\n".join(linhas) + "\n"
 
 
@@ -290,8 +363,9 @@ def main() -> int:
     specs = ler_specs()
     verificar_specs(specs)
     no_codigo = verificar_referencias(specs)
+    testes = ler_testes(specs)
 
-    matriz = gerar_matriz(specs, no_codigo)
+    matriz = gerar_matriz(specs, no_codigo, testes)
     if gerar:
         MATRIZ.write_text(matriz, encoding="utf-8")
         print(f"Matriz gravada em {rel(MATRIZ)}.")

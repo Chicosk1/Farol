@@ -25,6 +25,9 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Testes do script de verificação
+        run: python3 -m unittest discover -s scripts
+
       - name: Specs, rastreabilidade e links
         run: python3 scripts/verificar_specs.py
 

@@ -35,7 +35,7 @@ A primeira entrega do produto prova a arquitetura em todas as camadas com uma fu
 - [x] ACE-T15 [P] Gerar o OpenAPI com drf-spectacular, versionar o arquivo, gerar os tipos do front-end com openapi-typescript e acrescentar o job Contrato ao GitHub Actions
 - [x] ACE-T16 [P] Configurar Ruff e os contratos do import-linter com as regras da ADR 0007 e acrescentar os dois ao job Back-end do GitHub Actions
 - [x] ACE-T17 Escrever `docs/desenvolvimento.md`: pré-requisitos, como subir o ambiente, rodar os testes, criar migrações e popular os dados de demonstração
-- [ ] ACE-T18 Marcador `requisito` no pytest e coluna "Testes" na matriz de rastreabilidade, lida por `scripts/verificar_specs.py`
+- [x] ACE-T18 Marcador `requisito` no pytest e coluna "Testes" na matriz de rastreabilidade, lida por `scripts/verificar_specs.py`
 
 ## Produto: História 1, entrar com a conta institucional (P1)
 

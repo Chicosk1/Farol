@@ -16,6 +16,7 @@ def test_pessoa_e_o_modelo_de_usuario_e_entra_pelo_email():
     assert Pessoa.USERNAME_FIELD == "email"
 
 
+@pytest.mark.requisito("ACE-RF-02")
 @pytest.mark.django_db
 def test_pessoa_criada_nao_tem_senha_utilizavel():
     pessoa = Pessoa.objects.create_user(email="ana.souza@exemplo.edu.br", nome="Ana Souza")
@@ -24,6 +25,7 @@ def test_pessoa_criada_nao_tem_senha_utilizavel():
     assert not pessoa.has_usable_password()
 
 
+@pytest.mark.requisito("ACE-RF-02")
 @pytest.mark.django_db
 def test_superusuario_tambem_nao_tem_senha_utilizavel():
     pessoa = Pessoa.objects.create_superuser(
@@ -36,6 +38,7 @@ def test_superusuario_tambem_nao_tem_senha_utilizavel():
     assert not pessoa.has_usable_password()
 
 
+@pytest.mark.requisito("ACE-RF-02")
 @pytest.mark.django_db
 def test_definir_senha_nao_grava_senha_nenhuma():
     pessoa = Pessoa.objects.create_user(email="carlos.mendes@exemplo.edu.br", nome="Carlos Mendes")

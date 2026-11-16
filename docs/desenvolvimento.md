@@ -89,15 +89,16 @@ docker compose run --rm --no-deps frontend npm run format       # formata o cód
 
 ```bash
 python3 scripts/verificar_specs.py --gerar
+python3 -m unittest discover -s scripts
 ```
 
-Confere as specs, a rastreabilidade dos requisitos e os links, e regenera a [matriz de rastreabilidade](rastreabilidade.md).
+O primeiro confere as specs, a rastreabilidade dos requisitos (inclusive os marcadores `requisito` dos testes) e os links, e regenera a [matriz de rastreabilidade](rastreabilidade.md). O segundo roda os testes do próprio script.
 
 ### O que o GitHub Actions roda
 
 | Job | Passos |
 | --- | --- |
-| Specs | `scripts/verificar_specs.py` e a sintaxe do protótipo |
+| Specs | `scripts/verificar_specs.py`, os testes do script e a sintaxe do protótipo |
 | Back-end | Ruff, `lint-imports`, migrações esquecidas e pytest, com PostgreSQL e Redis como serviços |
 | Contrato | Gera o OpenAPI e os tipos do front-end e confere se os arquivos versionados estão iguais |
 | Front-end | ESLint e Prettier, tipos, Vitest e build |
