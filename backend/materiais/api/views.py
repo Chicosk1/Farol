@@ -118,3 +118,17 @@ def arquivo(request: Request, material_id: int) -> FileResponse:
     # O PDF é de uma disciplina: nunca fica em cache compartilhado.
     resposta["Cache-Control"] = "private, max-age=0, must-revalidate"
     return resposta
+
+
+@extend_schema(summary="Retira um material", responses={204: None}, tags=["materiais"])
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def retirar(request: Request, material_id: int) -> Response:
+    perfil = contas.perfil_ativo(request.user, request.session)
+    try:
+        servicos.retirar_material(request.user, perfil, material_id)
+    except servicos.MaterialNaoEncontrado:
+        raise Http404 from None
+    except servicos.SemAcessoAoMaterial:
+        raise PermissionDenied from None
+    return Response(status=status.HTTP_204_NO_CONTENT)

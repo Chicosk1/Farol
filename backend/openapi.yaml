@@ -283,6 +283,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/Importacao'
           description: ''
+  /api/materiais/{material_id}:
+    delete:
+      operationId: materiais_destroy
+      summary: Retira um material
+      parameters:
+      - in: path
+        name: material_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - materiais
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/materiais/{material_id}/arquivo:
     get:
       operationId: materiais_arquivo_retrieve

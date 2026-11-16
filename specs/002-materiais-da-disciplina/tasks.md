@@ -44,7 +44,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 ## Produto: História 4, retirar ou substituir (P2)
 
 - [x] MAT-T50 [H4] Teste: material retirado não é usado na pergunta seguinte, entregue junto da MAT-T51 e completado pela spec 003 (MAT-RF-10, MAT-CS-03)
-- [ ] MAT-T51 [H4] Retirada de material e marcação das questões de origem (MAT-RF-10)
+- [x] MAT-T51 [H4] Retirada de material e marcação das questões de origem (MAT-RF-10)
 - [ ] MAT-T52 [H4] Envio de nova versão com troca atômica ao ficar pronta (MAT-RF-11)
 
 ## Produto: acabamento

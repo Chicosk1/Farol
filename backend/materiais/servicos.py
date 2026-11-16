@@ -48,6 +48,10 @@ def _definir_etapa(material: Material, etapa: str) -> None:
     material.save(update_fields=["etapa"])
 
 
+def _foi_retirado(material: Material) -> bool:
+    return Material.objects.filter(pk=material.pk, status=Material.Status.RETIRADO).exists()
+
+
 def _marcar_erro(material: Material, mensagem: str) -> None:
     material.status = Material.Status.ERRO
     material.erro = mensagem
@@ -125,6 +129,9 @@ def _processar(material: Material) -> None:
 
     # Os trechos entram todos juntos: o material nunca fica pronto com a busca pela metade.
     with transaction.atomic():
+        if _foi_retirado(material):
+            material.status = Material.Status.RETIRADO  # retirado no meio do processamento
+            return
         material.trechos.all().delete()
         Trecho.objects.bulk_create(trechos)
         material.status = Material.Status.PRONTO
@@ -140,6 +147,8 @@ def processar_material(material_id: int) -> Material:
     certo e a mensagem para o professor, sem perder o arquivo, e pode ser processado de novo.
     """
     material = Material.objects.get(pk=material_id)
+    if material.status == Material.Status.RETIRADO:
+        return material  # o professor retirou: não há o que processar
     material.status = Material.Status.PROCESSANDO
     material.erro = ""
     material.save(update_fields=["status", "erro"])
@@ -253,3 +262,24 @@ def disciplinas_com_material_pronto() -> set[int]:
         .values_list("disciplina_id", flat=True)
         .distinct()
     )
+
+
+def retirar_material(pessoa, perfil: str | None, material_id: int) -> Material:
+    """Retira o material: some da lista do aluno e deixa de ser usado pelo tutor (MAT-RF-10).
+
+    Só o professor da disciplina e a administração retiram (MAT-RNF-02). O arquivo e os trechos
+    ficam guardados; retirar de novo não muda nada.
+    """
+    try:
+        material = Material.objects.get(pk=material_id)
+    except Material.DoesNotExist:
+        raise MaterialNaoEncontrado(material_id) from None
+    pode = ve_todos_os_materiais(perfil) and disciplinas.tem_acesso(
+        pessoa, perfil, material.disciplina_id
+    )
+    if not pode:
+        raise SemAcessoAoMaterial(material_id)
+    if material.status != Material.Status.RETIRADO:
+        material.status = Material.Status.RETIRADO
+        material.save(update_fields=["status"])
+    return material

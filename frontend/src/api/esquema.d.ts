@@ -189,6 +189,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/materiais/{material_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Retira um material */
+        delete: operations["materiais_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/materiais/{material_id}/arquivo": {
         parameters: {
             query?: never;
@@ -675,6 +692,26 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Importacao"];
                 };
+            };
+        };
+    };
+    materiais_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                material_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

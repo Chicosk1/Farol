@@ -9,4 +9,5 @@ urlpatterns = [
         name="materiais",
     ),
     path("materiais/<int:material_id>/arquivo", views.arquivo, name="material-arquivo"),
+    path("materiais/<int:material_id>", views.retirar, name="material"),
 ]
