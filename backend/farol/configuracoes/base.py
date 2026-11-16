@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "contas",
     "disciplinas",
     "materiais",
+    "ia",
     "demonstracao",
 ]
 
@@ -45,6 +46,10 @@ FAROL_ACESSO = {
 # Tamanho dos vetores de busca dos trechos. É fixo no banco: trocar o modelo de embeddings por
 # um de outro tamanho exige uma migração (docs/arquitetura.md).
 FAROL_DIMENSAO_DO_VETOR = 256
+
+# Provedor de IA, atrás do módulo ia. Por padrão (desenvolvimento e testes) é o adaptador falso;
+# a produção precisa indicar o adaptador do provedor escolhido (ADR 0005).
+FAROL_IA = {"ADAPTADOR": "ia.adaptadores.falso.ProvedorFalso"}
 
 # Atalho para entrar sem o login institucional (POST /api/dev/entrar). Desligado por padrão:
 # só as configurações de desenvolvimento e de teste ligam (ACE-RNF-03).

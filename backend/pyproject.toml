@@ -49,25 +49,25 @@ extend-exclude = ["*/migrations/*"]
 select = ["E", "F", "W", "I", "B", "UP", "DJ", "SIM"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["farol", "nucleo", "contas", "disciplinas", "materiais", "demonstracao"]
+known-first-party = ["farol", "nucleo", "contas", "disciplinas", "materiais", "ia", "demonstracao"]
 
 # Fronteiras entre módulos da ADR 0007: lint-imports
 # Ao criar um módulo (por exemplo, tutor), acrescente-o em root_packages, nos contratos
 # 1, 2 e 4 e num contrato 3 próprio, copiado do de materiais.
 [tool.importlinter]
-root_packages = ["farol", "nucleo", "contas", "disciplinas", "materiais", "demonstracao"]
+root_packages = ["farol", "nucleo", "contas", "disciplinas", "materiais", "ia", "demonstracao"]
 include_external_packages = true
 
 [[tool.importlinter.contracts]]
 name = "1. nucleo não depende de nenhum outro módulo do Farol"
 type = "forbidden"
 source_modules = ["nucleo"]
-forbidden_modules = ["farol", "contas", "disciplinas", "materiais", "demonstracao"]
+forbidden_modules = ["farol", "contas", "disciplinas", "materiais", "ia", "demonstracao"]
 
 [[tool.importlinter.contracts]]
 name = "2. Camadas de cada módulo: api e tarefas usam servicos, que usa models"
 type = "layers"
-containers = ["nucleo", "contas", "disciplinas", "materiais", "demonstracao"]
+containers = ["nucleo", "contas", "disciplinas", "materiais", "ia", "demonstracao"]
 layers = ["(api) | (tarefas)", "(servicos)", "(models)"]
 
 [[tool.importlinter.contracts]]
@@ -92,6 +92,14 @@ type = "protected"
 protected_modules = ["materiais.*"]
 allowed_importers = ["materiais", "farol"]
 ignore_imports = ["** -> materiais.servicos", "*.testes.** -> materiais.**"]
+unmatched_ignore_imports_alerting = "none"
+
+[[tool.importlinter.contracts]]
+name = "3d. Os outros módulos usam ia só pelo ia.servicos"
+type = "protected"
+protected_modules = ["ia.*"]
+allowed_importers = ["ia", "farol"]
+ignore_imports = ["** -> ia.servicos", "*.testes.** -> ia.**"]
 unmatched_ignore_imports_alerting = "none"
 
 # O provedor ainda não foi escolhido (ADR 0005): a lista traz os SDKs mais comuns. Quando o módulo
