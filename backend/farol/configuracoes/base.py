@@ -31,6 +31,13 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# Funções dos módulos que o núcleo usa na permissão por disciplina (nucleo/permissoes.py).
+# Indicá-las aqui mantém o núcleo sem depender de contas nem de disciplinas (ADR 0007).
+FAROL_ACESSO = {
+    "PERFIL_ATIVO": "contas.servicos.perfil_ativo",
+    "ACESSO_A_DISCIPLINA": "disciplinas.servicos.tem_acesso",
+}
+
 # Atalho para entrar sem o login institucional (POST /api/dev/entrar). Desligado por padrão:
 # só as configurações de desenvolvimento e de teste ligam (ACE-RNF-03).
 FAROL_LOGIN_DESENVOLVIMENTO = False

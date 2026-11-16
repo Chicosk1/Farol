@@ -63,3 +63,18 @@ def garantir_matricula(aluno, disciplina: Disciplina) -> tuple[Matricula, bool]:
         aluno=aluno, disciplina=disciplina, defaults={"situacao": Matricula.Situacao.ATIVA}
     )
     return matricula, criada
+
+
+def tem_acesso(pessoa, perfil: str | None, disciplina_id: int) -> bool:
+    """Se a pessoa, no perfil em uso, pode acessar a disciplina (ACE-RF-05).
+
+    O aluno precisa de matrícula ativa, e o professor, de lecionar a disciplina. Os outros
+    perfis ainda não têm regra de acesso e são negados.
+    """
+    if perfil == Perfil.ALUNO:
+        return Matricula.objects.filter(
+            aluno=pessoa, disciplina_id=disciplina_id, situacao=Matricula.Situacao.ATIVA
+        ).exists()
+    if perfil == Perfil.PROFESSOR:
+        return Disciplina.objects.filter(id=disciplina_id, professor=pessoa).exists()
+    return False
