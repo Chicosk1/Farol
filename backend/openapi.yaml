@@ -4,6 +4,37 @@ info:
   version: 0.1.0
   description: API REST do Farol, tutor de estudos com IA da UNIMATER.
 paths:
+  /api/dev/entrar:
+    post:
+      operationId: dev_entrar_create
+      description: |-
+        Abre a sessão de uma pessoa fictícia pelo e-mail. A rota só existe com
+        FAROL_LOGIN_DESENVOLVIMENTO ligado (ACE-RNF-03).
+      summary: Entra pelo e-mail, sem login institucional (só desenvolvimento e teste)
+      tags:
+      - desenvolvimento
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntradaDeDesenvolvimentoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EntradaDeDesenvolvimentoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EntradaDeDesenvolvimentoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Eu'
+          description: ''
   /api/eu:
     get:
       operationId: eu_retrieve
@@ -78,6 +109,15 @@ paths:
           description: ''
 components:
   schemas:
+    EntradaDeDesenvolvimentoRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+      required:
+      - email
     Eu:
       type: object
       description: A pessoa que está usando o Farol, com os perfis dela e o perfil

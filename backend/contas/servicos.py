@@ -2,9 +2,21 @@
 
 from collections.abc import MutableMapping
 
-from .models import Pessoa
+from .models import Pessoa, normalizar_email
 
 CHAVE_PERFIL_ATIVO = "perfil_ativo"
+
+
+class PessoaNaoEncontrada(LookupError):
+    """Não há pessoa ativa com o e-mail informado."""
+
+
+def pessoa_ativa_por_email(email: str) -> Pessoa:
+    """A pessoa ativa com este e-mail, sem diferenciar maiúsculas nem espaços."""
+    try:
+        return Pessoa.objects.get(email=normalizar_email(email), is_active=True)
+    except Pessoa.DoesNotExist:
+        raise PessoaNaoEncontrada(email) from None
 
 
 class PerfilInvalido(ValueError):

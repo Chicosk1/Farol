@@ -29,6 +29,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# Atalho para entrar sem o login institucional (POST /api/dev/entrar). Desligado por padrão:
+# só as configurações de desenvolvimento e de teste ligam (ACE-RNF-03).
+FAROL_LOGIN_DESENVOLVIMENTO = False
+
 ROOT_URLCONF = "farol.urls"
 WSGI_APPLICATION = "farol.wsgi.application"
 

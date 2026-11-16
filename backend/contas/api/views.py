@@ -1,6 +1,6 @@
 """Rotas da própria pessoa. Só HTTP: as regras ficam em contas/servicos.py (ADR 0007)."""
 
-from django.contrib.auth import logout
+from django.contrib.auth import login, logout
 from django.views.decorators.csrf import ensure_csrf_cookie
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
@@ -11,7 +11,11 @@ from rest_framework.response import Response
 
 from contas import servicos
 
-from .serializers import EuSerializer, TrocaDePerfilSerializer
+from .serializers import (
+    EntradaDeDesenvolvimentoSerializer,
+    EuSerializer,
+    TrocaDePerfilSerializer,
+)
 
 
 def _dados_da_pessoa(request: Request) -> dict:
@@ -52,6 +56,30 @@ def perfil_ativo(request: Request) -> Response:
         return Response(
             {"perfil": ["Você não tem este perfil."]}, status=status.HTTP_400_BAD_REQUEST
         )
+    return Response(EuSerializer(_dados_da_pessoa(request)).data)
+
+
+@extend_schema(
+    summary="Entra pelo e-mail, sem login institucional (só desenvolvimento e teste)",
+    request=EntradaDeDesenvolvimentoSerializer,
+    responses=EuSerializer,
+    tags=["desenvolvimento"],
+)
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def entrar_em_desenvolvimento(request: Request) -> Response:
+    """Abre a sessão de uma pessoa fictícia pelo e-mail. A rota só existe com
+    FAROL_LOGIN_DESENVOLVIMENTO ligado (ACE-RNF-03)."""
+    entrada = EntradaDeDesenvolvimentoSerializer(data=request.data)
+    entrada.is_valid(raise_exception=True)
+    try:
+        pessoa = servicos.pessoa_ativa_por_email(entrada.validated_data["email"])
+    except servicos.PessoaNaoEncontrada:
+        return Response(
+            {"email": ["Não há pessoa ativa com este e-mail."]}, status=status.HTTP_400_BAD_REQUEST
+        )
+    login(request._request, pessoa, backend="django.contrib.auth.backends.ModelBackend")
+    request.user = pessoa
     return Response(EuSerializer(_dados_da_pessoa(request)).data)
 
 

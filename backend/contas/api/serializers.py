@@ -13,5 +13,9 @@ class EuSerializer(serializers.Serializer):
     perfil_ativo = serializers.ChoiceField(choices=Perfil.choices, allow_null=True)
 
 
+class EntradaDeDesenvolvimentoSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
 class TrocaDePerfilSerializer(serializers.Serializer):
     perfil = serializers.ChoiceField(choices=Perfil.choices)

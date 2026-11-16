@@ -7,6 +7,8 @@ from .base import *  # noqa: F403
 
 DEBUG = False
 
+FAROL_LOGIN_DESENVOLVIMENTO = True
+
 SECRET_KEY = "teste-nao-secreto"
 
 ALLOWED_HOSTS = ["testserver", "localhost"]

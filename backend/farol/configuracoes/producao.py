@@ -8,6 +8,10 @@ from .base import DATABASES
 
 DEBUG = False
 
+# Em produção, a única forma de entrar é o login institucional (ACE-RNF-03).
+# Fixo no código, de propósito: nenhuma variável de ambiente liga o atalho.
+FAROL_LOGIN_DESENVOLVIMENTO = False
+
 SECRET_KEY = ambiente.obrigatoria("DJANGO_SECRET_KEY")
 
 ALLOWED_HOSTS = ambiente.lista(ambiente.obrigatoria("DJANGO_ALLOWED_HOSTS"))
