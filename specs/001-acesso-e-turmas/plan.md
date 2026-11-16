@@ -4,7 +4,7 @@
 | --- | --- |
 | Spec | [spec.md](./spec.md) |
 | Branch | `001-acesso-e-turmas` |
-| Status | Em revisão |
+| Status | Aprovada |
 | Atualizado em | 2026-11-16 |
 
 ## Resumo
