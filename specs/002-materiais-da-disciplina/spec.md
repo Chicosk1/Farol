@@ -4,7 +4,7 @@
 | --- | --- |
 | Código | `MAT` |
 | Branch | `002-materiais-da-disciplina` |
-| Status | Em revisão |
+| Status | Aprovada |
 | Criada em | 2026-11-13 |
 | Origem | Documento de idealização, seções "Princípios do produto" e "Como funciona por dentro" |
 
@@ -69,10 +69,10 @@ Como professor, quero retirar um material ou trocar por uma versão corrigida, e
 ### Casos de borda
 
 - PDF protegido por senha: o envio é recusado com uma mensagem clara.
-- PDF muito grande: [PRECISA ESCLARECER: tamanho máximo do arquivo; sugestão inicial de 50 MB e 300 páginas]
+- PDF muito grande: o envio é recusado acima de 50 MB ou de 300 páginas, com uma mensagem que diz o limite.
 - Dois professores na mesma disciplina enviando ao mesmo tempo: os dois materiais são processados, cada um na sua aula.
 - Falha no processamento (por exemplo, provedor de embeddings fora do ar): o material fica com "Erro, tente de novo", e o professor pode reenviar sem perder o arquivo.
-- Citações antigas no histórico do aluno apontando para um material substituído: [PRECISA ESCLARECER: abrir a versão antiga, guardada como arquivo morto, ou a versão nova?]
+- Citações antigas no histórico do aluno apontando para um material substituído: abrem a versão nova do mesmo material, na mesma página quando ela existir, e a tela avisa que o material foi atualizado.
 
 ## Requisitos
 
@@ -117,11 +117,11 @@ Como professor, quero retirar um material ou trocar por uma versão corrigida, e
 
 | Questão | Dono | Prazo |
 | --- | --- | --- |
-| Tamanho máximo do arquivo e número máximo de páginas | Equipe técnica | Antes do plano final |
-| O que a citação antiga abre depois de uma substituição | Dono do produto | Antes do plano final |
+| Confirmar com o dono do produto os limites de 50 MB e 300 páginas e a regra da citação antiga (decisões provisórias tomadas ao aprovar a spec) | Dono do produto | Fim da fase 0 |
 
 ## Histórico
 
 | Data | Mudança |
 | --- | --- |
 | 2026-11-13 | Criação da spec a partir da idealização e do protótipo |
+| 2026-11-16 | Aprovada. Decisões provisórias: limite de 50 MB e 300 páginas; citação antiga abre a versão nova do material |
