@@ -22,7 +22,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Primeira fatia: arquitetura de pé
 
-A primeira entrega do produto prova a arquitetura em todas as camadas com uma funcionalidade pequena: entrar (com o login de desenvolvimento) e ver as próprias disciplinas. Ela é formada pelas tarefas ACE-T10 a ACE-T19, ACE-T22, ACE-T24, ACE-T25, ACE-T26, ACE-T30, ACE-T27, ACE-T31 a ACE-T33 e ACE-T35, nesta ordem. Cada tarefa leva os próprios testes, escritos antes do código, e vira um commit e um push. O login institucional (ACE-T20 e ACE-T21) fica para quando o provedor for definido.
+A primeira entrega do produto prova a arquitetura em todas as camadas com uma funcionalidade pequena: entrar (com o login de desenvolvimento) e ver as próprias disciplinas. Ela é formada pelas tarefas ACE-T10 a ACE-T19, ACE-T22, ACE-T24, ACE-T25, ACE-T26, ACE-T30, ACE-T27, ACE-T31 a ACE-T33, ACE-T35 e ACE-T36, nesta ordem. Cada tarefa leva os próprios testes, escritos antes do código, e vira um commit e um push. O login institucional (ACE-T20 e ACE-T21) fica para quando o provedor for definido.
 
 ## Produto: fundação do repositório
 
@@ -55,6 +55,7 @@ A primeira entrega do produto prova a arquitetura em todas as camadas com uma fu
 - [x] ACE-T32 [H2] Favoritos: modelo `Favorito`, rotas `PUT` e `DELETE /api/disciplinas/{id}/favorito` e filtro Favoritas, com testes do cenário 3 (ACE-RF-10)
 - [x] ACE-T33 [H2] Tela de disciplinas com lista, busca e alternância entre grade e lista, com testes de tela e de acessibilidade (ACE-RF-10)
 - [ ] ACE-T35 [H2] Abas Todas e Favoritas e botão de favoritar na tela de disciplinas, com testes (ACE-RF-10)
+- [ ] ACE-T36 [H2] Disciplinas favoritas no topo da tela inicial, com testes do cenário 3 (ACE-RF-10)
 - [ ] ACE-T34 [H2] Ligar a aba "Com tutor" ao serviço de materiais, depois da História 1 da spec 002, com testes do cenário 4 (ACE-RF-10)
 
 ## Produto: História 3, importar turmas (P2)
