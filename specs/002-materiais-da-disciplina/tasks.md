@@ -34,12 +34,12 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 ## Produto: História 2, consultar os materiais (P1)
 
 - [x] MAT-T30 [H2] Testes de visibilidade: aluno só vê material pronto, entregues junto da MAT-T31 (MAT-RF-07)
-- [ ] MAT-T31 [H2] Lista de materiais do aluno e visualizador de PDF com página inicial (MAT-RF-08, MAT-RF-09)
+- [x] MAT-T31 [H2] Lista de materiais do aluno e visualizador de PDF com página inicial (MAT-RF-08, MAT-RF-09)
 - [ ] MAT-T32 [H2] Destaque do trecho citado no visualizador (MAT-RF-09)
 
 ## Produto: História 3, avisar PDF sem texto (P2)
 
-- [ ] MAT-T40 [H3] Detecção de páginas sem texto e status "Precisa de atenção" (MAT-RF-05)
+- [x] MAT-T40 [H3] Detecção de páginas sem texto e status "Precisa de atenção" (MAT-RF-05), entregue junto da MAT-T22
 
 ## Produto: História 4, retirar ou substituir (P2)
 

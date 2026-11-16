@@ -122,6 +122,30 @@ paths:
         '204':
           description: No response body
   /api/disciplinas/{disciplina_id}/materiais:
+    get:
+      operationId: disciplinas_materiais_list
+      description: O professor e a administração veem todos, com status, etapa e avisos;
+        o aluno vê só os prontos, apenas com id, aula, título e páginas.
+      summary: Materiais da disciplina
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - materiais
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MaterialDoProfessor'
+          description: ''
     post:
       operationId: disciplinas_materiais_create
       description: Guarda o PDF, cria o material e põe o processamento na fila (MAT-RF-01
@@ -259,6 +283,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/Importacao'
           description: ''
+  /api/materiais/{material_id}/arquivo:
+    get:
+      operationId: materiais_arquivo_retrieve
+      description: Serve o arquivo só para quem tem acesso à disciplina. O aluno só
+        abre material pronto. O parâmetro pagina é validado; o visualizador abre nessa
+        página (MAT-RF-09).
+      summary: Abre o PDF de um material
+      parameters:
+      - in: path
+        name: material_id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: pagina
+        schema:
+          type: integer
+          minimum: 1
+        description: Página em que o visualizador deve abrir.
+      tags:
+      - materiais
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          description: ''
   /api/sair:
     post:
       operationId: sair_create
@@ -378,6 +433,20 @@ components:
       - arquivo
       - aula_numero
       - aula_titulo
+    EtapaEnum:
+      enum:
+      - enviando
+      - lendo
+      - dividindo
+      - vetorizando
+      - pronto
+      type: string
+      description: |-
+        * `enviando` - Enviando arquivo
+        * `lendo` - Lendo as páginas
+        * `dividindo` - Dividindo em trechos
+        * `vetorizando` - Gerando a busca semântica
+        * `pronto` - Pronto para o tutor
     Eu:
       type: object
       description: A pessoa que está usando o Farol, com os perfis dela e o perfil
@@ -483,6 +552,74 @@ components:
       required:
       - linha
       - motivo
+    MaterialDoProfessor:
+      type: object
+      description: 'O que o professor e a administração veem: todos os materiais,
+        com o andamento.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        aula_numero:
+          type: integer
+          readOnly: true
+          title: Número da aula
+        aula_titulo:
+          type: string
+          readOnly: true
+          title: Título da aula
+        paginas:
+          type: integer
+          readOnly: true
+          title: Páginas
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusDoMaterialEnum'
+          readOnly: true
+        status_rotulo:
+          type: string
+          readOnly: true
+        etapa:
+          allOf:
+          - $ref: '#/components/schemas/EtapaEnum'
+          readOnly: true
+          title: Etapa do processamento
+        etapa_rotulo:
+          type: string
+          readOnly: true
+        erro:
+          type: string
+          readOnly: true
+          title: Mensagem de erro
+        paginas_sem_texto:
+          type: array
+          items:
+            type: integer
+            maximum: 2147483647
+            minimum: 0
+          readOnly: true
+          title: Páginas sem texto
+        versao:
+          type: integer
+          readOnly: true
+          title: Versão
+        criado_em:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - aula_numero
+      - aula_titulo
+      - criado_em
+      - erro
+      - etapa
+      - etapa_rotulo
+      - id
+      - paginas
+      - paginas_sem_texto
+      - status
+      - status_rotulo
+      - versao
     MaterialEnviado:
       type: object
       properties:

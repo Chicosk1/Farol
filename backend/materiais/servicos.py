@@ -10,6 +10,8 @@ from django.db import transaction
 from pypdf import PdfReader
 from pypdf.errors import PyPdfError
 
+from contas.servicos import Perfil
+from disciplinas import servicos as disciplinas
 from ia import servicos as ia
 
 from .models import Material, Trecho
@@ -207,3 +209,38 @@ def enfileirar_processamento(material_id: int) -> None:
     A tarefa é chamada pelo nome, porque a camada de serviços não importa a de tarefas.
     """
     current_app.signature("materiais.processar", args=(material_id,)).apply_async()
+
+
+class MaterialNaoEncontrado(LookupError):
+    """O material não existe, ou o aluno não deve saber que ele existe (ainda não está pronto)."""
+
+
+class SemAcessoAoMaterial(PermissionError):
+    """A pessoa não tem acesso à disciplina do material."""
+
+
+def ve_todos_os_materiais(perfil: str | None) -> bool:
+    """O professor e a administração veem todos os materiais, em qualquer status."""
+    return perfil in (Perfil.PROFESSOR, Perfil.ADMIN)
+
+
+def listar_materiais(perfil: str | None, disciplina_id: int):
+    """Os materiais da disciplina, por aula. O aluno só vê os prontos (MAT-RF-07 e 08)."""
+    materiais = Material.objects.filter(disciplina_id=disciplina_id)
+    if not ve_todos_os_materiais(perfil):
+        materiais = materiais.filter(status=Material.Status.PRONTO)
+    return materiais.order_by("aula_numero", "id")
+
+
+def material_para_abrir(pessoa, perfil: str | None, material_id: int) -> Material:
+    """O material, se a pessoa pode abrir o PDF dele. Levanta MaterialNaoEncontrado ou
+    SemAcessoAoMaterial."""
+    try:
+        material = Material.objects.get(pk=material_id)
+    except Material.DoesNotExist:
+        raise MaterialNaoEncontrado(material_id) from None
+    if not disciplinas.tem_acesso(pessoa, perfil, material.disciplina_id):
+        raise SemAcessoAoMaterial(material_id)
+    if not ve_todos_os_materiais(perfil) and material.status != Material.Status.PRONTO:
+        raise MaterialNaoEncontrado(material_id)
+    return material

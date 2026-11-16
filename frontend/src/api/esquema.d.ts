@@ -84,7 +84,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Materiais da disciplina
+         * @description O professor e a administração veem todos, com status, etapa e avisos; o aluno vê só os prontos, apenas com id, aula, título e páginas.
+         */
+        get: operations["disciplinas_materiais_list"];
         put?: never;
         /**
          * Envia o PDF de uma aula da disciplina
@@ -185,6 +189,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/materiais/{material_id}/arquivo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Abre o PDF de um material
+         * @description Serve o arquivo só para quem tem acesso à disciplina. O aluno só abre material pronto. O parâmetro pagina é validado; o visualizador abre nessa página (MAT-RF-09).
+         */
+        get: operations["materiais_arquivo_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sair": {
         parameters: {
             query?: never;
@@ -265,6 +289,15 @@ export interface components {
             aula_numero: number;
             aula_titulo: string;
         };
+        /**
+         * @description * `enviando` - Enviando arquivo
+         *     * `lendo` - Lendo as páginas
+         *     * `dividindo` - Dividindo em trechos
+         *     * `vetorizando` - Gerando a busca semântica
+         *     * `pronto` - Pronto para o tutor
+         * @enum {string}
+         */
+        EtapaEnum: "enviando" | "lendo" | "dividindo" | "vetorizando" | "pronto";
         /** @description A pessoa que está usando o Farol, com os perfis dela e o perfil em uso. */
         Eu: {
             id: number;
@@ -305,6 +338,29 @@ export interface components {
             /** @description Número da linha no arquivo; o cabeçalho é a linha 1. */
             linha: number;
             motivo: string;
+        };
+        /** @description O que o professor e a administração veem: todos os materiais, com o andamento. */
+        MaterialDoProfessor: {
+            readonly id: number;
+            /** Número da aula */
+            readonly aula_numero: number;
+            /** Título da aula */
+            readonly aula_titulo: string;
+            /** Páginas */
+            readonly paginas: number;
+            readonly status: components["schemas"]["StatusDoMaterialEnum"];
+            readonly status_rotulo: string;
+            /** Etapa do processamento */
+            readonly etapa: components["schemas"]["EtapaEnum"];
+            readonly etapa_rotulo: string;
+            /** Mensagem de erro */
+            readonly erro: string;
+            /** Páginas sem texto */
+            readonly paginas_sem_texto: number[];
+            /** Versão */
+            readonly versao: number;
+            /** Format: date-time */
+            readonly criado_em: string;
         };
         MaterialEnviado: {
             material_id: number;
@@ -464,6 +520,27 @@ export interface operations {
             };
         };
     };
+    disciplinas_materiais_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaterialDoProfessor"][];
+                };
+            };
+        };
+    };
     disciplinas_materiais_create: {
         parameters: {
             query?: never;
@@ -597,6 +674,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Importacao"];
+                };
+            };
+        };
+    };
+    materiais_arquivo_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Página em que o visualizador deve abrir. */
+                pagina?: number;
+            };
+            header?: never;
+            path: {
+                material_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
                 };
             };
         };
