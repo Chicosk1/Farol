@@ -12,6 +12,8 @@ from rest_framework.response import Response
 from contas import servicos
 
 from .serializers import (
+    AvisoDePrivacidadeSerializer,
+    CienciaDoAvisoSerializer,
     EntradaDeDesenvolvimentoSerializer,
     EuSerializer,
     TrocaDePerfilSerializer,
@@ -20,12 +22,14 @@ from .serializers import (
 
 def _dados_da_pessoa(request: Request) -> dict:
     pessoa = request.user
+    perfil = servicos.perfil_ativo(pessoa, request.session)
     return {
         "id": pessoa.id,
         "email": pessoa.email,
         "nome": pessoa.nome,
         "perfis": pessoa.perfis,
-        "perfil_ativo": servicos.perfil_ativo(pessoa, request.session),
+        "perfil_ativo": perfil,
+        "precisa_ver_aviso": servicos.precisa_ver_aviso(pessoa, perfil),
     }
 
 
@@ -88,4 +92,36 @@ def entrar_em_desenvolvimento(request: Request) -> Response:
 @permission_classes([AllowAny])
 def sair(request: Request) -> Response:
     logout(request._request)
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@extend_schema(
+    summary="Texto da versão atual do aviso de privacidade",
+    responses=AvisoDePrivacidadeSerializer,
+    tags=["contas"],
+)
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def aviso_de_privacidade(request: Request) -> Response:
+    return Response(AvisoDePrivacidadeSerializer(servicos.texto_do_aviso()).data)
+
+
+@extend_schema(
+    summary="Registra que a pessoa leu a versão atual do aviso de privacidade",
+    request=CienciaDoAvisoSerializer,
+    responses={204: None},
+    tags=["contas"],
+)
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def ciencia_de_privacidade(request: Request) -> Response:
+    entrada = CienciaDoAvisoSerializer(data=request.data)
+    entrada.is_valid(raise_exception=True)
+    try:
+        servicos.registrar_ciencia(request.user, entrada.validated_data["versao"])
+    except servicos.VersaoDoAvisoDesatualizada:
+        return Response(
+            {"versao": ["Esta não é mais a versão atual do aviso. Recarregue a página."]},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
     return Response(status=status.HTTP_204_NO_CONTENT)

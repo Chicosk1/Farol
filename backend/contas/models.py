@@ -84,3 +84,28 @@ class Pessoa(AbstractBaseUser, PermissionsMixin):
     def set_password(self, raw_password: str | None) -> None:
         """Nunca grava uma senha: o Farol não cria nem guarda senhas próprias (ACE-RF-02)."""
         self.set_unusable_password()
+
+
+class CienciaPrivacidade(models.Model):
+    """O aluno leu uma versão do aviso de privacidade, e quando (ACE-RF-08)."""
+
+    pessoa = models.ForeignKey(
+        Pessoa,
+        verbose_name="pessoa",
+        on_delete=models.CASCADE,
+        related_name="ciencias_de_privacidade",
+    )
+    versao_aviso = models.CharField("versão do aviso", max_length=20)
+    data = models.DateTimeField("data da ciência", default=timezone.now)
+
+    class Meta:
+        verbose_name = "ciência do aviso de privacidade"
+        verbose_name_plural = "ciências do aviso de privacidade"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["pessoa", "versao_aviso"], name="ciencia_unica_por_pessoa_e_versao"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.pessoa_id} leu a versão {self.versao_aviso}"

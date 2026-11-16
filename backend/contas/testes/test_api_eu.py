@@ -58,6 +58,7 @@ def test_eu_mostra_a_pessoa_e_o_perfil_ativo(cliente_aluna, aluna):
         "nome": "Ana Souza",
         "perfis": ["aluno"],
         "perfil_ativo": "aluno",
+        "precisa_ver_aviso": True,
     }
 
 

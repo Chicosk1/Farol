@@ -2,8 +2,9 @@
 
 from collections.abc import MutableMapping
 
+from . import aviso
+from .models import CienciaPrivacidade, Pessoa, normalizar_email
 from .models import Perfil as Perfil  # reexportado: os outros módulos usam o perfil pelo servicos
-from .models import Pessoa, normalizar_email
 
 CHAVE_PERFIL_ATIVO = "perfil_ativo"
 
@@ -84,3 +85,28 @@ def garantir_pessoa_com_perfil(
             pessoa.nome = nome
         pessoa.save()
     return pessoa, False
+
+
+class VersaoDoAvisoDesatualizada(ValueError):
+    """A pessoa confirmou a leitura de uma versão que não é mais a atual."""
+
+
+def precisa_ver_aviso(pessoa: Pessoa, perfil: str | None) -> bool:
+    """O aviso vale para o aluno: na primeira entrada e a cada nova versão (ACE-RF-08)."""
+    if perfil != Perfil.ALUNO:
+        return False
+    return not CienciaPrivacidade.objects.filter(
+        pessoa=pessoa, versao_aviso=aviso.VERSAO_ATUAL
+    ).exists()
+
+
+def registrar_ciencia(pessoa: Pessoa, versao: str) -> None:
+    """Guarda que a pessoa leu a versão atual do aviso. Confirmar de novo não muda nada."""
+    if versao != aviso.VERSAO_ATUAL:
+        raise VersaoDoAvisoDesatualizada(versao)
+    CienciaPrivacidade.objects.get_or_create(pessoa=pessoa, versao_aviso=versao)
+
+
+def texto_do_aviso() -> dict:
+    """A versão atual do aviso e o seu texto, para a tela mostrar."""
+    return {"versao": aviso.VERSAO_ATUAL, "titulo": aviso.TITULO, "itens": aviso.ITENS}

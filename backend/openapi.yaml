@@ -4,6 +4,21 @@ info:
   version: 0.1.0
   description: API REST do Farol, tutor de estudos com IA da UNIMATER.
 paths:
+  /api/aviso-privacidade:
+    get:
+      operationId: aviso_privacidade_retrieve
+      summary: Texto da versão atual do aviso de privacidade
+      tags:
+      - contas
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvisoDePrivacidade'
+          description: ''
   /api/dev/entrar:
     post:
       operationId: dev_entrar_create
@@ -121,6 +136,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/Eu'
           description: ''
+  /api/eu/ciencia-privacidade:
+    post:
+      operationId: eu_ciencia_privacidade_create
+      summary: Registra que a pessoa leu a versão atual do aviso de privacidade
+      tags:
+      - contas
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CienciaDoAvisoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CienciaDoAvisoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CienciaDoAvisoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/eu/perfil-ativo:
     post:
       operationId: eu_perfil_ativo_create
@@ -224,6 +262,30 @@ paths:
           description: ''
 components:
   schemas:
+    AvisoDePrivacidade:
+      type: object
+      properties:
+        versao:
+          type: string
+        titulo:
+          type: string
+        itens:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemDoAviso'
+      required:
+      - itens
+      - titulo
+      - versao
+    CienciaDoAvisoRequest:
+      type: object
+      properties:
+        versao:
+          type: string
+          minLength: 1
+          description: A versão do aviso que a pessoa leu.
+      required:
+      - versao
     Disciplina:
       type: object
       properties:
@@ -289,12 +351,16 @@ components:
           oneOf:
           - $ref: '#/components/schemas/PerfilEnum'
           - $ref: '#/components/schemas/NullEnum'
+        precisa_ver_aviso:
+          type: boolean
+          description: Se o aluno ainda precisa ler a versão atual do aviso de privacidade.
       required:
       - email
       - id
       - nome
       - perfil_ativo
       - perfis
+      - precisa_ver_aviso
     Importacao:
       type: object
       properties:
@@ -348,6 +414,16 @@ components:
       required:
       - id
       - status
+    ItemDoAviso:
+      type: object
+      properties:
+        titulo:
+          type: string
+        texto:
+          type: string
+      required:
+      - texto
+      - titulo
     LinhaRejeitada:
       type: object
       properties:

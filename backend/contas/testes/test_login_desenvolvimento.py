@@ -37,6 +37,7 @@ def test_entra_pelo_email_e_abre_a_sessao(cliente, aluna):
         "nome": "Ana Souza",
         "perfis": ["aluno"],
         "perfil_ativo": "aluno",
+        "precisa_ver_aviso": True,
     }
     # A sessão ficou aberta: as outras rotas já reconhecem a pessoa.
     assert cliente.get("/api/eu").json()["email"] == "ana.souza@exemplo.edu.br"

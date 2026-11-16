@@ -11,6 +11,9 @@ class EuSerializer(serializers.Serializer):
     nome = serializers.CharField()
     perfis = serializers.ListField(child=serializers.ChoiceField(choices=Perfil.choices))
     perfil_ativo = serializers.ChoiceField(choices=Perfil.choices, allow_null=True)
+    precisa_ver_aviso = serializers.BooleanField(
+        help_text="Se o aluno ainda precisa ler a versão atual do aviso de privacidade."
+    )
 
 
 class EntradaDeDesenvolvimentoSerializer(serializers.Serializer):
@@ -19,3 +22,18 @@ class EntradaDeDesenvolvimentoSerializer(serializers.Serializer):
 
 class TrocaDePerfilSerializer(serializers.Serializer):
     perfil = serializers.ChoiceField(choices=Perfil.choices)
+
+
+class ItemDoAvisoSerializer(serializers.Serializer):
+    titulo = serializers.CharField()
+    texto = serializers.CharField()
+
+
+class AvisoDePrivacidadeSerializer(serializers.Serializer):
+    versao = serializers.CharField()
+    titulo = serializers.CharField()
+    itens = ItemDoAvisoSerializer(many=True)
+
+
+class CienciaDoAvisoSerializer(serializers.Serializer):
+    versao = serializers.CharField(help_text="A versão do aviso que a pessoa leu.")
