@@ -1,11 +1,14 @@
 /**
  * Único caminho entre as telas e a API do Farol (ADR 0007). Os tipos vêm de esquema.d.ts,
  * gerado do contrato OpenAPI do back-end com `npm run api:gerar`: se a API muda, a compilação avisa.
- * A sessão é o cookie do Django, na mesma origem (sem JWT).
+ * A sessão é o cookie do Django, na mesma origem (sem JWT); as chamadas que mudam dados levam o
+ * token CSRF no cabeçalho X-CSRFToken.
  */
 import type { components } from './esquema';
 
 export type Saude = components['schemas']['Saude'];
+export type Eu = components['schemas']['Eu'];
+export type Perfil = components['schemas']['PerfilEnum'];
 
 /** Resposta da API fora da faixa de sucesso (2xx), com o status e o corpo devolvidos. */
 export class ErroDaApi extends Error {
@@ -32,12 +35,27 @@ async function lerCorpo(resposta: Response): Promise<unknown> {
   }
 }
 
+/** Token CSRF que o Django entrega no cookie `csrftoken` (por exemplo, em GET /api/eu). */
+function tokenCsrf(): string | undefined {
+  const cookie = document.cookie.split('; ').find((parte) => parte.startsWith('csrftoken='));
+  return cookie ? decodeURIComponent(cookie.slice('csrftoken='.length)) : undefined;
+}
+
 async function requisitar<T>(caminho: string, opcoes: RequestInit = {}): Promise<T> {
+  const metodo = (opcoes.method ?? 'GET').toUpperCase();
+  const cabecalhos = new Headers({ Accept: 'application/json' });
+  if (opcoes.body !== undefined) {
+    cabecalhos.set('Content-Type', 'application/json');
+  }
+  const csrf = tokenCsrf();
+  if (metodo !== 'GET' && csrf) {
+    cabecalhos.set('X-CSRFToken', csrf);
+  }
   const resposta = await fetch(caminho, {
-    method: 'GET',
     credentials: 'same-origin',
     ...opcoes,
-    headers: { Accept: 'application/json', ...opcoes.headers },
+    method: metodo,
+    headers: cabecalhos,
   });
   const corpo = await lerCorpo(resposta);
   if (!resposta.ok) {
@@ -46,7 +64,41 @@ async function requisitar<T>(caminho: string, opcoes: RequestInit = {}): Promise
   return corpo as T;
 }
 
+function enviar<T>(caminho: string, dados?: unknown): Promise<T> {
+  return requisitar<T>(caminho, {
+    method: 'POST',
+    body: dados === undefined ? undefined : JSON.stringify(dados),
+  });
+}
+
 /** GET /api/saude: diz se a API está no ar. */
 export function obterSaude(): Promise<Saude> {
   return requisitar<Saude>('/api/saude');
+}
+
+/** GET /api/eu: a pessoa logada, ou null quando ninguém entrou (401). */
+export async function obterEu(): Promise<Eu | null> {
+  try {
+    return await requisitar<Eu>('/api/eu');
+  } catch (erro) {
+    if (erro instanceof ErroDaApi && erro.status === 401) {
+      return null;
+    }
+    throw erro;
+  }
+}
+
+/** POST /api/dev/entrar: só existe em desenvolvimento e em teste (ACE-RNF-03). */
+export function entrarEmDesenvolvimento(email: string): Promise<Eu> {
+  return enviar<Eu>('/api/dev/entrar', { email });
+}
+
+/** POST /api/eu/perfil-ativo: troca o perfil em uso, sem sair. */
+export function trocarPerfilAtivo(perfil: Perfil): Promise<Eu> {
+  return enviar<Eu>('/api/eu/perfil-ativo', { perfil });
+}
+
+/** POST /api/sair: encerra a sessão. */
+export async function sair(): Promise<void> {
+  await enviar<undefined>('/api/sair');
 }

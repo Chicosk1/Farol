@@ -1,30 +1,26 @@
-import { render, screen } from '@testing-library/react';
-import { createMemoryRouter, RouterProvider } from 'react-router';
-import { describe, expect, it } from 'vitest';
+import { screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { ANA, simularApi } from '../testes/api';
 import { violacoesDeAcessibilidade } from '../testes/acessibilidade';
-import { Provedores } from './provedores';
-import { rotas } from './rotas';
-
-function renderizarEm(caminho: string) {
-  const roteador = createMemoryRouter(rotas, { initialEntries: [caminho] });
-  return render(
-    <Provedores>
-      <RouterProvider router={roteador} />
-    </Provedores>,
-  );
-}
+import { renderizarApp } from '../testes/renderizar';
 
 describe('aplicação', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('mostra a página inicial com o título Farol dentro do conteúdo principal', async () => {
-    renderizarEm('/');
+    simularApi({ 'GET /api/eu': { corpo: ANA } });
+    renderizarApp('/');
 
     const titulo = await screen.findByRole('heading', { level: 1, name: 'Farol' });
     expect(screen.getByRole('main')).toContainElement(titulo);
   });
 
   it('avisa quando a página não existe e oferece o caminho de volta', async () => {
-    renderizarEm('/endereco-que-nao-existe');
+    simularApi({});
+    renderizarApp('/endereco-que-nao-existe');
 
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Página não encontrada' }),
@@ -35,7 +31,8 @@ describe('aplicação', () => {
   it.each(['/', '/endereco-que-nao-existe'])(
     'não tem violações de acessibilidade em %s',
     async (caminho) => {
-      const { container } = renderizarEm(caminho);
+      simularApi({ 'GET /api/eu': { corpo: ANA } });
+      const { container } = renderizarApp(caminho);
       await screen.findByRole('heading', { level: 1 });
 
       expect(await violacoesDeAcessibilidade(container)).toEqual([]);
