@@ -22,7 +22,7 @@ Monólito modular em camadas: `docs/adr/0007-monolito-modular-em-camadas.md` e `
 
 Detalhes em `docs/qualidade-e-testes.md`.
 
-- Teste antes da implementação. Cada cenário Dado / Quando / Então vira um teste com `@pytest.mark.requisito("ACE-RF-04")`.
+- Teste antes da implementação, dentro da mesma tarefa e no mesmo commit. Cada cenário Dado / Quando / Então vira um teste com `@pytest.mark.requisito("ACE-RF-04")`.
 - A IA é sempre o adaptador falso nos testes. Os testes de API usam o PostgreSQL do Docker, nunca SQLite.
 - Dados de teste e de demonstração são fictícios. Nunca use dados reais de alunos.
 - Telas novas têm teste de acessibilidade (axe) e seguem o design system Farol.
@@ -33,15 +33,25 @@ Os comandos do produto são criados pelas tarefas ACE-T11 a ACE-T17 e documentad
 
 - `python3 scripts/verificar_specs.py --gerar`: verifica specs, rastreabilidade e links, e regenera `docs/rastreabilidade.md`.
 
+## Tarefas pequenas: uma tarefa, um commit, um push
+
+Regra do projeto: trabalhe sempre em passos pequenos.
+
+- Uma tarefa de `tasks.md` vira um commit, e cada commit é enviado (push) para o branch da spec logo em seguida.
+- Uma tarefa é pequena quando dá para revisar o commit em poucos minutos: um assunto só, de preferência uma camada ou um módulo, e algumas centenas de linhas no máximo, sem contar arquivos gerados (migrações, OpenAPI, lockfiles).
+- Se uma tarefa parecer grande, divida antes de começar: escreva as novas tarefas em `tasks.md`, com os números livres do mesmo bloco, e faça um commit só com essa divisão.
+- Nunca junte duas tarefas no mesmo commit, nem deixe trabalho sem commit no fim de uma tarefa.
+
 ## Ao terminar uma tarefa
 
 1. Rode todos os testes e as verificações estáticas.
 2. Marque a tarefa como `[x]` em `tasks.md`.
 3. Rode `python3 scripts/verificar_specs.py --gerar`.
 4. Faça o commit com os identificadores no fim da mensagem, por exemplo `Cria a rota de disciplinas (ACE-T31, ACE-RF-04)`.
+5. Faça o push do branch da spec e confira se o GitHub Actions passou. Se falhar, corrija antes de começar a próxima tarefa.
 
 ## Git
 
-- Trabalhe num branch com o nome da spec (`001-acesso-e-turmas`). Nunca faça commit direto na `main`.
-- Não faça push nem abra pull request sem o pedido explícito do usuário.
+- Trabalhe num branch com o nome da spec (`001-acesso-e-turmas`). Nunca faça commit nem push direto na `main`.
+- O push vai só para o branch da spec. Pull request e merge só com o pedido explícito do usuário.
 - Nunca coloque segredos no repositório. O `.env` fica fora do Git; o modelo é o `.env.exemplo`.

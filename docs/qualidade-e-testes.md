@@ -15,7 +15,7 @@ Este documento diz como o Farol é testado e o que precisa estar verdadeiro para
 
 ## Regras
 
-1. **Teste antes do código.** Em `tasks.md`, a tarefa de teste de cada história vem antes da implementação. Escreva o teste, veja falhar, implemente.
+1. **Teste antes do código, no mesmo commit.** Dentro de cada tarefa, escreva o teste, veja falhar e só então implemente. Teste e implementação vão juntos no commit da tarefa, para o branch nunca ficar com o CI vermelho.
 2. **Todo teste de aceite cita o requisito** com o marcador `requisito`:
 
    ```python
@@ -61,4 +61,5 @@ Um pull request só pode ser mesclado com todos os jobs passando.
 - [ ] O código respeita as camadas e as fronteiras entre módulos.
 - [ ] A documentação foi atualizada junto: o OpenAPI é gerado sozinho, mas comandos novos vão para o guia de desenvolvimento e decisões novas viram ADR.
 - [ ] A tarefa está marcada em `tasks.md`, e a matriz de rastreabilidade foi gerada de novo.
+- [ ] A tarefa virou um único commit pequeno, já enviado para o branch da spec, com o GitHub Actions passando.
 - [ ] Telas novas foram testadas no celular, com o teclado e nos temas claro e escuro.
