@@ -12,7 +12,7 @@ A coluna Testes mostra os testes do produto que citam o requisito com `@pytest.m
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | [001 Acesso e turmas](../specs/001-acesso-e-turmas/spec.md) | 11 | 8 de 11 | 2 | 3 | 1 | 5 | 34 de 42 | 3 |
 | [002 Materiais da disciplina](../specs/002-materiais-da-disciplina/spec.md) | 11 | 9 de 11 | 2 | 5 | 1 | 3 | 16 de 23 | 0 |
-| [003 Tutor da disciplina](../specs/003-tutor-da-disciplina/spec.md) | 14 | 1 de 14 | 6 | 5 | 2 | 1 | 16 de 35 | 0 |
+| [003 Tutor da disciplina](../specs/003-tutor-da-disciplina/spec.md) | 14 | 2 de 14 | 6 | 5 | 2 | 1 | 17 de 35 | 0 |
 | [004 Dúvidas ao professor](../specs/004-duvidas-ao-professor/spec.md) | 9 | 0 de 9 | 5 | 0 | 1 | 3 | 4 de 14 | 1 |
 | [005 Questões e quizzes](../specs/005-questoes-e-quizzes/spec.md) | 11 | 0 de 11 | 5 | 1 | 3 | 2 | 6 de 20 | 1 |
 | [006 Revisão do dia](../specs/006-revisao-do-dia/spec.md) | 10 | 0 de 10 | 5 | 3 | 1 | 1 | 5 de 17 | 1 |
@@ -75,7 +75,7 @@ Tarefas já especificadas que aproximam o protótipo do comportamento descrito n
 | `TUT-RF-09` | O aluno DEVE poder avaliar cada resposta como útil, não útil ou incorreta; respostas marcadas como incorretas entram na fila de revisão da equipe. | Parcial | [aluno-tutor.js](../prototipo/js/screens/aluno-tutor.js) |  |  | TUT-T07, TUT-T70 |
 | `TUT-RF-10` | O tutor DEVE exibir a política de uso de IA da disciplina, escrita e editável pelo professor. | Coberto | [aluno-tutor.js](../prototipo/js/screens/aluno-tutor.js), [prof-disciplina.js](../prototipo/js/screens/prof-disciplina.js) |  | TUT-T08 | TUT-T80 |
 | `TUT-RF-11` | O sistema DEVE remover dados pessoais (nome, e-mail, CPF, telefone) da pergunta antes de enviá-la ao provedor de IA ou registrá-la para análise. | Não coberto |  | [nucleo/testes/test_privacidade.py](../backend/nucleo/testes/test_privacidade.py) (10) | TUT-T90 |  |
-| `TUT-RF-12` | O histórico de conversa DEVE ser visível só para o próprio aluno; os registros usados no radar e na análise de qualidade DEVEM guardar só um identificador pseudônimo, que permite contar alunos distintos sem revelar quem são. | Simulado | [store.js](../prototipo/js/store.js) |  | TUT-T09 | TUT-T91 |
+| `TUT-RF-12` | O histórico de conversa DEVE ser visível só para o próprio aluno; os registros usados no radar e na análise de qualidade DEVEM guardar só um identificador pseudônimo, que permite contar alunos distintos sem revelar quem são. | Simulado | [store.js](../prototipo/js/store.js) | [nucleo/testes/test_pseudonimo.py](../backend/nucleo/testes/test_pseudonimo.py) (5) | TUT-T09, TUT-T91 |  |
 | `TUT-RF-13` | O tutor DEVE mostrar a resposta aos poucos (streaming), à medida que é gerada. | Simulado | [aluno-tutor.js](../prototipo/js/screens/aluno-tutor.js) |  | TUT-T01 | TUT-T23 |
 | `TUT-RF-14` | O tutor PODE sugerir perguntas iniciais sobre o material da disciplina quando a conversa está vazia. | Coberto | [data.js](../prototipo/js/data.js), [aluno-tutor.js](../prototipo/js/screens/aluno-tutor.js) |  | TUT-T01 | TUT-T25 |
 

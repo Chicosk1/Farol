@@ -48,6 +48,12 @@ FAROL_ACESSO = {
 FAROL_PDF_MAX_BYTES = 50 * 1024 * 1024
 FAROL_PDF_MAX_PAGINAS = 300
 
+# Segredo do identificador pseudônimo do aluno (nucleo/pseudonimo.py). Fica fora do banco; trocá-lo
+# muda todos os identificadores. O padrão só serve ao desenvolvimento e aos testes.
+FAROL_SEGREDO_DO_PSEUDONIMO = ambiente.opcional(
+    "FAROL_SEGREDO_PSEUDONIMO", "pseudonimo-de-desenvolvimento-nao-use-em-producao"
+)
+
 # Tamanho dos vetores de busca dos trechos. É fixo no banco: trocar o modelo de embeddings por
 # um de outro tamanho exige uma migração (docs/arquitetura.md).
 FAROL_DIMENSAO_DO_VETOR = 256
