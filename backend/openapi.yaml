@@ -73,6 +73,39 @@ paths:
                 items:
                   $ref: '#/components/schemas/Disciplina'
           description: ''
+  /api/disciplinas/{disciplina_id}/favorito:
+    put:
+      operationId: disciplinas_favorito_update
+      summary: Marca a disciplina como favorita
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - disciplinas
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+    delete:
+      operationId: disciplinas_favorito_destroy
+      summary: Marca a disciplina como favorita
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - disciplinas
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/eu:
     get:
       operationId: eu_retrieve
@@ -162,8 +195,12 @@ components:
           type: string
         professor_nome:
           type: string
+        favorita:
+          type: boolean
+          description: Se a pessoa marcou a disciplina como favorita.
       required:
       - codigo
+      - favorita
       - id
       - nome
       - professor_nome

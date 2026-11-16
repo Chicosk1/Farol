@@ -1,12 +1,12 @@
 """Regras do módulo disciplinas (spec 001). Chamado pela API e pelos outros módulos."""
 
 from django.contrib.postgres.lookups import Unaccent
-from django.db.models import QuerySet
+from django.db.models import Exists, OuterRef, QuerySet
 from django.db.models.functions import Lower
 
 from contas.servicos import Perfil
 
-from .models import Disciplina, Matricula
+from .models import Disciplina, Favorito, Matricula
 
 FILTROS = ("todas", "favoritas", "com-tutor")
 
@@ -36,6 +36,12 @@ def listar_disciplinas(
     if filtro == "com-tutor":
         # Depende de saber se há material pronto, o que vem com a spec 002 (ACE-T34).
         return Disciplina.objects.none()
+
+    disciplinas = disciplinas.annotate(
+        favorita=Exists(Favorito.objects.filter(pessoa=pessoa, disciplina=OuterRef("pk")))
+    )
+    if filtro == "favoritas":
+        disciplinas = disciplinas.filter(favorita=True)
 
     return disciplinas.select_related("professor").order_by(Lower(Unaccent("nome")), "id")
 
@@ -78,3 +84,13 @@ def tem_acesso(pessoa, perfil: str | None, disciplina_id: int) -> bool:
     if perfil == Perfil.PROFESSOR:
         return Disciplina.objects.filter(id=disciplina_id, professor=pessoa).exists()
     return False
+
+
+def favoritar(pessoa, disciplina_id: int) -> None:
+    """Marca a disciplina como favorita da pessoa. Marcar de novo não faz nada."""
+    Favorito.objects.get_or_create(pessoa=pessoa, disciplina_id=disciplina_id)
+
+
+def desfavoritar(pessoa, disciplina_id: int) -> None:
+    """Tira a disciplina dos favoritos da pessoa. Não ser favorita não é erro."""
+    Favorito.objects.filter(pessoa=pessoa, disciplina_id=disciplina_id).delete()

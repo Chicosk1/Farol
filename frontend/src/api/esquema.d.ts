@@ -42,6 +42,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/disciplinas/{disciplina_id}/favorito": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Marca a disciplina como favorita */
+        put: operations["disciplinas_favorito_update"];
+        post?: never;
+        /** Marca a disciplina como favorita */
+        delete: operations["disciplinas_favorito_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/eu": {
         parameters: {
             query?: never;
@@ -124,6 +142,8 @@ export interface components {
             turma: string;
             semestre: string;
             professor_nome: string;
+            /** @description Se a pessoa marcou a disciplina como favorita. */
+            favorita: boolean;
         };
         EntradaDeDesenvolvimentoRequest: {
             /** Format: email */
@@ -213,6 +233,46 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Disciplina"][];
                 };
+            };
+        };
+    };
+    disciplinas_favorito_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    disciplinas_favorito_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

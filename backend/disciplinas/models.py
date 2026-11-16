@@ -66,3 +66,32 @@ class Matricula(models.Model):
 
     def __str__(self) -> str:
         return f"{self.aluno_id} em {self.disciplina_id} ({self.situacao})"
+
+
+class Favorito(models.Model):
+    """Disciplina que a pessoa marcou como favorita. É da pessoa, e não do perfil em uso."""
+
+    pessoa = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="pessoa",
+        on_delete=models.CASCADE,
+        related_name="favoritos",
+    )
+    disciplina = models.ForeignKey(
+        Disciplina,
+        verbose_name="disciplina",
+        on_delete=models.CASCADE,
+        related_name="favoritos",
+    )
+
+    class Meta:
+        verbose_name = "favorito"
+        verbose_name_plural = "favoritos"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["pessoa", "disciplina"], name="favorito_unico_por_pessoa_e_disciplina"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.pessoa_id} favoritou {self.disciplina_id}"

@@ -73,6 +73,7 @@ def test_cada_disciplina_traz_codigo_turma_semestre_e_o_nome_do_professor(
         "turma": "SINF2NA",
         "semestre": "2026/2",
         "professor_nome": "Carlos Mendes",
+        "favorita": False,
     }
 
 

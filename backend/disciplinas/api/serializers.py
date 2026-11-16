@@ -10,6 +10,7 @@ class DisciplinaSerializer(serializers.Serializer):
     turma = serializers.CharField()
     semestre = serializers.CharField()
     professor_nome = serializers.CharField(source="professor.nome")
+    favorita = serializers.BooleanField(help_text="Se a pessoa marcou a disciplina como favorita.")
 
 
 class ConsultaDeDisciplinasSerializer(serializers.Serializer):
