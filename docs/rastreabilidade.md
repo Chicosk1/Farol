@@ -8,7 +8,7 @@ Legenda da coluna Protótipo: **Coberto** funciona como no produto, com dados fi
 
 | Spec | Requisitos funcionais | Coberto | Simulado | Parcial | Não coberto | Tarefas feitas | Pontos a esclarecer |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [001 Acesso e turmas](../specs/001-acesso-e-turmas/spec.md) | 11 | 2 | 3 | 1 | 5 | 5 de 36 | 3 |
+| [001 Acesso e turmas](../specs/001-acesso-e-turmas/spec.md) | 11 | 2 | 3 | 1 | 5 | 5 de 37 | 3 |
 | [002 Materiais da disciplina](../specs/002-materiais-da-disciplina/spec.md) | 11 | 2 | 5 | 1 | 3 | 4 de 21 | 2 |
 | [003 Tutor da disciplina](../specs/003-tutor-da-disciplina/spec.md) | 14 | 6 | 5 | 2 | 1 | 8 de 35 | 0 |
 | [004 Dúvidas ao professor](../specs/004-duvidas-ao-professor/spec.md) | 9 | 5 | 0 | 1 | 3 | 4 de 14 | 1 |
