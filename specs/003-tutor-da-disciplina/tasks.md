@@ -33,7 +33,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 ## Produto: História 1, perguntar e receber resposta com a fonte (P1)
 
 - [x] TUT-T20 [H1] Testes de aceite dos cenários 1 a 4 com o provedor falso, entregues junto da TUT-T22 (TUT-RF-01, TUT-RF-02, TUT-RF-03)
-- [ ] TUT-T21 [H1] Busca dos 6 trechos mais próximos, filtrada por disciplina e por material pronto (TUT-RF-01)
+- [x] TUT-T21 [H1] Busca dos 6 trechos mais próximos, filtrada por disciplina e por material pronto (TUT-RF-01)
 - [ ] TUT-T22 [H1] Regras fixas do prompt e conversão das marcações de trecho em citações, descartando frases sem marcação (TUT-RF-02, TUT-RF-03, TUT-RNF-02)
 - [ ] TUT-T23 [H1] Rota de perguntas com streaming por SSE (TUT-RF-13)
 - [ ] TUT-T24 [H1] Tela do tutor no React com citações clicáveis e região `aria-live` (TUT-RF-02, TUT-RNF-03, TUT-RNF-04)
