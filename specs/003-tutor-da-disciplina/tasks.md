@@ -70,7 +70,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Produto: História 7, regras de uso de IA (P3)
 
-- [ ] TUT-T80 [H7] Exibição da política de uso de IA na tela do tutor, com o resumo das regras; a edição vem com a TUT-T43 (TUT-RF-10)
+- [x] TUT-T80 [H7] Exibição da política de uso de IA na tela do tutor, com o resumo das regras; a edição vem com a TUT-T43 (TUT-RF-10)
 
 ## Produto: privacidade e acabamento
 

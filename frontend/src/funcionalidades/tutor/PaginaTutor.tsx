@@ -160,6 +160,47 @@ function Mensagem({ mensagem }: { mensagem: MensagemNaTela }) {
   );
 }
 
+/** O texto do professor e o resumo das regras do tutor, abertos por um botão (TUT-RF-10). */
+function PoliticaDeUso({ politica, modoPistas }: { politica: string; modoPistas: boolean }) {
+  const [aberta, setAberta] = useState(false);
+  return (
+    <div>
+      <Botao
+        variante="secundario"
+        aria-expanded={aberta}
+        aria-controls="politica-de-uso"
+        onClick={() => setAberta((valor) => !valor)}
+      >
+        Política de uso de IA
+      </Botao>
+      {aberta && (
+        <section
+          id="politica-de-uso"
+          aria-labelledby="titulo-politica"
+          className="mt-2 rounded-lg border border-line bg-surface p-4 text-ink"
+        >
+          <h2 id="titulo-politica" className="text-lg font-bold">
+            Política de uso de IA
+          </h2>
+          <p className="mt-1 whitespace-pre-wrap">
+            {politica.trim() || 'O professor ainda não escreveu uma política para esta disciplina.'}
+          </p>
+          <h3 className="mt-3 font-bold">Regras do tutor</h3>
+          <ul className="list-disc pl-5">
+            <li>Responde só com o material desta disciplina, sempre com a página citada.</li>
+            <li>
+              {modoPistas
+                ? 'Em exercícios, dá pistas em vez da resposta pronta.'
+                : 'O modo pistas está desligado nesta disciplina.'}
+            </li>
+            <li>Fica pausado durante as provas.</li>
+          </ul>
+        </section>
+      )}
+    </div>
+  );
+}
+
 export function PaginaTutor() {
   const disciplinaId = Number(useParams().id);
   const tutor = useTutor(disciplinaId);
@@ -278,6 +319,7 @@ export function PaginaTutor() {
 
       {tutor.data && (
         <>
+          <PoliticaDeUso politica={tutor.data.politica} modoPistas={tutor.data.modo_pistas} />
           {tutor.data.modo_pistas && (
             <p className="w-fit rounded-full bg-accent-soft px-3 py-1 text-sm font-bold text-ink">
               Modo pistas ligado

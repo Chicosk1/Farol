@@ -273,4 +273,38 @@ describe('tela do tutor (TUT-T24)', () => {
     await screen.findByText('Não encontrei isso no material da disciplina.');
     expect(screen.queryByRole('group', { name: 'Avaliar resposta' })).not.toBeInTheDocument();
   });
+
+  it('mostra a política do professor e o resumo das regras ao tocar no botão', async () => {
+    simularTutor(estado({ politica: 'Use o tutor para estudar, não para copiar.' }));
+    const { container } = renderizarApp(`/disciplinas/${ESTRUTURAS.id}/tutor`);
+
+    const botao = await screen.findByRole('button', { name: 'Política de uso de IA' });
+    expect(botao).toHaveAttribute('aria-expanded', 'false');
+    fireEvent.click(botao);
+
+    const politica = screen.getByRole('region', { name: 'Política de uso de IA' });
+    expect(botao).toHaveAttribute('aria-expanded', 'true');
+    expect(within(politica).getByText('Use o tutor para estudar, não para copiar.')).toBeVisible();
+    expect(within(politica).getByText(/só com o material desta disciplina/)).toBeVisible();
+    expect(within(politica).getByText(/dá pistas em vez da resposta pronta/)).toBeVisible();
+    expect(within(politica).getByText('Fica pausado durante as provas.')).toBeVisible();
+    expect(await violacoesDeAcessibilidade(container)).toEqual([]);
+  });
+
+  it('a política também aparece com o tutor pausado, e avisa quando não foi escrita', async () => {
+    simularTutor(estado({ pausado: true, modo_pistas: false }));
+    renderizarApp(`/disciplinas/${ESTRUTURAS.id}/tutor`);
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Política de uso de IA' }));
+
+    const politica = screen.getByRole('region', { name: 'Política de uso de IA' });
+    expect(
+      within(politica).getByText(
+        'O professor ainda não escreveu uma política para esta disciplina.',
+      ),
+    ).toBeVisible();
+    expect(
+      within(politica).getByText('O modo pistas está desligado nesta disciplina.'),
+    ).toBeVisible();
+  });
 });
