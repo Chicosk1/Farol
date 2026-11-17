@@ -3,7 +3,7 @@
 from django.http import FileResponse, Http404
 from drf_spectacular.utils import OpenApiTypes, extend_schema
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, parser_classes, permission_classes
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
@@ -20,7 +20,9 @@ from .serializers import (
     MaterialDoAlunoSerializer,
     MaterialDoProfessorSerializer,
     MaterialEnviadoSerializer,
+    NovaVersaoSerializer,
     PaginaDoPdfSerializer,
+    TrechoParaAbrirSerializer,
 )
 
 
@@ -115,6 +117,8 @@ def arquivo(request: Request, material_id: int) -> FileResponse:
         as_attachment=False,
         filename=f"aula-{material.aula_numero}.pdf",
     )
+    # Quando a citação é de uma versão substituída, diz qual versão foi aberta.
+    resposta["X-Farol-Material"] = str(material.id)
     # O PDF é de uma disciplina: nunca fica em cache compartilhado.
     resposta["Cache-Control"] = "private, max-age=0, must-revalidate"
     return resposta
@@ -132,3 +136,52 @@ def retirar(request: Request, material_id: int) -> Response:
     except servicos.SemAcessoAoMaterial:
         raise PermissionDenied from None
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@extend_schema(
+    summary="Envia a versão nova de um material",
+    description="A versão anterior continua em uso até a nova ficar pronta (MAT-RF-11).",
+    request={"multipart/form-data": NovaVersaoSerializer},
+    responses={202: MaterialEnviadoSerializer},
+    tags=["materiais"],
+)
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser])
+def nova_versao(request: Request, material_id: int) -> Response:
+    entrada = NovaVersaoSerializer(data=request.data)
+    entrada.is_valid(raise_exception=True)
+    arquivo = entrada.validated_data["arquivo"]
+    perfil = contas.perfil_ativo(request.user, request.session)
+    try:
+        nova = servicos.criar_nova_versao(
+            request.user, perfil, material_id, arquivo.read(), arquivo.name
+        )
+    except servicos.MaterialNaoEncontrado:
+        raise Http404 from None
+    except servicos.SemAcessoAoMaterial:
+        raise PermissionDenied from None
+    except servicos.MaterialInvalido as invalido:
+        return Response({invalido.campo: [invalido.mensagem]}, status=status.HTTP_400_BAD_REQUEST)
+    servicos.enfileirar_processamento(nova.id)
+    nova.refresh_from_db()
+    dados = {"material_id": nova.id, "status": nova.status}
+    return Response(MaterialEnviadoSerializer(dados).data, status=status.HTTP_202_ACCEPTED)
+
+
+@extend_schema(
+    summary="A página citada com a posição do trecho, para destacar",
+    responses=TrechoParaAbrirSerializer,
+    tags=["materiais"],
+)
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def trecho(request: Request, trecho_id: int) -> Response:
+    perfil = contas.perfil_ativo(request.user, request.session)
+    try:
+        dados = servicos.trecho_para_abrir(request.user, perfil, trecho_id)
+    except servicos.MaterialNaoEncontrado:
+        raise Http404 from None
+    except servicos.SemAcessoAoMaterial:
+        raise PermissionDenied from None
+    return Response(TrechoParaAbrirSerializer(dados).data)

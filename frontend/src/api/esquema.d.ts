@@ -403,6 +403,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/materiais/{material_id}/versoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Envia a versão nova de um material
+         * @description A versão anterior continua em uso até a nova ficar pronta (MAT-RF-11).
+         */
+        post: operations["materiais_versoes_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/mensagens/{mensagem_id}/avaliacao": {
         parameters: {
             query?: never;
@@ -520,6 +540,23 @@ export interface paths {
          * @description Diz que a API está no ar. Usada pelo Docker Compose e pelo monitoramento; não exige login.
          */
         get: operations["saude_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/trechos/{trecho_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A página citada com a posição do trecho, para destacar */
+        get: operations["trechos_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -793,6 +830,13 @@ export interface components {
             /** Format: date-time */
             fim?: string | null;
         };
+        NovaVersaoRequest: {
+            /**
+             * Format: binary
+             * @description O PDF corrigido da aula.
+             */
+            arquivo: string;
+        };
         /** @enum {unknown} */
         NullEnum: null;
         PatchedConfiguracaoRequest: {
@@ -837,9 +881,21 @@ export interface components {
          *     * `atencao` - Precisa de atenção
          *     * `erro` - Erro, tente de novo
          *     * `retirado` - Retirado
+         *     * `substituido` - Substituído pela versão nova
          * @enum {string}
          */
-        StatusDoMaterialEnum: "processando" | "pronto" | "atencao" | "erro" | "retirado";
+        StatusDoMaterialEnum: "processando" | "pronto" | "atencao" | "erro" | "retirado" | "substituido";
+        TrechoParaAbrir: {
+            material_id: number;
+            aula_numero: number;
+            aula_titulo: string;
+            pagina: number;
+            texto_da_pagina: string;
+            inicio: number;
+            fim: number;
+            /** @description O material foi substituído por uma versão nova depois da citação. */
+            atualizado: boolean;
+        };
         TrocaDePerfilRequest: {
             perfil: components["schemas"]["PerfilEnum"];
         };
@@ -1465,6 +1521,31 @@ export interface operations {
             };
         };
     };
+    materiais_versoes_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                material_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["NovaVersaoRequest"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaterialEnviado"];
+                };
+            };
+        };
+    };
     mensagens_avaliacao_update: {
         parameters: {
             query?: never;
@@ -1640,6 +1721,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Saude"];
+                };
+            };
+        };
+    };
+    trechos_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trecho_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrechoParaAbrir"];
                 };
             };
         };

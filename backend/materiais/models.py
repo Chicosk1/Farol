@@ -15,6 +15,7 @@ class Material(models.Model):
         ATENCAO = "atencao", "Precisa de atenção"
         ERRO = "erro", "Erro, tente de novo"
         RETIRADO = "retirado", "Retirado"
+        SUBSTITUIDO = "substituido", "Substituído pela versão nova"
 
     class Etapa(models.TextChoices):
         ENVIANDO = "enviando", "Enviando arquivo"

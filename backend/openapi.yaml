@@ -649,6 +649,34 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /api/materiais/{material_id}/versoes:
+    post:
+      operationId: materiais_versoes_create
+      description: A versão anterior continua em uso até a nova ficar pronta (MAT-RF-11).
+      summary: Envia a versão nova de um material
+      parameters:
+      - in: path
+        name: material_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - materiais
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NovaVersaoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaterialEnviado'
+          description: ''
   /api/mensagens/{mensagem_id}/avaliacao:
     put:
       operationId: mensagens_avaliacao_update
@@ -793,6 +821,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Saude'
+          description: ''
+  /api/trechos/{trecho_id}:
+    get:
+      operationId: trechos_retrieve
+      summary: A página citada com a posição do trecho, para destacar
+      parameters:
+      - in: path
+        name: trecho_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - materiais
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrechoParaAbrir'
           description: ''
 components:
   schemas:
@@ -1386,6 +1435,15 @@ components:
           type: string
           format: date-time
           nullable: true
+    NovaVersaoRequest:
+      type: object
+      properties:
+        arquivo:
+          type: string
+          format: binary
+          description: O PDF corrigido da aula.
+      required:
+      - arquivo
     NullEnum:
       enum:
       - null
@@ -1463,6 +1521,7 @@ components:
       - atencao
       - erro
       - retirado
+      - substituido
       type: string
       description: |-
         * `processando` - Processando
@@ -1470,6 +1529,36 @@ components:
         * `atencao` - Precisa de atenção
         * `erro` - Erro, tente de novo
         * `retirado` - Retirado
+        * `substituido` - Substituído pela versão nova
+    TrechoParaAbrir:
+      type: object
+      properties:
+        material_id:
+          type: integer
+        aula_numero:
+          type: integer
+        aula_titulo:
+          type: string
+        pagina:
+          type: integer
+        texto_da_pagina:
+          type: string
+        inicio:
+          type: integer
+        fim:
+          type: integer
+        atualizado:
+          type: boolean
+          description: O material foi substituído por uma versão nova depois da citação.
+      required:
+      - atualizado
+      - aula_numero
+      - aula_titulo
+      - fim
+      - inicio
+      - material_id
+      - pagina
+      - texto_da_pagina
     TrocaDePerfilRequest:
       type: object
       properties:

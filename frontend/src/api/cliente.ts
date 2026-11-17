@@ -294,6 +294,26 @@ export async function enviarMaterial(
   }
 }
 
+/** POST /api/materiais/{id}/versoes (multipart): a versão nova substitui a anterior quando fica pronta. */
+export async function enviarNovaVersao(materialId: number, arquivo: File): Promise<void> {
+  const formulario = new FormData();
+  formulario.append('arquivo', arquivo);
+  const cabecalhos = new Headers({ Accept: 'application/json' });
+  const csrf = tokenCsrf();
+  if (csrf) {
+    cabecalhos.set('X-CSRFToken', csrf);
+  }
+  const resposta = await fetch(`/api/materiais/${materialId}/versoes`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: cabecalhos,
+    body: formulario,
+  });
+  if (!resposta.ok) {
+    throw new ErroDaApi(resposta.status, await lerCorpo(resposta));
+  }
+}
+
 /** DELETE /api/materiais/{id}: retira o material; o tutor deixa de usá-lo (MAT-RF-10). */
 export async function retirarMaterial(materialId: number): Promise<void> {
   await enviar<undefined>(`/api/materiais/${materialId}`, undefined, 'DELETE');
@@ -375,4 +395,11 @@ export function obterHistorico(): Promise<ConversaDoHistorico[]> {
 /** DELETE /api/eu/historico: apaga todas as conversas do aluno com o tutor. */
 export async function apagarHistorico(): Promise<void> {
   await enviar<undefined>('/api/eu/historico', undefined, 'DELETE');
+}
+
+export type TrechoParaAbrir = components['schemas']['TrechoParaAbrir'];
+
+/** GET /api/trechos/{id}: a página citada com a posição do trecho, para destacar (MAT-RF-09). */
+export function obterTrecho(trechoId: number): Promise<TrechoParaAbrir> {
+  return requisitar<TrechoParaAbrir>(`/api/trechos/${trechoId}`);
 }

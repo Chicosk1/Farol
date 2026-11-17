@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState, type FormEvent } from 'react';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 
 import {
   avaliarResposta,
@@ -61,15 +61,13 @@ function Citacoes({ citacoes }: { citacoes: CitacaoDoTutor[] }) {
     <ul aria-label="Fontes da resposta" className="mt-2 flex flex-wrap gap-2">
       {citacoes.map((citacao) => (
         <li key={citacao.ordem}>
-          <a
-            href={`/api/materiais/${citacao.material_id}/arquivo?pagina=${citacao.pagina}#page=${citacao.pagina}`}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to={`/trechos/${citacao.trecho_id}`}
             className="inline-flex min-h-12 items-center rounded-lg border border-line-control bg-surface px-3 text-sm font-bold text-ink underline"
           >
             [{citacao.ordem}] {citacao.rotulo}
-            <span className="sr-only"> (abre o material em nova aba)</span>
-          </a>
+            <span className="sr-only"> (abre a página com o trecho destacado)</span>
+          </Link>
         </li>
       ))}
     </ul>
