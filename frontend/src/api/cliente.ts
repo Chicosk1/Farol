@@ -12,6 +12,18 @@ export type Perfil = components['schemas']['PerfilEnum'];
 export type Disciplina = components['schemas']['Disciplina'];
 export type AvisoDePrivacidade = components['schemas']['AvisoDePrivacidade'];
 export type FiltroDeDisciplinas = 'todas' | 'favoritas' | 'com-tutor';
+export type EstadoDoTutor = components['schemas']['EstadoDoTutor'];
+export type MensagemDoTutor = components['schemas']['Mensagem'];
+export type CitacaoDoTutor = components['schemas']['Citacao'];
+export type TipoDeMensagem = components['schemas']['TipoEnum'];
+
+/** Os eventos da resposta do tutor em streaming (SSE), na ordem em que chegam. */
+export type EventoDoTutor =
+  | { evento: 'inicio'; dados: { conversa_id: number } }
+  | { evento: 'texto'; dados: { texto: string } }
+  | { evento: 'citacao'; dados: CitacaoDoTutor }
+  | { evento: 'fim'; dados: { tipo: TipoDeMensagem; mensagem_id: number } }
+  | { evento: 'erro'; dados: { mensagem: string } };
 
 /** Resposta da API fora da faixa de sucesso (2xx), com o status e o corpo devolvidos. */
 export class ErroDaApi extends Error {
@@ -139,4 +151,61 @@ export async function confirmarCienciaDoAviso(versao: string): Promise<void> {
 /** POST /api/sair: encerra a sessão. */
 export async function sair(): Promise<void> {
   await enviar<undefined>('/api/sair');
+}
+
+/** GET /api/disciplinas/{id}/tutor: regras, pausa, uso do dia, conversa guardada e sugestões. */
+export function obterTutor(disciplinaId: number): Promise<EstadoDoTutor> {
+  return requisitar<EstadoDoTutor>(`/api/disciplinas/${disciplinaId}/tutor`);
+}
+
+function lerEvento(bloco: string): EventoDoTutor | null {
+  let evento = '';
+  let dados = '';
+  for (const linha of bloco.split('\n')) {
+    if (linha.startsWith('event: ')) evento = linha.slice('event: '.length);
+    else if (linha.startsWith('data: ')) dados += linha.slice('data: '.length);
+  }
+  return evento && dados ? ({ evento, dados: JSON.parse(dados) } as EventoDoTutor) : null;
+}
+
+/**
+ * POST /api/disciplinas/{id}/tutor/perguntas: envia a pergunta e entrega cada evento da resposta
+ * assim que ele chega. Recusas antes da resposta (400, 423, 429, 503) viram ErroDaApi.
+ */
+export async function perguntarAoTutor(
+  disciplinaId: number,
+  texto: string,
+  aoReceber: (evento: EventoDoTutor) => void,
+): Promise<void> {
+  const cabecalhos = new Headers({
+    Accept: 'text/event-stream',
+    'Content-Type': 'application/json',
+  });
+  const csrf = tokenCsrf();
+  if (csrf) {
+    cabecalhos.set('X-CSRFToken', csrf);
+  }
+  const resposta = await fetch(`/api/disciplinas/${disciplinaId}/tutor/perguntas`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: cabecalhos,
+    body: JSON.stringify({ texto }),
+  });
+  if (!resposta.ok || !resposta.body) {
+    throw new ErroDaApi(resposta.status, await lerCorpo(resposta));
+  }
+  const leitor = resposta.body.getReader();
+  const decodificador = new TextDecoder();
+  let pendente = '';
+  for (;;) {
+    const { value, done } = await leitor.read();
+    pendente += done ? decodificador.decode() : decodificador.decode(value, { stream: true });
+    const blocos = pendente.split('\n\n');
+    pendente = done ? '' : (blocos.pop() ?? '');
+    for (const bloco of blocos) {
+      const evento = lerEvento(bloco);
+      if (evento) aoReceber(evento);
+    }
+    if (done) return;
+  }
 }
