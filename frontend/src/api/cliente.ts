@@ -16,6 +16,8 @@ export type EstadoDoTutor = components['schemas']['EstadoDoTutor'];
 export type MensagemDoTutor = components['schemas']['Mensagem'];
 export type CitacaoDoTutor = components['schemas']['Citacao'];
 export type TipoDeMensagem = components['schemas']['TipoEnum'];
+/** A avaliação de uma resposta do tutor; vazio é sem avaliação. */
+export type AvaliacaoDaResposta = components['schemas']['AvaliacaoEnum'] | '';
 
 /** Os eventos da resposta do tutor em streaming (SSE), na ordem em que chegam. */
 export type EventoDoTutor =
@@ -208,4 +210,12 @@ export async function perguntarAoTutor(
     }
     if (done) return;
   }
+}
+
+/** PUT /api/mensagens/{id}/avaliacao: marca a resposta; vazio desfaz a marcação (TUT-RF-09). */
+export async function avaliarResposta(
+  mensagemId: number,
+  avaliacao: AvaliacaoDaResposta,
+): Promise<void> {
+  await enviar<undefined>(`/api/mensagens/${mensagemId}/avaliacao`, { avaliacao }, 'PUT');
 }

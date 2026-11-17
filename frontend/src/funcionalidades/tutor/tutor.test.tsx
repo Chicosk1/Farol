@@ -218,4 +218,59 @@ describe('tela do tutor (TUT-T24)', () => {
       expect(roteador.state.location.pathname).toBe(`/disciplinas/${ESTRUTURAS.id}/tutor`),
     );
   });
+
+  it('a aluna marca a resposta como incorreta, vê o agradecimento e pode desfazer', async () => {
+    const { chamadas } = simularApi({
+      'GET /api/eu': { corpo: ANA },
+      'GET /api/disciplinas': { corpo: DISCIPLINAS },
+      [`GET ${URL_DO_TUTOR}`]: { corpo: CONVERSA_GUARDADA },
+      'PUT /api/mensagens/2/avaliacao': { status: 204 },
+    });
+    renderizarApp(`/disciplinas/${ESTRUTURAS.id}/tutor`);
+
+    const avaliar = await screen.findByRole('group', { name: 'Avaliar resposta' });
+    const incorreta = within(avaliar).getByRole('button', { name: 'Incorreta' });
+    fireEvent.click(incorreta);
+
+    await waitFor(() => expect(incorreta).toHaveAttribute('aria-pressed', 'true'));
+    expect(
+      screen.getByText('Obrigado. Respostas marcadas como incorretas vão para revisão da equipe.'),
+    ).toBeInTheDocument();
+    fireEvent.click(incorreta);
+    await waitFor(() => expect(incorreta).toHaveAttribute('aria-pressed', 'false'));
+    expect(chamadas.filter((c) => c.metodo === 'PUT').map((c) => c.corpo)).toEqual([
+      { avaliacao: 'incorreta' },
+      { avaliacao: '' },
+    ]);
+  });
+
+  it('a resposta nova também pode ser avaliada', async () => {
+    simularTutor(estado(), RESPOSTA_EM_EVENTOS);
+    renderizarApp(`/disciplinas/${ESTRUTURAS.id}/tutor`);
+
+    await enviarPergunta('O que é uma pilha?');
+
+    expect(await screen.findByRole('group', { name: 'Avaliar resposta' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Útil' })).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('a resposta "não encontrei" não tem avaliação', async () => {
+    simularTutor(
+      estado({
+        mensagens: [
+          {
+            id: 3,
+            autor: 'tutor',
+            tipo: 'nao_encontrado',
+            texto: 'Não encontrei isso no material da disciplina.',
+            citacoes: [],
+          },
+        ],
+      }),
+    );
+    renderizarApp(`/disciplinas/${ESTRUTURAS.id}/tutor`);
+
+    await screen.findByText('Não encontrei isso no material da disciplina.');
+    expect(screen.queryByRole('group', { name: 'Avaliar resposta' })).not.toBeInTheDocument();
+  });
 });

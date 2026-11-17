@@ -2,8 +2,10 @@ import { useRef, useState, type FormEvent } from 'react';
 import { useParams } from 'react-router';
 
 import {
+  avaliarResposta,
   ErroDaApi,
   perguntarAoTutor,
+  type AvaliacaoDaResposta,
   type CitacaoDoTutor,
   type EventoDoTutor,
   type MensagemDoTutor,
@@ -18,6 +20,9 @@ const LIMITE_DE_CARACTERES = 1000;
 /** Uma mensagem como a tela mostra: a guardada no servidor ou a desta visita. */
 type MensagemNaTela = {
   chave: string;
+  /** O id no servidor: a resposta nova só o recebe no fim. */
+  id?: number;
+  avaliacao?: AvaliacaoDaResposta;
   autor: 'aluno' | 'tutor';
   texto: string;
   tipo?: TipoDeMensagem;
@@ -28,6 +33,8 @@ type MensagemNaTela = {
 function daConversaGuardada(mensagem: MensagemDoTutor): MensagemNaTela {
   return {
     chave: `guardada-${mensagem.id}`,
+    id: mensagem.id,
+    avaliacao: mensagem.avaliacao,
     autor: mensagem.autor,
     texto: mensagem.texto,
     tipo: mensagem.tipo,
@@ -65,6 +72,62 @@ function Citacoes({ citacoes }: { citacoes: CitacaoDoTutor[] }) {
   );
 }
 
+const OPCOES_DE_AVALIACAO = [
+  { valor: 'util', rotulo: 'Útil' },
+  { valor: 'nao_util', rotulo: 'Não útil' },
+  { valor: 'incorreta', rotulo: 'Incorreta' },
+] as const;
+
+const OBRIGADO = 'Obrigado. Respostas marcadas como incorretas vão para revisão da equipe.';
+
+/** Útil, não útil ou incorreta; tocar de novo na marcada desfaz (TUT-RF-09). */
+function AvaliarResposta({
+  mensagemId,
+  inicial,
+}: {
+  mensagemId: number;
+  inicial: AvaliacaoDaResposta;
+}) {
+  const [atual, setAtual] = useState<AvaliacaoDaResposta>(inicial);
+  const [aviso, setAviso] = useState('');
+  const [salvando, setSalvando] = useState(false);
+
+  async function marcar(valor: AvaliacaoDaResposta) {
+    const nova = atual === valor ? '' : valor;
+    setSalvando(true);
+    try {
+      await avaliarResposta(mensagemId, nova);
+      setAtual(nova);
+      setAviso(nova === 'incorreta' ? OBRIGADO : '');
+    } catch {
+      setAviso('Não foi possível registrar a avaliação. Tente de novo.');
+    } finally {
+      setSalvando(false);
+    }
+  }
+
+  return (
+    <div className="mt-2">
+      <div role="group" aria-label="Avaliar resposta" className="flex flex-wrap gap-2">
+        {OPCOES_DE_AVALIACAO.map((opcao) => (
+          <Botao
+            key={opcao.valor}
+            variante="secundario"
+            aria-pressed={atual === opcao.valor}
+            disabled={salvando}
+            onClick={() => void marcar(opcao.valor)}
+          >
+            {opcao.rotulo}
+          </Botao>
+        ))}
+      </div>
+      <p role="status" className="mt-1 text-sm text-ink-muted">
+        {aviso}
+      </p>
+    </div>
+  );
+}
+
 function Mensagem({ mensagem }: { mensagem: MensagemNaTela }) {
   if (mensagem.autor === 'aluno') {
     return (
@@ -89,6 +152,10 @@ function Mensagem({ mensagem }: { mensagem: MensagemNaTela }) {
         {mensagem.texto || (mensagem.respondendo ? 'O tutor está respondendo…' : '')}
       </p>
       <Citacoes citacoes={mensagem.citacoes} />
+      {mensagem.id !== undefined &&
+        (mensagem.tipo === 'resposta' || mensagem.tipo === 'pistas') && (
+          <AvaliarResposta mensagemId={mensagem.id} inicial={mensagem.avaliacao ?? ''} />
+        )}
     </li>
   );
 }
@@ -147,7 +214,8 @@ export function PaginaTutor() {
         atualizarResposta(chaveDaResposta, (m) => ({ ...m, citacoes: [...m.citacoes, citacao] }));
       } else if (evento.evento === 'fim') {
         const tipo = evento.dados.tipo;
-        atualizarResposta(chaveDaResposta, (m) => ({ ...m, tipo, respondendo: false }));
+        const id = evento.dados.mensagem_id;
+        atualizarResposta(chaveDaResposta, (m) => ({ ...m, id, tipo, respondendo: false }));
         setAnuncio(`O tutor respondeu: ${textoDaResposta.trim()}`);
       } else {
         const aviso = evento.dados.mensagem;
