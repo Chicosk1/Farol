@@ -7,6 +7,8 @@ export type ChamadaSimulada = {
   metodo: string;
   caminho: string;
   corpo: unknown;
+  /** Os campos de um envio multipart; arquivos aparecem pelo nome. */
+  formulario?: Record<string, string>;
   cabecalhos: Record<string, string>;
 };
 
@@ -23,6 +25,15 @@ export function simularApi(rotas: Record<string, Rota>) {
       metodo,
       caminho,
       corpo: typeof init.body === 'string' ? JSON.parse(init.body) : undefined,
+      formulario:
+        init.body instanceof FormData
+          ? Object.fromEntries(
+              [...init.body.entries()].map(([campo, valor]) => [
+                campo,
+                typeof valor === 'string' ? valor : valor.name,
+              ]),
+            )
+          : undefined,
       cabecalhos: Object.fromEntries(new Headers(init.headers).entries()),
     };
     chamadas.push(chamada);

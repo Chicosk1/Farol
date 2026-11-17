@@ -12,6 +12,7 @@ export type Perfil = components['schemas']['PerfilEnum'];
 export type Disciplina = components['schemas']['Disciplina'];
 export type AvisoDePrivacidade = components['schemas']['AvisoDePrivacidade'];
 export type FiltroDeDisciplinas = 'todas' | 'favoritas' | 'com-tutor';
+export type MaterialDoProfessor = components['schemas']['MaterialDoProfessor'];
 
 /** Resposta da API fora da faixa de sucesso (2xx), com o status e o corpo devolvidos. */
 export class ErroDaApi extends Error {
@@ -139,4 +140,40 @@ export async function confirmarCienciaDoAviso(versao: string): Promise<void> {
 /** POST /api/sair: encerra a sessão. */
 export async function sair(): Promise<void> {
   await enviar<undefined>('/api/sair');
+}
+
+/** GET /api/disciplinas/{id}/materiais: para o professor, todos, com status e etapa. */
+export function listarMateriaisDoProfessor(disciplinaId: number): Promise<MaterialDoProfessor[]> {
+  return requisitar<MaterialDoProfessor[]>(`/api/disciplinas/${disciplinaId}/materiais`);
+}
+
+/** POST /api/disciplinas/{id}/materiais (multipart): envia o PDF; o processamento vai para a fila. */
+export async function enviarMaterial(
+  disciplinaId: number,
+  dados: { arquivo: File; aulaNumero: number; aulaTitulo: string },
+): Promise<void> {
+  const formulario = new FormData();
+  formulario.append('arquivo', dados.arquivo);
+  formulario.append('aula_numero', String(dados.aulaNumero));
+  formulario.append('aula_titulo', dados.aulaTitulo);
+  const cabecalhos = new Headers({ Accept: 'application/json' });
+  const csrf = tokenCsrf();
+  if (csrf) {
+    cabecalhos.set('X-CSRFToken', csrf);
+  }
+  // Sem Content-Type: o navegador põe o multipart com a fronteira certa.
+  const resposta = await fetch(`/api/disciplinas/${disciplinaId}/materiais`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: cabecalhos,
+    body: formulario,
+  });
+  if (!resposta.ok) {
+    throw new ErroDaApi(resposta.status, await lerCorpo(resposta));
+  }
+}
+
+/** DELETE /api/materiais/{id}: retira o material; o tutor deixa de usá-lo (MAT-RF-10). */
+export async function retirarMaterial(materialId: number): Promise<void> {
+  await enviar<undefined>(`/api/materiais/${materialId}`, undefined, 'DELETE');
 }

@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router';
 
 import type { FiltroDeDisciplinas } from '../../api/cliente';
 import { Abas } from '../../componentes/Abas';
 import { Botao } from '../../componentes/Botao';
+import { useEu } from '../contas/sessao';
 import { useDefinirFavorito, useDisciplinas } from './consultas';
 
 type Visao = 'grade' | 'lista';
@@ -44,6 +46,7 @@ export function PaginaDisciplinas() {
   const [aba, setAba] = useState<FiltroDeDisciplinas>('todas');
   const disciplinas = useDisciplinas(useTextoEstavel(digitado), aba);
   const favoritar = useDefinirFavorito();
+  const perfil = useEu().data?.perfil_ativo;
 
   return (
     <main id="conteudo" className="mx-auto max-w-5xl p-4">
@@ -126,6 +129,15 @@ export function PaginaDisciplinas() {
                           {disciplina.codigo} · {disciplina.turma}
                         </p>
                         <p className="text-sm text-ink-muted">Prof. {disciplina.professor_nome}</p>
+                        {perfil === 'professor' && (
+                          <Link
+                            to={`/disciplinas/${disciplina.id}/materiais`}
+                            aria-label={`Materiais de ${disciplina.nome}`}
+                            className="mt-2 inline-flex min-h-12 items-center font-bold text-accent underline"
+                          >
+                            Materiais
+                          </Link>
+                        )}
                       </div>
                       <button
                         type="button"
