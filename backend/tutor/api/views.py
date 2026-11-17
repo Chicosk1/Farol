@@ -13,7 +13,12 @@ from rest_framework.views import APIView
 from nucleo.permissoes import acesso_a_disciplina
 from tutor import servicos
 
-from .serializers import JanelaSerializer, NovaJanelaSerializer, PerguntaSerializer
+from .serializers import (
+    ConfiguracaoSerializer,
+    JanelaSerializer,
+    NovaJanelaSerializer,
+    PerguntaSerializer,
+)
 
 PAUSADO = "O tutor está pausado durante a prova."
 
@@ -108,3 +113,31 @@ def apagar_janela(request: Request, disciplina_id: int, janela_id: int) -> Respo
     if not servicos.apagar_janela(disciplina_id, janela_id):
         raise Http404
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ConfiguracaoDoTutor(APIView):
+    """O que o professor controla no tutor da disciplina (TUT-RF-06, TUT-RF-08 e TUT-RF-10)."""
+
+    permission_classes = [acesso_a_disciplina("professor")]
+
+    @extend_schema(
+        summary="Configuração do tutor da disciplina",
+        responses=ConfiguracaoSerializer,
+        tags=["tutor"],
+    )
+    def get(self, request: Request, disciplina_id: int) -> Response:
+        configuracao = servicos.configuracao_do_tutor(disciplina_id)
+        return Response(ConfiguracaoSerializer(configuracao).data)
+
+    @extend_schema(
+        summary="Muda o modo pistas, o limite diário ou a política de uso de IA",
+        description="Só os campos enviados mudam. O limite aceita 20, 40 ou 60 perguntas por dia.",
+        request=ConfiguracaoSerializer(partial=True),
+        responses=ConfiguracaoSerializer,
+        tags=["tutor"],
+    )
+    def patch(self, request: Request, disciplina_id: int) -> Response:
+        entrada = ConfiguracaoSerializer(data=request.data, partial=True)
+        entrada.is_valid(raise_exception=True)
+        configuracao = servicos.atualizar_configuracao(disciplina_id, **entrada.validated_data)
+        return Response(ConfiguracaoSerializer(configuracao).data)

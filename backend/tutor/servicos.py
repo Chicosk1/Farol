@@ -192,6 +192,21 @@ class LimiteAtingido(RuntimeError):
         self.limite = limite
 
 
+def configuracao_do_tutor(disciplina_id: int) -> ConfiguracaoTutor:
+    """A configuração da disciplina; a primeira vez cria a padrão (pistas ligado, limite 40)."""
+    configuracao, _ = ConfiguracaoTutor.objects.get_or_create(disciplina_id=disciplina_id)
+    return configuracao
+
+
+def atualizar_configuracao(disciplina_id: int, **campos) -> ConfiguracaoTutor:
+    """Muda só os campos informados: modo_pistas, limite_diario ou politica (TUT-RF-06, 08, 10)."""
+    configuracao = configuracao_do_tutor(disciplina_id)
+    for nome, valor in campos.items():
+        setattr(configuracao, nome, valor)
+    configuracao.save(update_fields=list(campos) or None)
+    return configuracao
+
+
 def tutor_pausado(disciplina_id: int, agora: datetime | None = None) -> bool:
     """A disciplina tem uma janela de prova que já começou e ainda não acabou."""
     agora = agora or timezone.now()
@@ -300,7 +315,7 @@ def perguntar(aluno, disciplina_id: int, texto: str) -> Iterator[tuple[str, dict
     # O modo prova é verificado antes de qualquer processamento (plan.md, princípio III).
     if tutor_pausado(disciplina_id):
         raise TutorPausado
-    configuracao, _ = ConfiguracaoTutor.objects.get_or_create(disciplina_id=disciplina_id)
+    configuracao = configuracao_do_tutor(disciplina_id)
     if not contador.reservar(disciplina_id, aluno.id, configuracao.limite_diario):
         raise LimiteAtingido(configuracao.limite_diario)
     filtrada = remover_dados_pessoais(texto.strip(), nomes=[aluno.nome])

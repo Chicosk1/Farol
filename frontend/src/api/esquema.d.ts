@@ -142,6 +142,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/disciplinas/{disciplina_id}/tutor/configuracao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Configuração do tutor da disciplina
+         * @description O que o professor controla no tutor da disciplina (TUT-RF-06, TUT-RF-08 e TUT-RF-10).
+         */
+        get: operations["disciplinas_tutor_configuracao_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Muda o modo pistas, o limite diário ou a política de uso de IA
+         * @description Só os campos enviados mudam. O limite aceita 20, 40 ou 60 perguntas por dia.
+         */
+        patch: operations["disciplinas_tutor_configuracao_partial_update"];
+        trace?: never;
+    };
     "/api/disciplinas/{disciplina_id}/tutor/perguntas": {
         parameters: {
             query?: never;
@@ -337,6 +361,13 @@ export interface components {
             /** @description A versão do aviso que a pessoa leu. */
             versao: string;
         };
+        Configuracao: {
+            modo_pistas?: boolean;
+            /** Limite diário */
+            limite_diario?: components["schemas"]["LimiteDiarioEnum"];
+            /** Política de uso de IA */
+            politica?: string;
+        };
         Disciplina: {
             id: number;
             codigo: string;
@@ -422,6 +453,13 @@ export interface components {
             /** Format: date-time */
             fim?: string | null;
         };
+        /**
+         * @description * `20` - 20 perguntas por dia
+         *     * `40` - 40 perguntas por dia
+         *     * `60` - 60 perguntas por dia
+         * @enum {integer}
+         */
+        LimiteDiarioEnum: 20 | 40 | 60;
         LinhaRejeitada: {
             /** @description Número da linha no arquivo; o cabeçalho é a linha 1. */
             linha: number;
@@ -463,6 +501,13 @@ export interface components {
         };
         /** @enum {unknown} */
         NullEnum: null;
+        PatchedConfiguracaoRequest: {
+            modo_pistas?: boolean;
+            /** Limite diário */
+            limite_diario?: components["schemas"]["LimiteDiarioEnum"];
+            /** Política de uso de IA */
+            politica?: string;
+        };
         /**
          * @description * `aluno` - Aluno
          *     * `professor` - Professor
@@ -729,6 +774,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MaterialEnviado"];
+                };
+            };
+        };
+    };
+    disciplinas_tutor_configuracao_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Configuracao"];
+                };
+            };
+        };
+    };
+    disciplinas_tutor_configuracao_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedConfiguracaoRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedConfiguracaoRequest"];
+                "multipart/form-data": components["schemas"]["PatchedConfiguracaoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Configuracao"];
                 };
             };
         };

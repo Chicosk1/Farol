@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from tutor.models import JanelaProva
+from tutor.models import ConfiguracaoTutor, JanelaProva
 from tutor.servicos import LIMITE_DE_CARACTERES
 
 
@@ -25,3 +25,9 @@ class JanelaSerializer(serializers.ModelSerializer):
     class Meta:
         model = JanelaProva
         fields = ["id", "inicio", "fim"]
+
+
+class ConfiguracaoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConfiguracaoTutor
+        fields = ["modo_pistas", "limite_diario", "politica"]

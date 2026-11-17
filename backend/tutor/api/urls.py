@@ -9,6 +9,11 @@ urlpatterns = [
         name="tutor-perguntas",
     ),
     path(
+        "disciplinas/<int:disciplina_id>/tutor/configuracao",
+        views.ConfiguracaoDoTutor.as_view(),
+        name="tutor-configuracao",
+    ),
+    path(
         "disciplinas/<int:disciplina_id>/janelas-prova",
         views.JanelasDeProva.as_view(),
         name="janelas-prova",

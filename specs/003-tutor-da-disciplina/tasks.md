@@ -47,8 +47,8 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 ## Produto: História 3, pistas em vez da resposta pronta (P1)
 
 - [x] TUT-T40 [H3] Perguntas de exercício no conjunto de avaliação, com verificação de que o resultado final não aparece, entregues junto da TUT-T41 (TUT-RF-05)
-- [ ] TUT-T41 [H3] Instruções de modo pistas nas regras fixas e marcação "Modo pistas" na resposta (TUT-RF-05)
-- [ ] TUT-T42 [H3] Configuração do modo pistas por disciplina (TUT-RF-06)
+- [x] TUT-T41 [H3] Instruções de modo pistas nas regras fixas e marcação "Modo pistas" na resposta, entregues junto da TUT-T22; a tela mostra a marcação com a TUT-T24 (TUT-RF-05)
+- [x] TUT-T42 [H3] Configuração do modo pistas por disciplina (TUT-RF-06)
 
 ## Produto: História 4, pausar o tutor durante as provas (P2)
 

@@ -253,6 +253,62 @@ paths:
               schema:
                 $ref: '#/components/schemas/MaterialEnviado'
           description: ''
+  /api/disciplinas/{disciplina_id}/tutor/configuracao:
+    get:
+      operationId: disciplinas_tutor_configuracao_retrieve
+      description: O que o professor controla no tutor da disciplina (TUT-RF-06, TUT-RF-08
+        e TUT-RF-10).
+      summary: Configuração do tutor da disciplina
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuracao'
+          description: ''
+    patch:
+      operationId: disciplinas_tutor_configuracao_partial_update
+      description: Só os campos enviados mudam. O limite aceita 20, 40 ou 60 perguntas
+        por dia.
+      summary: Muda o modo pistas, o limite diário ou a política de uso de IA
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedConfiguracaoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedConfiguracaoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedConfiguracaoRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuracao'
+          description: ''
   /api/disciplinas/{disciplina_id}/tutor/perguntas:
     post:
       operationId: disciplinas_tutor_perguntas_create
@@ -508,6 +564,20 @@ components:
           description: A versão do aviso que a pessoa leu.
       required:
       - versao
+    Configuracao:
+      type: object
+      properties:
+        modo_pistas:
+          type: boolean
+        limite_diario:
+          allOf:
+          - $ref: '#/components/schemas/LimiteDiarioEnum'
+          title: Limite diário
+          minimum: 0
+          maximum: 32767
+        politica:
+          type: string
+          title: Política de uso de IA
     Disciplina:
       type: object
       properties:
@@ -696,6 +766,16 @@ components:
       required:
       - id
       - inicio
+    LimiteDiarioEnum:
+      enum:
+      - 20
+      - 40
+      - 60
+      type: integer
+      description: |-
+        * `20` - 20 perguntas por dia
+        * `40` - 40 perguntas por dia
+        * `60` - 60 perguntas por dia
     LinhaRejeitada:
       type: object
       properties:
@@ -800,6 +880,20 @@ components:
     NullEnum:
       enum:
       - null
+    PatchedConfiguracaoRequest:
+      type: object
+      properties:
+        modo_pistas:
+          type: boolean
+        limite_diario:
+          allOf:
+          - $ref: '#/components/schemas/LimiteDiarioEnum'
+          title: Limite diário
+          minimum: 0
+          maximum: 32767
+        politica:
+          type: string
+          title: Política de uso de IA
     PerfilEnum:
       enum:
       - aluno
