@@ -4,6 +4,7 @@ import { useParams } from 'react-router';
 
 import {
   enviarMaterial,
+  enviarNovaVersao,
   ErroDaApi,
   listarMateriaisDoProfessor,
   retirarMaterial,
@@ -35,17 +36,25 @@ function situacao(material: MaterialDoProfessor): string {
 function ItemDeMaterial({
   material,
   aoRetirar,
-  retirando,
+  aoEnviarVersao,
+  ocupado,
 }: {
   material: MaterialDoProfessor;
   aoRetirar: () => void;
-  retirando: boolean;
+  aoEnviarVersao: (arquivo: File) => void;
+  ocupado: boolean;
 }) {
+  const ativo = material.status !== 'retirado' && material.status !== 'substituido';
   return (
     <li className="flex flex-wrap items-start justify-between gap-2 rounded-lg border border-line bg-surface p-4">
       <div>
         <p className="font-bold">
           Aula {material.aula_numero}: {material.aula_titulo}
+          {material.versao > 1 && (
+            <span className="ml-2 text-sm font-normal text-ink-muted">
+              versão {material.versao}
+            </span>
+          )}
         </p>
         <p className={material.status === 'pronto' ? 'text-success-text' : 'text-ink-muted'}>
           {situacao(material)}
@@ -57,19 +66,38 @@ function ItemDeMaterial({
         )}
         {material.erro && <p className="text-sm text-danger-text">{material.erro}</p>}
       </div>
-      <Botao
-        variante="secundario"
-        aria-label={`Retirar a aula ${material.aula_numero}`}
-        disabled={retirando}
-        onClick={aoRetirar}
-      >
-        Retirar
-      </Botao>
+      {ativo && (
+        <div className="flex flex-wrap gap-2">
+          {/* O campo de arquivo fica dentro do rótulo com cara de botão: teclado e leitor de tela. */}
+          <label className="inline-flex min-h-12 cursor-pointer items-center rounded-lg border border-line-control bg-surface px-4 text-sm font-bold text-ink focus-within:outline focus-within:outline-2">
+            Enviar nova versão
+            <input
+              type="file"
+              accept="application/pdf,.pdf"
+              aria-label={`Enviar nova versão da aula ${material.aula_numero}`}
+              disabled={ocupado}
+              className="sr-only"
+              onChange={(evento) => {
+                const arquivo = evento.target.files?.[0];
+                if (arquivo) aoEnviarVersao(arquivo);
+                evento.target.value = '';
+              }}
+            />
+          </label>
+          <Botao
+            variante="secundario"
+            aria-label={`Retirar a aula ${material.aula_numero}`}
+            disabled={ocupado}
+            onClick={aoRetirar}
+          >
+            Retirar
+          </Botao>
+        </div>
+      )}
     </li>
   );
 }
 
-/** Os materiais da disciplina para o professor: envio do PDF e etapas ao vivo (MAT-RF-01 a 03). */
 /** A tela de materiais: a aluna vê e abre os prontos; o professor envia e acompanha. */
 export function PaginaMateriais() {
   const disciplinaId = Number(useParams().id);
@@ -88,6 +116,7 @@ export function PaginaMateriais() {
   return <MateriaisDoProfessor />;
 }
 
+/** Os materiais da disciplina para o professor: envio do PDF e etapas ao vivo (MAT-RF-01 a 03). */
 function MateriaisDoProfessor() {
   const disciplinaId = Number(useParams().id);
   const disciplina = useDisciplinas('').data?.find((d) => d.id === disciplinaId);
@@ -108,6 +137,10 @@ function MateriaisDoProfessor() {
     onSuccess: recarregar,
   });
   const retirar = useMutation({ mutationFn: retirarMaterial, onSuccess: recarregar });
+  const enviarVersao = useMutation({
+    mutationFn: ({ id, arquivo }: { id: number; arquivo: File }) => enviarNovaVersao(id, arquivo),
+    onSuccess: recarregar,
+  });
 
   const [arquivo, setArquivo] = useState<File | null>(null);
   const [aulaNumero, setAulaNumero] = useState('');
@@ -148,7 +181,10 @@ function MateriaisDoProfessor() {
     );
   }
 
-  const aviso = erro || (enviar.isError ? motivo(enviar.error) : '');
+  const aviso =
+    erro ||
+    (enviar.isError ? motivo(enviar.error) : '') ||
+    (enviarVersao.isError ? motivo(enviarVersao.error) : '');
 
   return (
     <main id="conteudo" className="mx-auto flex max-w-3xl flex-col gap-4 p-4 text-ink">
@@ -251,8 +287,16 @@ function MateriaisDoProfessor() {
                 <ItemDeMaterial
                   key={material.id}
                   material={material}
-                  retirando={retirar.isPending}
+                  ocupado={retirar.isPending || enviarVersao.isPending}
                   aoRetirar={() => retirar.mutate(material.id)}
+                  aoEnviarVersao={(arquivo) => {
+                    if (!ehPdf(arquivo)) {
+                      setErro(NAO_E_PDF);
+                      return;
+                    }
+                    setErro('');
+                    enviarVersao.mutate({ id: material.id, arquivo });
+                  }}
                 />
               ))}
             </ul>

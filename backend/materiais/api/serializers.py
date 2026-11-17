@@ -52,3 +52,7 @@ class PaginaDoPdfSerializer(serializers.Serializer):
     pagina = serializers.IntegerField(
         min_value=1, required=False, help_text="Página em que o visualizador deve abrir."
     )
+
+
+class NovaVersaoSerializer(serializers.Serializer):
+    arquivo = serializers.FileField(help_text="O PDF corrigido da aula.")

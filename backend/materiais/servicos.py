@@ -141,6 +141,11 @@ def _processar(material: Material) -> None:
         material.etapa = Material.Etapa.PRONTO
         material.erro = ""
         material.save(update_fields=["paginas", "paginas_sem_texto", "status", "etapa", "erro"])
+        # Troca atômica (MAT-RF-11): a versão anterior sai de uso junto com a entrada da nova.
+        if material.substitui_id is not None:
+            Material.objects.filter(pk=material.substitui_id).exclude(
+                status=Material.Status.RETIRADO
+            ).update(status=Material.Status.SUBSTITUIDO)
 
 
 def processar_material(material_id: int) -> Material:
@@ -279,6 +284,7 @@ def material_para_abrir(pessoa, perfil: str | None, material_id: int) -> Materia
         raise MaterialNaoEncontrado(material_id) from None
     if not disciplinas.tem_acesso(pessoa, perfil, material.disciplina_id):
         raise SemAcessoAoMaterial(material_id)
+    material = versao_atual(material)
     if not ve_todos_os_materiais(perfil) and material.status != Material.Status.PRONTO:
         raise MaterialNaoEncontrado(material_id)
     return material
@@ -354,3 +360,52 @@ def buscar_trechos(
         )
         for t in achados
     ]
+
+
+def versao_atual(material: Material) -> Material:
+    """A versão em uso de um material substituído; a citação antiga abre a nova (spec 002)."""
+    vistos = {material.pk}
+    while material.status == Material.Status.SUBSTITUIDO:
+        nova = (
+            Material.objects.filter(substitui=material, status=Material.Status.PRONTO)
+            .order_by("-versao")
+            .first()
+        )
+        if nova is None or nova.pk in vistos:
+            break
+        vistos.add(nova.pk)
+        material = nova
+    return material
+
+
+def criar_nova_versao(pessoa, perfil: str | None, material_id: int, conteudo: bytes, nome: str):
+    """Cria a versão nova do material, que só substitui a anterior quando fica pronta (MAT-RF-11).
+
+    Só o professor da disciplina e a administração enviam (MAT-RNF-02). Levanta
+    MaterialNaoEncontrado, SemAcessoAoMaterial ou MaterialInvalido.
+    """
+    try:
+        anterior = Material.objects.get(pk=material_id)
+    except Material.DoesNotExist:
+        raise MaterialNaoEncontrado(material_id) from None
+    pode = ve_todos_os_materiais(perfil) and disciplinas.tem_acesso(
+        pessoa, perfil, anterior.disciplina_id
+    )
+    if not pode:
+        raise SemAcessoAoMaterial(material_id)
+    if anterior.status in (Material.Status.RETIRADO, Material.Status.SUBSTITUIDO):
+        raise MaterialInvalido(
+            "material", "Este material foi retirado ou já tem versão nova. Envie a partir da atual."
+        )
+    _validar_pdf(conteudo, nome)
+    nova = Material(
+        disciplina_id=anterior.disciplina_id,
+        aula_numero=anterior.aula_numero,
+        aula_titulo=anterior.aula_titulo,
+        versao=anterior.versao + 1,
+        substitui=anterior,
+        enviado_por=pessoa,
+    )
+    nova.arquivo.save(nome, ContentFile(conteudo), save=False)
+    nova.save()
+    return nova

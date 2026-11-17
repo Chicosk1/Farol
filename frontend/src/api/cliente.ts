@@ -253,6 +253,26 @@ export async function enviarMaterial(
   }
 }
 
+/** POST /api/materiais/{id}/versoes (multipart): a versão nova substitui a anterior quando fica pronta. */
+export async function enviarNovaVersao(materialId: number, arquivo: File): Promise<void> {
+  const formulario = new FormData();
+  formulario.append('arquivo', arquivo);
+  const cabecalhos = new Headers({ Accept: 'application/json' });
+  const csrf = tokenCsrf();
+  if (csrf) {
+    cabecalhos.set('X-CSRFToken', csrf);
+  }
+  const resposta = await fetch(`/api/materiais/${materialId}/versoes`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: cabecalhos,
+    body: formulario,
+  });
+  if (!resposta.ok) {
+    throw new ErroDaApi(resposta.status, await lerCorpo(resposta));
+  }
+}
+
 /** DELETE /api/materiais/{id}: retira o material; o tutor deixa de usá-lo (MAT-RF-10). */
 export async function retirarMaterial(materialId: number): Promise<void> {
   await enviar<undefined>(`/api/materiais/${materialId}`, undefined, 'DELETE');
