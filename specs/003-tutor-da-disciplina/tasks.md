@@ -21,7 +21,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ### Pendências do protótipo
 
-- [ ] TUT-T07 [H6] Acrescentar a avaliação "Não útil" ao lado de "Útil" e "Incorreta" em `prototipo/js/screens/aluno-tutor.js` (TUT-RF-09)
+- [x] TUT-T07 [H6] Acrescentar a avaliação "Não útil" ao lado de "Útil" e "Incorreta" em `prototipo/js/screens/aluno-tutor.js` (TUT-RF-09)
 
 ## Produto: fundação
 

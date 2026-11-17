@@ -25,6 +25,7 @@
     if (m.kind === 'answer') {
       extra += `<div class="answer-tools" role="group" aria-label="Avaliar resposta">
         <button type="button" class="tool-btn" data-action="tutor-rate" data-rate="util" data-index="${index}" data-disc="${disciplineId}" aria-pressed="${m.rating === 'util'}">${F.icon('check')}Útil</button>
+        <button type="button" class="tool-btn" data-action="tutor-rate" data-rate="nao_util" data-index="${index}" data-disc="${disciplineId}" aria-pressed="${m.rating === 'nao_util'}">${F.icon('x')}Não útil</button>
         <button type="button" class="tool-btn" data-action="tutor-rate" data-rate="incorreta" data-index="${index}" data-disc="${disciplineId}" aria-pressed="${m.rating === 'incorreta'}">${F.icon('alert-triangle')}Incorreta</button>
       </div>`;
     }
@@ -226,7 +227,7 @@
       const m = F.store.state.chats[id][index];
       el.closest('.fr-bubble').outerHTML = tutorBubble(m, index, id);
       if (m.rating === 'incorreta') F.toast('Obrigado. Respostas marcadas como incorretas vão para revisão da equipe.', 'info-circle');
-      if (m.rating === 'util') F.toast('Obrigado pela avaliação.');
+      if (m.rating === 'util' || m.rating === 'nao_util') F.toast('Obrigado pela avaliação.');
     },
   });
 })();
