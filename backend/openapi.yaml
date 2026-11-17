@@ -119,6 +119,43 @@ paths:
                 items:
                   $ref: '#/components/schemas/DuvidaDoProfessor'
           description: ''
+  /api/disciplinas/{disciplina_id}/duvidas/{duvida_id}:
+    patch:
+      operationId: disciplinas_duvidas_partial_update
+      summary: Marca a dúvida como respondida em aula ou a oculta
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: duvida_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - duvidas
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMudancaDeStatusRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMudancaDeStatusRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMudancaDeStatusRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DuvidaDoProfessor'
+          description: ''
   /api/disciplinas/{disciplina_id}/favorito:
     put:
       operationId: disciplinas_favorito_update
@@ -1195,6 +1232,14 @@ components:
         * `nao_encontrado` - Não encontrei no material
         * `saudacao` - Saudação
         * `erro` - Erro
+    MudancaDeStatusStatusEnum:
+      enum:
+      - respondida
+      - oculta
+      type: string
+      description: |-
+        * `respondida` - respondida
+        * `oculta` - oculta
     Notificacao:
       type: object
       properties:
@@ -1271,6 +1316,11 @@ components:
         politica:
           type: string
           title: Política de uso de IA
+    PatchedMudancaDeStatusRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/MudancaDeStatusStatusEnum'
     PerfilEnum:
       enum:
       - aluno

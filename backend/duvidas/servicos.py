@@ -95,3 +95,24 @@ def duvidas_para_o_professor(disciplina_id: int, status: str = Duvida.Status.ABE
     ]
     Duvida.objects.filter(id__in=[d.id for d in duvidas if not d.vista]).update(vista=True)
     return lista
+
+
+class DuvidaNaoEncontrada(LookupError):
+    """A dúvida não existe ou não é desta disciplina."""
+
+
+def mudar_status(professor, disciplina_id: int, duvida_id: int, status: str) -> Duvida:
+    """Respondida em aula ou oculta; a ocultação guarda quem ocultou e quando (DUV-RF-07)."""
+    if status not in (Duvida.Status.RESPONDIDA, Duvida.Status.OCULTA):
+        raise StatusInvalido(status)
+    try:
+        duvida = Duvida.objects.get(id=duvida_id, disciplina_id=disciplina_id)
+    except Duvida.DoesNotExist:
+        raise DuvidaNaoEncontrada(duvida_id) from None
+    duvida.status = status
+    duvida.vista = True
+    if status == Duvida.Status.OCULTA:
+        duvida.ocultada_por = professor
+        duvida.ocultada_em = timezone.now()
+    duvida.save()
+    return duvida

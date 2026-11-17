@@ -18,3 +18,7 @@ class DuvidaDoProfessorSerializer(serializers.Serializer):
     data = serializers.DateField()
     status = serializers.CharField()
     nova = serializers.BooleanField()
+
+
+class MudancaDeStatusSerializer(serializers.Serializer):
+    status = serializers.ChoiceField(choices=["respondida", "oculta"])

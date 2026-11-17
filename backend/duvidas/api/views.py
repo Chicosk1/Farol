@@ -10,7 +10,12 @@ from rest_framework.response import Response
 from duvidas import servicos
 from nucleo.permissoes import acesso_a_disciplina, exige_perfil_ativo
 
-from .serializers import DuvidaDoProfessorSerializer, DuvidaEnviadaSerializer, PreviaSerializer
+from .serializers import (
+    DuvidaDoProfessorSerializer,
+    DuvidaEnviadaSerializer,
+    MudancaDeStatusSerializer,
+    PreviaSerializer,
+)
 
 JA_ENVIADA = "Esta dúvida já foi enviada ao professor."
 
@@ -101,3 +106,30 @@ def da_disciplina(request: Request, disciplina_id: int) -> Response:
             {"status": ["Use aberta ou respondida."]}, status=status.HTTP_400_BAD_REQUEST
         )
     return Response(DuvidaDoProfessorSerializer(lista, many=True).data)
+
+
+@extend_schema(
+    summary="Marca a dúvida como respondida em aula ou a oculta",
+    request=MudancaDeStatusSerializer,
+    responses=DuvidaDoProfessorSerializer,
+    tags=["duvidas"],
+)
+@api_view(["PATCH"])
+@permission_classes([acesso_a_disciplina("professor")])
+def mudar_status(request: Request, disciplina_id: int, duvida_id: int) -> Response:
+    entrada = MudancaDeStatusSerializer(data=request.data)
+    entrada.is_valid(raise_exception=True)
+    try:
+        duvida = servicos.mudar_status(
+            request.user, disciplina_id, duvida_id, entrada.validated_data["status"]
+        )
+    except servicos.DuvidaNaoEncontrada:
+        raise Http404 from None
+    dados = {
+        "id": duvida.id,
+        "texto": duvida.texto,
+        "data": duvida.data,
+        "status": duvida.status,
+        "nova": False,
+    }
+    return Response(DuvidaDoProfessorSerializer(dados).data)

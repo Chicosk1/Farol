@@ -76,6 +76,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/disciplinas/{disciplina_id}/duvidas/{duvida_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Marca a dúvida como respondida em aula ou a oculta */
+        patch: operations["disciplinas_duvidas_partial_update"];
+        trace?: never;
+    };
     "/api/disciplinas/{disciplina_id}/favorito": {
         parameters: {
             query?: never;
@@ -684,6 +701,12 @@ export interface components {
          * @enum {string}
          */
         MensagemTipoEnum: "resposta" | "pistas" | "nao_encontrado" | "saudacao" | "erro";
+        /**
+         * @description * `respondida` - respondida
+         *     * `oculta` - oculta
+         * @enum {string}
+         */
+        MudancaDeStatusStatusEnum: "respondida" | "oculta";
         Notificacao: {
             readonly id: number;
             tipo: components["schemas"]["NotificacaoTipoEnum"];
@@ -720,6 +743,9 @@ export interface components {
             limite_diario?: components["schemas"]["LimiteDiarioEnum"];
             /** Política de uso de IA */
             politica?: string;
+        };
+        PatchedMudancaDeStatusRequest: {
+            status?: components["schemas"]["MudancaDeStatusStatusEnum"];
         };
         /**
          * @description * `aluno` - Aluno
@@ -863,6 +889,34 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DuvidaDoProfessor"][];
+                };
+            };
+        };
+    };
+    disciplinas_duvidas_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+                duvida_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedMudancaDeStatusRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedMudancaDeStatusRequest"];
+                "multipart/form-data": components["schemas"]["PatchedMudancaDeStatusRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DuvidaDoProfessor"];
                 };
             };
         };

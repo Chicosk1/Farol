@@ -10,4 +10,9 @@ urlpatterns = [
         views.da_disciplina,
         name="duvidas-da-disciplina",
     ),
+    path(
+        "disciplinas/<int:disciplina_id>/duvidas/<int:duvida_id>",
+        views.mudar_status,
+        name="duvida-da-disciplina",
+    ),
 ]
