@@ -3,6 +3,7 @@ import type { RouteObject } from 'react-router';
 import { ExigeLogin } from '../funcionalidades/contas/ExigeLogin';
 import { PaginaEntrar } from '../funcionalidades/contas/PaginaEntrar';
 import { PaginaDisciplinas } from '../funcionalidades/disciplinas/PaginaDisciplinas';
+import { PaginaConfiguracaoDoTutor } from '../funcionalidades/tutor/PaginaConfiguracaoDoTutor';
 import { PaginaTutor } from '../funcionalidades/tutor/PaginaTutor';
 import { Layout } from './Layout';
 import { PaginaInicial } from './PaginaInicial';
@@ -20,6 +21,10 @@ export const rotas: RouteObject[] = [
           { path: '/', element: <PaginaInicial /> },
           { path: '/disciplinas', element: <PaginaDisciplinas /> },
           { path: '/disciplinas/:id/tutor', element: <PaginaTutor /> },
+          {
+            path: '/disciplinas/:id/tutor/configuracao',
+            element: <PaginaConfiguracaoDoTutor />,
+          },
         ],
       },
     ],

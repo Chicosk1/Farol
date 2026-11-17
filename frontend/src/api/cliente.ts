@@ -16,6 +16,7 @@ export type EstadoDoTutor = components['schemas']['EstadoDoTutor'];
 export type MensagemDoTutor = components['schemas']['Mensagem'];
 export type CitacaoDoTutor = components['schemas']['Citacao'];
 export type TipoDeMensagem = components['schemas']['TipoEnum'];
+export type ConfiguracaoDoTutor = components['schemas']['Configuracao'];
 /** A avaliação de uma resposta do tutor; vazio é sem avaliação. */
 export type AvaliacaoDaResposta = components['schemas']['AvaliacaoEnum'] | '';
 
@@ -218,4 +219,21 @@ export async function avaliarResposta(
   avaliacao: AvaliacaoDaResposta,
 ): Promise<void> {
   await enviar<undefined>(`/api/mensagens/${mensagemId}/avaliacao`, { avaliacao }, 'PUT');
+}
+
+/** GET /api/disciplinas/{id}/tutor/configuracao: modo pistas, limite e política (professor). */
+export function obterConfiguracaoDoTutor(disciplinaId: number): Promise<ConfiguracaoDoTutor> {
+  return requisitar<ConfiguracaoDoTutor>(`/api/disciplinas/${disciplinaId}/tutor/configuracao`);
+}
+
+/** PATCH /api/disciplinas/{id}/tutor/configuracao: só os campos enviados mudam. */
+export function salvarConfiguracaoDoTutor(
+  disciplinaId: number,
+  mudancas: ConfiguracaoDoTutor,
+): Promise<ConfiguracaoDoTutor> {
+  return enviar<ConfiguracaoDoTutor>(
+    `/api/disciplinas/${disciplinaId}/tutor/configuracao`,
+    mudancas,
+    'PATCH',
+  );
 }
