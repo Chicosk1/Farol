@@ -6,7 +6,7 @@ Todos os dados abaixo são inventados.
 
 import pytest
 
-from nucleo.privacidade import remover_dados_pessoais
+from nucleo.privacidade import remover_dados_pessoais, sem_marcas
 
 
 @pytest.mark.requisito("TUT-RF-11")
@@ -130,3 +130,9 @@ def test_filtrar_de_novo_nao_muda_o_resultado():
 def test_sem_nomes_nem_dados_o_texto_vazio_continua_vazio():
     assert remover_dados_pessoais("") == ""
     assert remover_dados_pessoais("   ") == "   "
+
+
+def test_sem_marcas_tira_as_marcas_dos_dados_removidos_para_a_busca():
+    filtrado = remover_dados_pessoais("Sou Ana, cpf 123.456.789-09: o que é pilha?", nomes=["Ana"])
+
+    assert sem_marcas(filtrado) == "Sou , cpf : o que é pilha?"

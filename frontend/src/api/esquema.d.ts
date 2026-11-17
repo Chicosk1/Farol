@@ -101,6 +101,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/disciplinas/{disciplina_id}/tutor/perguntas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Pergunta ao tutor da disciplina, com a resposta em streaming
+         * @description Resposta em eventos SSE: inicio {conversa_id}, texto {texto} (aos poucos), citacao {ordem, rotulo, trecho_id, material_id, pagina}, fim {tipo, mensagem_id} ou erro {mensagem}. O tipo do fim é resposta, pistas ou nao_encontrado.
+         */
+        post: operations["disciplinas_tutor_perguntas_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/eu": {
         parameters: {
             query?: never;
@@ -393,6 +413,9 @@ export interface components {
          * @enum {string}
          */
         PerfilEnum: "aluno" | "professor" | "coordenacao" | "admin";
+        PerguntaRequest: {
+            texto: string;
+        };
         Saude: {
             /** @description Sempre "ok" quando a API está no ar. */
             status: string;
@@ -580,6 +603,40 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["MaterialEnviado"];
                 };
+            };
+        };
+    };
+    disciplinas_tutor_perguntas_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PerguntaRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PerguntaRequest"];
+                "multipart/form-data": components["schemas"]["PerguntaRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": string;
+                };
+            };
+            /** @description O provedor de IA está indisponível. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

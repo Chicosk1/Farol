@@ -1,16 +1,26 @@
 """Regras do módulo tutor (spec 003). Chamado pela API; usa materiais e ia pelos serviços deles."""
 
+import logging
 from collections.abc import Iterator
 from dataclasses import dataclass, field
+from decimal import Decimal
+from itertools import chain
 
 from django.conf import settings
+from django.db import transaction
 
 from ia import servicos as ia
 from ia.servicos import EventoFim, EventoTexto, TrechoNumerado
 from materiais import servicos as materiais
 from materiais.servicos import TrechoEncontrado
+from nucleo.privacidade import remover_dados_pessoais, sem_marcas
+from nucleo.pseudonimo import pseudonimo_do_aluno
 
 from .citacoes import ConversorDeCitacoes
+from .models import Citacao as CitacaoGuardada
+from .models import ConfiguracaoTutor, Conversa, Mensagem, RegistroUso
+
+logger = logging.getLogger(__name__)
 
 NAO_ENCONTREI = "Não encontrei isso no material da disciplina."
 MARCA_DE_PISTAS = "[PISTAS]"
@@ -142,7 +152,7 @@ def responder_pergunta(
     chegar sem dados pessoais.
     """
     try:
-        vetor = ia.gerar_embedding(pergunta)
+        vetor = ia.gerar_embedding(sem_marcas(pergunta))
     except ValueError:  # pergunta sem nenhuma palavra útil
         yield from _nao_encontrei()
         return
@@ -156,3 +166,97 @@ def responder_pergunta(
         yield from _nao_encontrei()
         return
     yield from gerar_resposta(relevantes, pergunta, modo_pistas=modo_pistas)
+
+
+LIMITE_DE_CARACTERES = 1000
+ERRO_NO_MEIO = "O tutor teve um problema ao responder. Tente perguntar de novo."
+
+
+class ProvedorIndisponivel(RuntimeError):
+    """O provedor de IA falhou antes de começar a responder: nada foi guardado."""
+
+
+def _custo(tokens_entrada: int, tokens_saida: int) -> Decimal:
+    precos = settings.FAROL_IA_PRECO_POR_MIL_TOKENS
+    return (
+        Decimal(tokens_entrada) * Decimal(precos["entrada"])
+        + Decimal(tokens_saida) * Decimal(precos["saida"])
+    ) / 1000
+
+
+def _guardar_resposta(aluno, conversa: Conversa, pergunta: str, fim: Fim, citacoes) -> Mensagem:
+    with transaction.atomic():
+        mensagem = Mensagem.objects.create(
+            conversa=conversa, autor=Mensagem.Autor.TUTOR, texto=fim.texto, tipo=fim.tipo
+        )
+        for citacao in citacoes:
+            CitacaoGuardada.objects.create(
+                mensagem=mensagem, trecho_id=citacao.trecho_id, ordem=citacao.ordem
+            )
+        # Registro para o radar e a análise de qualidade: sem o aluno, só o pseudônimo (TUT-RF-12).
+        RegistroUso.objects.create(
+            aluno_pseudonimo=pseudonimo_do_aluno(aluno.id, conversa.disciplina_id),
+            disciplina_id=conversa.disciplina_id,
+            pergunta_filtrada=pergunta,
+            trechos=fim.trechos_citados,
+            tipo=fim.tipo,
+            tokens_entrada=fim.tokens_entrada,
+            tokens_saida=fim.tokens_saida,
+            custo=_custo(fim.tokens_entrada, fim.tokens_saida),
+        )
+    return mensagem
+
+
+def _acompanhar(aluno, conversa: Conversa, pergunta: str, eventos) -> Iterator[tuple[str, dict]]:
+    yield "inicio", {"conversa_id": conversa.id}
+    citacoes: list[Citacao] = []
+    try:
+        for evento in eventos:
+            if isinstance(evento, Texto):
+                yield "texto", {"texto": evento.texto}
+            elif isinstance(evento, Citacao):
+                citacoes.append(evento)
+                yield (
+                    "citacao",
+                    {
+                        "ordem": evento.ordem,
+                        "rotulo": evento.rotulo,
+                        "trecho_id": evento.trecho_id,
+                        "material_id": evento.material_id,
+                        "pagina": evento.pagina,
+                    },
+                )
+            elif isinstance(evento, Fim):
+                mensagem = _guardar_resposta(aluno, conversa, pergunta, evento, citacoes)
+                yield "fim", {"tipo": evento.tipo, "mensagem_id": mensagem.id}
+    except Exception:
+        logger.exception("Falha no meio da resposta do tutor na conversa %s", conversa.id)
+        Mensagem.objects.create(
+            conversa=conversa,
+            autor=Mensagem.Autor.TUTOR,
+            texto=ERRO_NO_MEIO,
+            tipo=Mensagem.Tipo.ERRO,
+        )
+        yield "erro", {"mensagem": ERRO_NO_MEIO}
+
+
+def perguntar(aluno, disciplina_id: int, texto: str) -> Iterator[tuple[str, dict]]:
+    """Responde a pergunta do aluno em eventos (inicio, texto, citacao, fim ou erro).
+
+    A pergunta perde os dados pessoais antes de qualquer outra coisa (TUT-RF-11): é o texto
+    filtrado que vai ao provedor, ao histórico e ao registro de uso. O começo da resposta é
+    buscado aqui mesmo, para uma falha do provedor virar ProvedorIndisponivel sem guardar nada.
+    """
+    filtrada = remover_dados_pessoais(texto.strip(), nomes=[aluno.nome])
+    configuracao, _ = ConfiguracaoTutor.objects.get_or_create(disciplina_id=disciplina_id)
+    eventos = responder_pergunta(disciplina_id, filtrada, modo_pistas=configuracao.modo_pistas)
+    try:
+        primeiro = next(eventos)
+    except Exception as erro:
+        raise ProvedorIndisponivel(str(erro)) from erro
+
+    conversa = Conversa.objects.filter(
+        aluno=aluno, disciplina_id=disciplina_id
+    ).first() or Conversa.objects.create(aluno=aluno, disciplina_id=disciplina_id)
+    Mensagem.objects.create(conversa=conversa, autor=Mensagem.Autor.ALUNO, texto=filtrada)
+    return _acompanhar(aluno, conversa, filtrada, chain([primeiro], eventos))

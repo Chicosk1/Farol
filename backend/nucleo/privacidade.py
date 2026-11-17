@@ -62,3 +62,11 @@ def remover_dados_pessoais(texto: str, nomes: Iterable[str] = ()) -> str:
     texto = _TELEFONE.sub("[telefone]", texto)
     texto = _CPF.sub("[CPF]", texto)
     return _remover_nomes(texto, nomes)
+
+
+_MARCAS = re.compile(r"\[(?:CPF|e-mail|telefone|RA|nome)\]")
+
+
+def sem_marcas(texto: str) -> str:
+    """O texto filtrado sem as marcas dos dados removidos, que só atrapalhariam a busca."""
+    return re.sub(r"\s{2,}", " ", _MARCAS.sub(" ", texto)).strip()

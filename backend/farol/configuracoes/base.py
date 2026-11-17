@@ -53,6 +53,10 @@ FAROL_PDF_MAX_PAGINAS = 300
 # adaptador falso e precisa ser recalibrado com o provedor real, pelo conjunto de avaliação.
 FAROL_TUTOR_SIMILARIDADE_MINIMA = 0.3
 
+# Preço do provedor de IA por mil tokens, em reais, para o custo de cada pergunta (TUT-RNF-05).
+# Fica em zero até a escolha do provedor (ADR 0005).
+FAROL_IA_PRECO_POR_MIL_TOKENS = {"entrada": "0", "saida": "0"}
+
 # Segredo do identificador pseudônimo do aluno (nucleo/pseudonimo.py). Fica fora do banco; trocá-lo
 # muda todos os identificadores. O padrão só serve ao desenvolvimento e aos testes.
 FAROL_SEGREDO_DO_PSEUDONIMO = ambiente.opcional(
