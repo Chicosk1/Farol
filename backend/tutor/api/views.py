@@ -2,17 +2,20 @@
 
 import json
 
-from django.http import StreamingHttpResponse
+from django.http import Http404, StreamingHttpResponse
 from drf_spectacular.utils import OpenApiResponse, OpenApiTypes, extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from nucleo.permissoes import acesso_a_disciplina
 from tutor import servicos
 
-from .serializers import PerguntaSerializer
+from .serializers import JanelaSerializer, NovaJanelaSerializer, PerguntaSerializer
+
+PAUSADO = "O tutor está pausado durante a prova."
 
 
 def _evento_sse(tipo: str, dados: dict) -> str:
@@ -29,6 +32,7 @@ def _evento_sse(tipo: str, dados: dict) -> str:
     request=PerguntaSerializer,
     responses={
         (200, "text/event-stream"): OpenApiTypes.STR,
+        423: OpenApiResponse(description="O tutor está pausado durante a prova."),
         503: OpenApiResponse(description="O provedor de IA está indisponível."),
     },
     tags=["tutor"],
@@ -40,6 +44,8 @@ def perguntar(request: Request, disciplina_id: int):
     entrada.is_valid(raise_exception=True)
     try:
         eventos = servicos.perguntar(request.user, disciplina_id, entrada.validated_data["texto"])
+    except servicos.TutorPausado:
+        return Response({"detail": PAUSADO}, status=status.HTTP_423_LOCKED)
     except servicos.ProvedorIndisponivel:
         return Response(
             {"detail": "O tutor está indisponível agora. Tente de novo em instantes."},
@@ -52,3 +58,44 @@ def perguntar(request: Request, disciplina_id: int):
     resposta["Cache-Control"] = "no-cache"
     resposta["X-Accel-Buffering"] = "no"  # o Nginx não segura os eventos
     return resposta
+
+
+class JanelasDeProva(APIView):
+    """As janelas de prova da disciplina, só para o professor dela (TUT-RF-07)."""
+
+    permission_classes = [acesso_a_disciplina("professor")]
+
+    @extend_schema(
+        summary="Janelas de prova em andamento e agendadas",
+        responses=JanelaSerializer(many=True),
+        tags=["tutor"],
+    )
+    def get(self, request: Request, disciplina_id: int) -> Response:
+        janelas = servicos.janelas_atuais_e_futuras(disciplina_id)
+        return Response(JanelaSerializer(janelas, many=True).data)
+
+    @extend_schema(
+        summary="Liga o modo prova agora ou agenda uma janela de prova",
+        description="Sem início, a janela começa agora; sem fim, fica aberta até ser apagada.",
+        request=NovaJanelaSerializer,
+        responses={201: JanelaSerializer},
+        tags=["tutor"],
+    )
+    def post(self, request: Request, disciplina_id: int) -> Response:
+        entrada = NovaJanelaSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        janela = servicos.criar_janela(disciplina_id, request.user, **entrada.validated_data)
+        return Response(JanelaSerializer(janela).data, status=status.HTTP_201_CREATED)
+
+
+@extend_schema(
+    summary="Apaga uma janela de prova (desliga o modo prova)",
+    responses={204: None},
+    tags=["tutor"],
+)
+@api_view(["DELETE"])
+@permission_classes([acesso_a_disciplina("professor")])
+def apagar_janela(request: Request, disciplina_id: int, janela_id: int) -> Response:
+    if not servicos.apagar_janela(disciplina_id, janela_id):
+        raise Http404
+    return Response(status=status.HTTP_204_NO_CONTENT)

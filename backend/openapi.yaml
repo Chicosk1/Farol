@@ -121,6 +121,85 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/disciplinas/{disciplina_id}/janelas-prova:
+    get:
+      operationId: disciplinas_janelas_prova_list
+      description: As janelas de prova da disciplina, só para o professor dela (TUT-RF-07).
+      summary: Janelas de prova em andamento e agendadas
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Janela'
+          description: ''
+    post:
+      operationId: disciplinas_janelas_prova_create
+      description: Sem início, a janela começa agora; sem fim, fica aberta até ser
+        apagada.
+      summary: Liga o modo prova agora ou agenda uma janela de prova
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NovaJanelaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NovaJanelaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NovaJanelaRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Janela'
+          description: ''
+  /api/disciplinas/{disciplina_id}/janelas-prova/{janela_id}:
+    delete:
+      operationId: disciplinas_janelas_prova_destroy
+      summary: Apaga uma janela de prova (desliga o modo prova)
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: janela_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/disciplinas/{disciplina_id}/materiais:
     get:
       operationId: disciplinas_materiais_list
@@ -210,6 +289,8 @@ paths:
               schema:
                 type: string
           description: ''
+        '423':
+          description: O tutor está pausado durante a prova.
         '503':
           description: O provedor de IA está indisponível.
   /api/eu:
@@ -596,6 +677,23 @@ components:
       required:
       - texto
       - titulo
+    Janela:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        inicio:
+          type: string
+          format: date-time
+          title: Início
+        fim:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - id
+      - inicio
     LinhaRejeitada:
       type: object
       properties:
@@ -685,6 +783,18 @@ components:
       required:
       - material_id
       - status
+    NovaJanelaRequest:
+      type: object
+      description: Sem início, a janela começa agora (modo prova imediato); sem fim,
+        fica aberta.
+      properties:
+        inicio:
+          type: string
+          format: date-time
+        fim:
+          type: string
+          format: date-time
+          nullable: true
     NullEnum:
       enum:
       - null

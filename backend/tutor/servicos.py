@@ -3,11 +3,14 @@
 import logging
 from collections.abc import Iterator
 from dataclasses import dataclass, field
+from datetime import datetime
 from decimal import Decimal
 from itertools import chain
 
 from django.conf import settings
 from django.db import transaction
+from django.db.models import Q
+from django.utils import timezone
 
 from ia import servicos as ia
 from ia.servicos import EventoFim, EventoTexto, TrechoNumerado
@@ -18,7 +21,7 @@ from nucleo.pseudonimo import pseudonimo_do_aluno
 
 from .citacoes import ConversorDeCitacoes
 from .models import Citacao as CitacaoGuardada
-from .models import ConfiguracaoTutor, Conversa, Mensagem, RegistroUso
+from .models import ConfiguracaoTutor, Conversa, JanelaProva, Mensagem, RegistroUso
 
 logger = logging.getLogger(__name__)
 
@@ -176,6 +179,44 @@ class ProvedorIndisponivel(RuntimeError):
     """O provedor de IA falhou antes de começar a responder: nada foi guardado."""
 
 
+class TutorPausado(RuntimeError):
+    """A disciplina está numa janela de prova: o aluno não pode perguntar (TUT-RF-07)."""
+
+
+def tutor_pausado(disciplina_id: int, agora: datetime | None = None) -> bool:
+    """A disciplina tem uma janela de prova que já começou e ainda não acabou."""
+    agora = agora or timezone.now()
+    return JanelaProva.objects.filter(
+        Q(fim__isnull=True) | Q(fim__gt=agora), disciplina_id=disciplina_id, inicio__lte=agora
+    ).exists()
+
+
+def janelas_atuais_e_futuras(disciplina_id: int) -> list[JanelaProva]:
+    """As janelas que o professor ainda pode mudar: a em andamento e as agendadas."""
+    agora = timezone.now()
+    return list(
+        JanelaProva.objects.filter(
+            Q(fim__isnull=True) | Q(fim__gt=agora), disciplina_id=disciplina_id
+        ).order_by("inicio")
+    )
+
+
+def criar_janela(disciplina_id: int, professor, inicio=None, fim=None) -> JanelaProva:
+    """Agenda uma janela; sem início, é o modo prova imediato, que começa agora."""
+    return JanelaProva.objects.create(
+        disciplina_id=disciplina_id,
+        inicio=inicio or timezone.now(),
+        fim=fim,
+        criada_por=professor,
+    )
+
+
+def apagar_janela(disciplina_id: int, janela_id: int) -> bool:
+    """Apaga a janela (desliga o modo prova). Falso se ela não for desta disciplina."""
+    apagadas, _ = JanelaProva.objects.filter(id=janela_id, disciplina_id=disciplina_id).delete()
+    return apagadas > 0
+
+
 def _custo(tokens_entrada: int, tokens_saida: int) -> Decimal:
     precos = settings.FAROL_IA_PRECO_POR_MIL_TOKENS
     return (
@@ -247,6 +288,9 @@ def perguntar(aluno, disciplina_id: int, texto: str) -> Iterator[tuple[str, dict
     filtrado que vai ao provedor, ao histórico e ao registro de uso. O começo da resposta é
     buscado aqui mesmo, para uma falha do provedor virar ProvedorIndisponivel sem guardar nada.
     """
+    # O modo prova é verificado antes de qualquer processamento (plan.md, princípio III).
+    if tutor_pausado(disciplina_id):
+        raise TutorPausado
     filtrada = remover_dados_pessoais(texto.strip(), nomes=[aluno.nome])
     configuracao, _ = ConfiguracaoTutor.objects.get_or_create(disciplina_id=disciplina_id)
     eventos = responder_pergunta(disciplina_id, filtrada, modo_pistas=configuracao.modo_pistas)

@@ -77,6 +77,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/disciplinas/{disciplina_id}/janelas-prova": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Janelas de prova em andamento e agendadas
+         * @description As janelas de prova da disciplina, só para o professor dela (TUT-RF-07).
+         */
+        get: operations["disciplinas_janelas_prova_list"];
+        put?: never;
+        /**
+         * Liga o modo prova agora ou agenda uma janela de prova
+         * @description Sem início, a janela começa agora; sem fim, fica aberta até ser apagada.
+         */
+        post: operations["disciplinas_janelas_prova_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/disciplinas/{disciplina_id}/janelas-prova/{janela_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Apaga uma janela de prova (desliga o modo prova) */
+        delete: operations["disciplinas_janelas_prova_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/disciplinas/{disciplina_id}/materiais": {
         parameters: {
             query?: never;
@@ -371,6 +412,16 @@ export interface components {
             titulo: string;
             texto: string;
         };
+        Janela: {
+            readonly id: number;
+            /**
+             * Início
+             * Format: date-time
+             */
+            inicio: string;
+            /** Format: date-time */
+            fim?: string | null;
+        };
         LinhaRejeitada: {
             /** @description Número da linha no arquivo; o cabeçalho é a linha 1. */
             linha: number;
@@ -402,6 +453,13 @@ export interface components {
         MaterialEnviado: {
             material_id: number;
             status: components["schemas"]["StatusDoMaterialEnum"];
+        };
+        /** @description Sem início, a janela começa agora (modo prova imediato); sem fim, fica aberta. */
+        NovaJanelaRequest: {
+            /** Format: date-time */
+            inicio?: string;
+            /** Format: date-time */
+            fim?: string | null;
         };
         /** @enum {unknown} */
         NullEnum: null;
@@ -560,6 +618,75 @@ export interface operations {
             };
         };
     };
+    disciplinas_janelas_prova_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Janela"][];
+                };
+            };
+        };
+    };
+    disciplinas_janelas_prova_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["NovaJanelaRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["NovaJanelaRequest"];
+                "multipart/form-data": components["schemas"]["NovaJanelaRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Janela"];
+                };
+            };
+        };
+    };
+    disciplinas_janelas_prova_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+                janela_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     disciplinas_materiais_list: {
         parameters: {
             query?: never;
@@ -630,6 +757,13 @@ export interface operations {
                 content: {
                     "text/event-stream": string;
                 };
+            };
+            /** @description O tutor está pausado durante a prova. */
+            423: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description O provedor de IA está indisponível. */
             503: {
