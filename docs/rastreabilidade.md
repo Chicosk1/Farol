@@ -11,7 +11,7 @@ A coluna Testes mostra os testes do produto que citam o requisito com `@pytest.m
 | Spec | Requisitos funcionais | Com teste | Coberto | Simulado | Parcial | Não coberto | Tarefas feitas | Pontos a esclarecer |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | [001 Acesso e turmas](../specs/001-acesso-e-turmas/spec.md) | 11 | 8 de 11 | 2 | 3 | 1 | 5 | 34 de 42 | 3 |
-| [002 Materiais da disciplina](../specs/002-materiais-da-disciplina/spec.md) | 11 | 10 de 11 | 2 | 5 | 1 | 3 | 19 de 23 | 0 |
+| [002 Materiais da disciplina](../specs/002-materiais-da-disciplina/spec.md) | 11 | 10 de 11 | 2 | 5 | 1 | 3 | 20 de 24 | 0 |
 | [003 Tutor da disciplina](../specs/003-tutor-da-disciplina/spec.md) | 14 | 14 de 14 | 6 | 5 | 2 | 1 | 33 de 38 | 0 |
 | [004 Dúvidas ao professor](../specs/004-duvidas-ao-professor/spec.md) | 9 | 8 de 9 | 5 | 0 | 1 | 3 | 13 de 15 | 0 |
 | [005 Questões e quizzes](../specs/005-questoes-e-quizzes/spec.md) | 11 | 0 de 11 | 5 | 1 | 3 | 2 | 6 de 20 | 1 |
@@ -55,8 +55,8 @@ Tarefas já especificadas que aproximam o protótipo do comportamento descrito n
 | `MAT-RF-05` | O sistema DEVE detectar páginas sem texto e marcar como "Precisa de atenção" o material em que a maioria das páginas não tem texto. | Não coberto |  | [materiais/testes/test_processamento.py](../backend/materiais/testes/test_processamento.py) (3) | MAT-T40 |  |
 | `MAT-RF-06` | O sistema DEVE avisar o professor quando um material fica pronto ou falha. | Simulado | [prof-materiais.js](../prototipo/js/screens/prof-materiais.js) | [notificacoes/testes/test_notificacoes.py](../backend/notificacoes/testes/test_notificacoes.py) (4) | MAT-T02, MAT-T23, MAT-T25 |  |
 | `MAT-RF-07` | Um material só DEVE aparecer para o aluno e ser usado pelo tutor e pelo gerador de questões depois de pronto. | Simulado | [aluno-disciplina.js](../prototipo/js/screens/aluno-disciplina.js) | [materiais/testes/test_api_materiais.py](../backend/materiais/testes/test_api_materiais.py) (6), [materiais/testes/test_busca.py](../backend/materiais/testes/test_busca.py) (1) | MAT-T03, MAT-T30 |  |
-| `MAT-RF-08` | O aluno DEVE ver os materiais prontos da disciplina, ordenados por aula, e poder abrir cada PDF. | Coberto | [aluno-disciplina.js](../prototipo/js/screens/aluno-disciplina.js) | [materiais/testes/test_api_materiais.py](../backend/materiais/testes/test_api_materiais.py) (2) | MAT-T03, MAT-T31 |  |
-| `MAT-RF-09` | O sistema DEVE abrir um material numa página específica, com o trecho citado destacado. | Simulado | [ui.js](../prototipo/js/ui.js) | [materiais/testes/test_api_materiais.py](../backend/materiais/testes/test_api_materiais.py) (1) | MAT-T04, MAT-T31 | MAT-T32 |
+| `MAT-RF-08` | O aluno DEVE ver os materiais prontos da disciplina, ordenados por aula, e poder abrir cada PDF. | Coberto | [aluno-disciplina.js](../prototipo/js/screens/aluno-disciplina.js) | [materiais/testes/test_api_materiais.py](../backend/materiais/testes/test_api_materiais.py) (2) | MAT-T03, MAT-T31, MAT-T33 |  |
+| `MAT-RF-09` | O sistema DEVE abrir um material numa página específica, com o trecho citado destacado. | Simulado | [ui.js](../prototipo/js/ui.js) | [materiais/testes/test_api_materiais.py](../backend/materiais/testes/test_api_materiais.py) (1) | MAT-T04, MAT-T31, MAT-T33 | MAT-T32 |
 | `MAT-RF-10` | O professor DEVE poder retirar um material; a partir daí, o tutor e o gerador de questões não o usam mais, e as questões aprovadas que vieram dele ficam marcadas para revisão. | Não coberto |  | [materiais/testes/test_api_retirada.py](../backend/materiais/testes/test_api_retirada.py) (7) | MAT-T50, MAT-T51 |  |
 | `MAT-RF-11` | O professor DEVE poder enviar uma versão nova de um material, que substitui a anterior quando fica pronta. | Não coberto |  |  |  | MAT-T52 |
 

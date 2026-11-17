@@ -353,3 +353,14 @@ export function mudarStatusDaDuvida(
     'PATCH',
   );
 }
+
+/** O que a aluna vê de um material: só os prontos, sem status, etapa nem erro. */
+export type MaterialDoAluno = Pick<
+  MaterialDoProfessor,
+  'id' | 'aula_numero' | 'aula_titulo' | 'paginas'
+>;
+
+/** GET /api/disciplinas/{id}/materiais: para a aluna, só os materiais prontos (MAT-RF-08). */
+export function listarMateriaisDoAluno(disciplinaId: number): Promise<MaterialDoAluno[]> {
+  return requisitar<MaterialDoAluno[]>(`/api/disciplinas/${disciplinaId}/materiais`);
+}

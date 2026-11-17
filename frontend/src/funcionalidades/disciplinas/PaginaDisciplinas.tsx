@@ -147,7 +147,7 @@ export function PaginaDisciplinas() {
                             Configurar tutor
                           </Link>
                         )}
-                        {perfil === 'professor' && (
+                        {(perfil === 'professor' || perfil === 'aluno') && (
                           <Link
                             to={`/disciplinas/${disciplina.id}/materiais`}
                             aria-label={`Materiais de ${disciplina.nome}`}
