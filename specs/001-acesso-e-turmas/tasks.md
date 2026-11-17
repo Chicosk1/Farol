@@ -74,7 +74,7 @@ A primeira entrega do produto prova a arquitetura em todas as camadas com uma fu
 
 ## Produto: História 5, usar como app (P3)
 
-- [ ] ACE-T60 [H5] Manifesto e service worker com vite-plugin-pwa (ACE-RF-11)
+- [x] ACE-T60 [H5] Manifesto e service worker com vite-plugin-pwa (ACE-RF-11)
 
 ## Produto: acabamento
 
