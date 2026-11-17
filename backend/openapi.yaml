@@ -560,6 +560,58 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/mensagens/{mensagem_id}/duvida:
+    post:
+      operationId: mensagens_duvida_create
+      summary: Envia a dúvida ao professor, sem o nome do aluno
+      parameters:
+      - in: path
+        name: mensagem_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - duvidas
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DuvidaEnviada'
+          description: ''
+        '400':
+          description: A mensagem não é uma resposta "não encontrei".
+        '409':
+          description: A dúvida já foi enviada.
+        '429':
+          description: O aluno já enviou 5 dúvidas hoje nesta disciplina.
+  /api/mensagens/{mensagem_id}/duvida/previa:
+    post:
+      operationId: mensagens_duvida_previa_create
+      summary: Mostra o texto que vai ao professor, já sem dados pessoais
+      parameters:
+      - in: path
+        name: mensagem_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - duvidas
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Previa'
+          description: ''
+        '400':
+          description: A mensagem não é uma resposta "não encontrei".
+        '409':
+          description: A dúvida já foi enviada.
   /api/notificacoes:
     get:
       operationId: notificacoes_retrieve
@@ -746,6 +798,16 @@ components:
       - professor_nome
       - semestre
       - turma
+    DuvidaEnviada:
+      type: object
+      properties:
+        duvida_id:
+          type: integer
+        status:
+          type: string
+      required:
+      - duvida_id
+      - status
     EntradaDeDesenvolvimentoRequest:
       type: object
       properties:
@@ -1176,6 +1238,13 @@ components:
           maxLength: 1000
       required:
       - texto
+    Previa:
+      type: object
+      properties:
+        texto_filtrado:
+          type: string
+      required:
+      - texto_filtrado
     Saude:
       type: object
       properties:

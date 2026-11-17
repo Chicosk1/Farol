@@ -21,8 +21,8 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Produto: História 1, enviar a dúvida (P1)
 
-- [ ] DUV-T10 [P] [H1] Testes de pré-visualização, envio e reenvio bloqueado (DUV-RF-02, DUV-RF-04)
-- [ ] DUV-T11 [H1] Modelos `Duvida` e `EnvioDuvida` e rotas de prévia e envio (DUV-RF-01, DUV-RF-02, DUV-RF-03, DUV-RF-04)
+- [x] DUV-T10 [P] [H1] Testes de pré-visualização, envio e reenvio bloqueado (DUV-RF-02, DUV-RF-04)
+- [x] DUV-T11 [H1] Modelos `Duvida` e `EnvioDuvida` e rotas de prévia e envio (DUV-RF-01, DUV-RF-02, DUV-RF-03, DUV-RF-04)
 - [ ] DUV-T12 [H1] Modal de pré-visualização no tutor (DUV-RF-02)
 
 ## Produto: História 2, ver as dúvidas da turma (P1)

@@ -431,3 +431,29 @@ def pergunta_respondida(resposta: Mensagem) -> Mensagem | None:
         .order_by("-id")
         .first()
     )
+
+
+@dataclass
+class PerguntaSemResposta:
+    mensagem_id: int
+    disciplina_id: int
+    texto: str
+
+
+def pergunta_sem_resposta(aluno, mensagem_id: int) -> PerguntaSemResposta | None:
+    """A pergunta do aluno que recebeu "não encontrei", já filtrada; None se não for o caso.
+
+    Levanta MensagemNaoEncontrada se a mensagem não é da conversa deste aluno.
+    """
+    try:
+        mensagem = Mensagem.objects.select_related("conversa").get(
+            id=mensagem_id, conversa__aluno=aluno
+        )
+    except Mensagem.DoesNotExist:
+        raise MensagemNaoEncontrada(mensagem_id) from None
+    if mensagem.autor != Mensagem.Autor.TUTOR or mensagem.tipo != Mensagem.Tipo.NAO_ENCONTRADO:
+        return None
+    pergunta = pergunta_respondida(mensagem)
+    if pergunta is None:
+        return None
+    return PerguntaSemResposta(mensagem.id, mensagem.conversa.disciplina_id, pergunta.texto)

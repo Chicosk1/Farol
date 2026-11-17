@@ -348,6 +348,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/mensagens/{mensagem_id}/duvida": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Envia a dúvida ao professor, sem o nome do aluno */
+        post: operations["mensagens_duvida_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mensagens/{mensagem_id}/duvida/previa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mostra o texto que vai ao professor, já sem dados pessoais */
+        post: operations["mensagens_duvida_previa_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/notificacoes": {
         parameters: {
             query?: never;
@@ -476,6 +510,10 @@ export interface components {
             professor_nome: string;
             /** @description Se a pessoa marcou a disciplina como favorita. */
             favorita: boolean;
+        };
+        DuvidaEnviada: {
+            duvida_id: number;
+            status: string;
         };
         EntradaDeDesenvolvimentoRequest: {
             /** Format: email */
@@ -666,6 +704,9 @@ export interface components {
         PerfilEnum: "aluno" | "professor" | "coordenacao" | "admin";
         PerguntaRequest: {
             texto: string;
+        };
+        Previa: {
+            texto_filtrado: string;
         };
         Saude: {
             /** @description Sempre "ok" quando a API está no ar. */
@@ -1222,6 +1263,83 @@ export interface operations {
         responses: {
             /** @description No response body */
             204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    mensagens_duvida_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mensagem_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DuvidaEnviada"];
+                };
+            };
+            /** @description A mensagem não é uma resposta "não encontrei". */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description A dúvida já foi enviada. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description O aluno já enviou 5 dúvidas hoje nesta disciplina. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    mensagens_duvida_previa_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mensagem_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Previa"];
+                };
+            };
+            /** @description A mensagem não é uma resposta "não encontrei". */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description A dúvida já foi enviada. */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

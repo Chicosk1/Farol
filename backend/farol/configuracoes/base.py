@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "contas",
     "disciplinas",
     "materiais",
+    "duvidas",
     "notificacoes",
     "tutor",
     "ia",
