@@ -1,5 +1,5 @@
 /* Aluno: tela inicial com revisão do dia, atalho para o tutor, novidades e disciplinas. */
-/* Specs: ACE-RF-10, REV-RF-06, REV-RF-07. Rastreabilidade em docs/rastreabilidade.md. */
+/* Specs: ACE-RF-08, ACE-RF-10, REV-RF-06, REV-RF-07. Rastreabilidade em docs/rastreabilidade.md. */
 (function () {
   'use strict';
   const F = window.Farol;
@@ -84,9 +84,33 @@
         </div>`,
       };
     },
+
+    /* Na primeira entrada, o aviso de privacidade (ACE-RF-08): só some com "Entendi". */
+    mount() {
+      if (F.store.state.privacidadeVista) return;
+      F.openModal({
+        title: 'Como o Farol cuida dos seus dados',
+        subtitle: 'Leia antes de começar',
+        body: `<ul class="list">
+            <li class="list-row"><div><p><strong>O que é registrado</strong></p><p class="small muted">O seu nome, o seu e-mail, as suas disciplinas e as suas conversas com o tutor.</p></div></li>
+            <li class="list-row"><div><p><strong>Para quê</strong></p><p class="small muted">Para o tutor continuar de onde você parou. O professor não vê as suas conversas.</p></div></li>
+            <li class="list-row"><div><p><strong>Por quanto tempo</strong></p><p class="small muted">As perguntas ficam guardadas por 12 meses.</p></div></li>
+            <li class="list-row"><div><p><strong>Os seus direitos</strong></p><p class="small muted">Você pode ver e apagar o seu histórico quando quiser.</p></div></li>
+          </ul>
+          <div class="fr-bubble-actions">
+            <button type="button" class="fr-btn fr-btn--primary" data-action="aviso-entendi">Entendi</button>
+          </div>`,
+      });
+    },
   };
 
   F.actions = F.actions || {};
+  F.actions['aviso-entendi'] = () => {
+    F.store.update((s) => {
+      s.privacidadeVista = true;
+    }, { render: false });
+    F.closeModal();
+  };
   F.actions['toggle-fav'] = (el) => {
     const id = el.dataset.id;
     F.store.update((s) => {

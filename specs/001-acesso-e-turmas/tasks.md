@@ -18,7 +18,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ### Pendências do protótipo
 
-- [ ] ACE-T06 [H4] Aviso de privacidade na primeira entrada da aluna, com botão "Entendi", em `prototipo/js/screens/aluno-inicio.js` (ACE-RF-08)
+- [x] ACE-T06 [H4] Aviso de privacidade na primeira entrada da aluna, com botão "Entendi", em `prototipo/js/screens/aluno-inicio.js` (ACE-RF-08)
 
 ## Primeira fatia: arquitetura de pé
 
