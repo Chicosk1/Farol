@@ -415,4 +415,46 @@ describe('tela do tutor (TUT-T24)', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
     expect(chamadas.some((c) => c.caminho === '/api/mensagens/2/duvida')).toBe(false);
   });
+
+  it('o modal da dúvida prende o foco e o devolve ao botão ao fechar (ACE-T90)', async () => {
+    simularApi({
+      'GET /api/eu': { corpo: ANA },
+      'GET /api/disciplinas': { corpo: DISCIPLINAS },
+      [`GET ${URL_DO_TUTOR}`]: {
+        corpo: estado({
+          mensagens: [
+            { id: 1, autor: 'aluno', texto: 'Isso cai na prova?', citacoes: [] },
+            {
+              id: 2,
+              autor: 'tutor',
+              tipo: 'nao_encontrado',
+              texto: 'Não encontrei isso no material da disciplina.',
+              citacoes: [],
+            },
+          ],
+        }),
+      },
+      [`GET /api/disciplinas/${ESTRUTURAS.id}/minhas-duvidas`]: { corpo: [] },
+      'POST /api/mensagens/2/duvida/previa': { corpo: { texto_filtrado: 'Isso cai na prova?' } },
+    });
+    renderizarApp(`/disciplinas/${ESTRUTURAS.id}/tutor`);
+
+    const abrir = await screen.findByRole('button', { name: 'Enviar dúvida ao professor' });
+    abrir.focus();
+    fireEvent.click(abrir);
+    const dialogo = await screen.findByRole('dialog');
+    const cancelar = within(dialogo).getByRole('button', { name: 'Cancelar' });
+    const enviar = within(dialogo).getByRole('button', { name: 'Enviar ao professor' });
+    expect(cancelar).toHaveFocus();
+
+    enviar.focus();
+    fireEvent.keyDown(enviar, { key: 'Tab' });
+    expect(cancelar).toHaveFocus();
+    fireEvent.keyDown(cancelar, { key: 'Tab', shiftKey: true });
+    expect(enviar).toHaveFocus();
+
+    fireEvent.keyDown(enviar, { key: 'Escape' });
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(abrir).toHaveFocus();
+  });
 });

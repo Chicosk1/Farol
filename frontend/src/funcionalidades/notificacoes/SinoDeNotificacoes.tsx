@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router';
 
 import { listarNotificacoes, marcarNotificacaoComoLida } from '../../api/cliente';
@@ -18,6 +18,7 @@ function rotuloDoSino(naoLidas: number): string {
 export function SinoDeNotificacoes() {
   const clienteDeDados = useQueryClient();
   const [aberto, setAberto] = useState(false);
+  const botao = useRef<HTMLButtonElement>(null);
   const notificacoes = useQuery({
     queryKey: CHAVE,
     queryFn: listarNotificacoes,
@@ -33,8 +34,17 @@ export function SinoDeNotificacoes() {
   const { notificacoes: lista, nao_lidas: naoLidas } = notificacoes.data;
 
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onKeyDown={(evento) => {
+        if (evento.key === 'Escape' && aberto) {
+          setAberto(false);
+          botao.current?.focus();
+        }
+      }}
+    >
       <button
+        ref={botao}
         type="button"
         aria-label={rotuloDoSino(naoLidas)}
         aria-expanded={aberto}

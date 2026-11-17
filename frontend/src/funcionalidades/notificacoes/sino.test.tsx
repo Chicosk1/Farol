@@ -83,4 +83,17 @@ describe('sino de notificações (MAT-T25)', () => {
     await waitFor(() => expect(roteador.state.location.pathname).toBe('/disciplinas/4/materiais'));
     expect(chamadas.some((c) => c.caminho === '/api/notificacoes/1/lida')).toBe(true);
   });
+
+  it('Esc fecha a lista e devolve o foco ao sino (ACE-T90)', async () => {
+    simular();
+    renderizarApp('/');
+
+    const sino = await screen.findByRole('button', { name: 'Notificações: 1 não lida' });
+    fireEvent.click(sino);
+    fireEvent.keyDown(screen.getByRole('list', { name: 'Notificações' }), { key: 'Escape' });
+
+    expect(screen.queryByRole('list', { name: 'Notificações' })).toBeNull();
+    expect(sino).toHaveFocus();
+    expect(sino).toHaveAttribute('aria-expanded', 'false');
+  });
 });

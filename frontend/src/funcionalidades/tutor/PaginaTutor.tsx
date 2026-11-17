@@ -170,7 +170,24 @@ function PreviaDaDuvida({
         aria-labelledby="titulo-duvida"
         aria-describedby="aviso-duvida"
         onKeyDown={(evento) => {
-          if (evento.key === 'Escape') aoFechar();
+          if (evento.key === 'Escape') {
+            aoFechar();
+            return;
+          }
+          // O foco fica dentro do modal: Tab no último volta ao primeiro, e vice-versa.
+          if (evento.key !== 'Tab') return;
+          const focaveis = [
+            ...evento.currentTarget.querySelectorAll<HTMLElement>('button:not([disabled])'),
+          ];
+          const primeiro = focaveis[0];
+          const ultimo = focaveis[focaveis.length - 1];
+          if (evento.shiftKey && document.activeElement === primeiro) {
+            evento.preventDefault();
+            ultimo?.focus();
+          } else if (!evento.shiftKey && document.activeElement === ultimo) {
+            evento.preventDefault();
+            primeiro?.focus();
+          }
         }}
         className="w-full max-w-lg rounded-lg bg-surface p-4 text-ink"
       >
@@ -306,8 +323,11 @@ export function PaginaTutor() {
   const [erroDaDuvida, setErroDaDuvida] = useState('');
   const [enviandoDuvida, setEnviandoDuvida] = useState(false);
 
+  const quemAbriuAPrevia = useRef<HTMLElement | null>(null);
+
   async function pedirDuvida(mensagemId: number) {
     setErroDaDuvida('');
+    quemAbriuAPrevia.current = document.activeElement as HTMLElement | null;
     try {
       setPrevia({ mensagemId, texto: await previaDaDuvida(mensagemId) });
     } catch (falha) {
@@ -546,7 +566,10 @@ export function PaginaTutor() {
       {previa && (
         <PreviaDaDuvida
           previa={previa}
-          aoFechar={() => setPrevia(null)}
+          aoFechar={() => {
+            setPrevia(null);
+            quemAbriuAPrevia.current?.focus(); // o foco volta ao botão que abriu
+          }}
           aoEnviar={() => void confirmarDuvida()}
           enviando={enviandoDuvida}
           erro={erroDaDuvida}
