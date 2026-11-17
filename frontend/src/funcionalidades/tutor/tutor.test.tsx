@@ -37,11 +37,16 @@ const CONVERSA_GUARDADA = estado({
   ],
 });
 
-function simularTutor(tutor: EstadoDoTutor, pergunta?: RespostaSimulada) {
+function simularTutor(
+  tutor: EstadoDoTutor,
+  pergunta?: RespostaSimulada,
+  duvidas: { mensagem_id: number; status: string }[] = [],
+) {
   return simularApi({
     'GET /api/eu': { corpo: ANA },
     'GET /api/disciplinas': { corpo: DISCIPLINAS },
     [`GET ${URL_DO_TUTOR}`]: { corpo: tutor },
+    [`GET /api/disciplinas/${ESTRUTURAS.id}/minhas-duvidas`]: { corpo: duvidas },
     ...(pergunta ? { [`POST ${URL_DO_TUTOR}/perguntas`]: pergunta } : {}),
   });
 }
@@ -306,5 +311,30 @@ describe('tela do tutor (TUT-T24)', () => {
     expect(
       within(politica).getByText('O modo pistas está desligado nesta disciplina.'),
     ).toBeVisible();
+  });
+
+  it('mostra a dúvida já enviada ao professor e o status dela (DUV-T31)', async () => {
+    simularTutor(
+      estado({
+        mensagens: [
+          { id: 1, autor: 'aluno', texto: 'Isso cai na prova?', citacoes: [] },
+          {
+            id: 2,
+            autor: 'tutor',
+            tipo: 'nao_encontrado',
+            texto: 'Não encontrei isso no material da disciplina.',
+            citacoes: [],
+          },
+        ],
+      }),
+      undefined,
+      [{ mensagem_id: 2, status: 'respondida' }],
+    );
+    renderizarApp(`/disciplinas/${ESTRUTURAS.id}/tutor`);
+
+    expect(
+      await screen.findByText('Dúvida enviada ao professor, sem o seu nome.'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('O professor marcou como respondida em aula.')).toBeInTheDocument();
   });
 });

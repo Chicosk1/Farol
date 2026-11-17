@@ -116,3 +116,20 @@ def mudar_status(professor, disciplina_id: int, duvida_id: int, status: str) -> 
         duvida.ocultada_em = timezone.now()
     duvida.save()
     return duvida
+
+
+def minhas_duvidas(aluno, disciplina_id: int) -> list[dict]:
+    """De que respostas o aluno enviou dúvida e o status de cada uma (DUV-RF-08).
+
+    A ocultada pelo professor aparece como aberta: o aluno não é avisado da moderação.
+    """
+    envios = EnvioDuvida.objects.filter(
+        mensagem__conversa__aluno=aluno, duvida__disciplina_id=disciplina_id
+    ).select_related("duvida")
+    return [
+        {
+            "mensagem_id": envio.mensagem_id,
+            "status": "respondida" if envio.duvida.status == Duvida.Status.RESPONDIDA else "aberta",
+        }
+        for envio in envios.order_by("mensagem_id")
+    ]

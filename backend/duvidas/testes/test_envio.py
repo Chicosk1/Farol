@@ -137,3 +137,29 @@ def test_a_duvida_nova_avisa_o_professor_no_sino_sem_o_nome_do_aluno(
     )
     assert aviso.link == f"/disciplinas/{disciplina.id}/duvidas"
     assert "Ana" not in aviso.texto
+
+
+@pytest.mark.requisito("DUV-RF-08")
+def test_o_aluno_ve_o_status_das_duvidas_que_enviou_na_disciplina(
+    cliente_aluna, aluna, resposta, disciplina
+):
+    outra = conversa_com(aluna, disciplina, "Vale ponto extra?")
+    enviar(cliente_aluna, resposta)
+    enviar(cliente_aluna, outra)
+    Duvida.objects.filter(texto="Vale ponto extra?").update(status="respondida")
+
+    lista = cliente_aluna.get(f"/api/disciplinas/{disciplina.id}/minhas-duvidas").json()
+
+    assert lista == [
+        {"mensagem_id": resposta.id, "status": "aberta"},
+        {"mensagem_id": outra.id, "status": "respondida"},
+    ]
+
+
+def test_a_duvida_oculta_aparece_ao_aluno_como_aberta(cliente_aluna, resposta, disciplina):
+    enviar(cliente_aluna, resposta)
+    Duvida.objects.update(status="oculta")
+
+    lista = cliente_aluna.get(f"/api/disciplinas/{disciplina.id}/minhas-duvidas").json()
+
+    assert lista == [{"mensagem_id": resposta.id, "status": "aberta"}]

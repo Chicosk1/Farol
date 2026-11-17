@@ -176,6 +176,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/disciplinas/{disciplina_id}/minhas-duvidas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** As dúvidas que o aluno enviou na disciplina e o status de cada uma */
+        get: operations["disciplinas_minhas_duvidas_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/disciplinas/{disciplina_id}/tutor": {
         parameters: {
             query?: never;
@@ -701,6 +718,16 @@ export interface components {
          * @enum {string}
          */
         MensagemTipoEnum: "resposta" | "pistas" | "nao_encontrado" | "saudacao" | "erro";
+        MinhaDuvida: {
+            mensagem_id: number;
+            status: components["schemas"]["MinhaDuvidaStatusEnum"];
+        };
+        /**
+         * @description * `aberta` - aberta
+         *     * `respondida` - respondida
+         * @enum {string}
+         */
+        MinhaDuvidaStatusEnum: "aberta" | "respondida";
         /**
          * @description * `respondida` - respondida
          *     * `oculta` - oculta
@@ -1072,6 +1099,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MaterialEnviado"];
+                };
+            };
+        };
+    };
+    disciplinas_minhas_duvidas_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MinhaDuvida"][];
                 };
             };
         };

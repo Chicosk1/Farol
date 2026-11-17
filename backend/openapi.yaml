@@ -321,6 +321,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/MaterialEnviado'
           description: ''
+  /api/disciplinas/{disciplina_id}/minhas-duvidas:
+    get:
+      operationId: disciplinas_minhas_duvidas_list
+      summary: As dúvidas que o aluno enviou na disciplina e o status de cada uma
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - duvidas
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MinhaDuvida'
+          description: ''
   /api/disciplinas/{disciplina_id}/tutor:
     get:
       operationId: disciplinas_tutor_retrieve
@@ -1232,6 +1255,24 @@ components:
         * `nao_encontrado` - Não encontrei no material
         * `saudacao` - Saudação
         * `erro` - Erro
+    MinhaDuvida:
+      type: object
+      properties:
+        mensagem_id:
+          type: integer
+        status:
+          $ref: '#/components/schemas/MinhaDuvidaStatusEnum'
+      required:
+      - mensagem_id
+      - status
+    MinhaDuvidaStatusEnum:
+      enum:
+      - aberta
+      - respondida
+      type: string
+      description: |-
+        * `aberta` - aberta
+        * `respondida` - respondida
     MudancaDeStatusStatusEnum:
       enum:
       - respondida

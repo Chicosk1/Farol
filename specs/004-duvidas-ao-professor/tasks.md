@@ -35,7 +35,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 ## Produto: Histórias 3 e 4, acompanhar a resposta (P2 e P3)
 
 - [x] DUV-T30 [H3] Marcar como respondida e ocultar dúvida ofensiva (DUV-RF-07)
-- [ ] DUV-T31 [H4] Status da dúvida na conversa do aluno (DUV-RF-08)
+- [x] DUV-T31 [H4] Status da dúvida na conversa do aluno (DUV-RF-08)
 
 ## Produto: acabamento
 

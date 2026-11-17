@@ -13,6 +13,7 @@ from nucleo.permissoes import acesso_a_disciplina, exige_perfil_ativo
 from .serializers import (
     DuvidaDoProfessorSerializer,
     DuvidaEnviadaSerializer,
+    MinhaDuvidaSerializer,
     MudancaDeStatusSerializer,
     PreviaSerializer,
 )
@@ -133,3 +134,15 @@ def mudar_status(request: Request, disciplina_id: int, duvida_id: int) -> Respon
         "nova": False,
     }
     return Response(DuvidaDoProfessorSerializer(dados).data)
+
+
+@extend_schema(
+    summary="As dúvidas que o aluno enviou na disciplina e o status de cada uma",
+    responses=MinhaDuvidaSerializer(many=True),
+    tags=["duvidas"],
+)
+@api_view(["GET"])
+@permission_classes([acesso_a_disciplina("aluno")])
+def minhas(request: Request, disciplina_id: int) -> Response:
+    lista = servicos.minhas_duvidas(request.user, disciplina_id)
+    return Response(MinhaDuvidaSerializer(lista, many=True).data)

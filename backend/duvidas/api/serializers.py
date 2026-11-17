@@ -22,3 +22,8 @@ class DuvidaDoProfessorSerializer(serializers.Serializer):
 
 class MudancaDeStatusSerializer(serializers.Serializer):
     status = serializers.ChoiceField(choices=["respondida", "oculta"])
+
+
+class MinhaDuvidaSerializer(serializers.Serializer):
+    mensagem_id = serializers.IntegerField()
+    status = serializers.ChoiceField(choices=["aberta", "respondida"])

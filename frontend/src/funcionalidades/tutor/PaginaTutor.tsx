@@ -1,9 +1,11 @@
+import { useQuery } from '@tanstack/react-query';
 import { useRef, useState, type FormEvent } from 'react';
 import { useParams } from 'react-router';
 
 import {
   avaliarResposta,
   ErroDaApi,
+  listarMinhasDuvidas,
   perguntarAoTutor,
   type AvaliacaoDaResposta,
   type CitacaoDoTutor,
@@ -128,7 +130,23 @@ function AvaliarResposta({
   );
 }
 
-function Mensagem({ mensagem }: { mensagem: MensagemNaTela }) {
+type StatusDaDuvida = 'aberta' | 'respondida';
+
+/** A nota da dúvida enviada ao professor, com o status dela (DUV-RF-08). */
+function DuvidaEnviada({ status }: { status: StatusDaDuvida }) {
+  return (
+    <div className="mt-2 text-sm">
+      <p className="font-bold text-success-text">Dúvida enviada ao professor, sem o seu nome.</p>
+      <p className="text-ink-muted">
+        {status === 'respondida'
+          ? 'O professor marcou como respondida em aula.'
+          : 'Aguardando o professor tratar em aula.'}
+      </p>
+    </div>
+  );
+}
+
+function Mensagem({ mensagem, duvida }: { mensagem: MensagemNaTela; duvida?: StatusDaDuvida }) {
   if (mensagem.autor === 'aluno') {
     return (
       <li className="ml-auto max-w-[85%] rounded-lg bg-accent-soft p-3 text-ink">
@@ -152,6 +170,7 @@ function Mensagem({ mensagem }: { mensagem: MensagemNaTela }) {
         {mensagem.texto || (mensagem.respondendo ? 'O tutor está respondendo…' : '')}
       </p>
       <Citacoes citacoes={mensagem.citacoes} />
+      {duvida && <DuvidaEnviada status={duvida} />}
       {mensagem.id !== undefined &&
         (mensagem.tipo === 'resposta' || mensagem.tipo === 'pistas') && (
           <AvaliarResposta mensagemId={mensagem.id} inicial={mensagem.avaliacao ?? ''} />
@@ -204,6 +223,13 @@ function PoliticaDeUso({ politica, modoPistas }: { politica: string; modoPistas:
 export function PaginaTutor() {
   const disciplinaId = Number(useParams().id);
   const tutor = useTutor(disciplinaId);
+  const minhasDuvidas = useQuery({
+    queryKey: ['minhas-duvidas', disciplinaId],
+    queryFn: () => listarMinhasDuvidas(disciplinaId),
+  });
+  const statusDasDuvidas = new Map(
+    (minhasDuvidas.data ?? []).map((duvida) => [duvida.mensagem_id, duvida.status]),
+  );
   const disciplina = useDisciplinas('').data?.find((d) => d.id === disciplinaId);
   const [novas, setNovas] = useState<MensagemNaTela[]>([]);
   const [pergunta, setPergunta] = useState('');
@@ -365,7 +391,13 @@ export function PaginaTutor() {
               ) : (
                 <ol aria-label="Conversa com o tutor" className="flex flex-col gap-3">
                   {mensagens.map((mensagem) => (
-                    <Mensagem key={mensagem.chave} mensagem={mensagem} />
+                    <Mensagem
+                      key={mensagem.chave}
+                      mensagem={mensagem}
+                      duvida={
+                        mensagem.id === undefined ? undefined : statusDasDuvidas.get(mensagem.id)
+                      }
+                    />
                   ))}
                 </ol>
               )}

@@ -308,3 +308,10 @@ export function listarNotificacoes(): Promise<Notificacoes> {
 export async function marcarNotificacaoComoLida(notificacaoId: number): Promise<void> {
   await enviar<undefined>(`/api/notificacoes/${notificacaoId}/lida`);
 }
+
+export type MinhaDuvida = components['schemas']['MinhaDuvida'];
+
+/** GET /api/disciplinas/{id}/minhas-duvidas: as dúvidas que o aluno enviou e o status de cada uma. */
+export function listarMinhasDuvidas(disciplinaId: number): Promise<MinhaDuvida[]> {
+  return requisitar<MinhaDuvida[]>(`/api/disciplinas/${disciplinaId}/minhas-duvidas`);
+}
