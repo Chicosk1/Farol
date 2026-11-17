@@ -15,6 +15,7 @@ dependencies = [
     "pgvector~=0.5.1",
     "psycopg[binary]~=3.3.9",
     "pypdf~=7.1.0",
+    "redis~=8.1",
 ]
 
 [project.optional-dependencies]
@@ -49,25 +50,25 @@ extend-exclude = ["*/migrations/*"]
 select = ["E", "F", "W", "I", "B", "UP", "DJ", "SIM"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["farol", "nucleo", "contas", "disciplinas", "materiais", "notificacoes", "ia", "demonstracao"]
+known-first-party = ["farol", "nucleo", "contas", "disciplinas", "materiais", "notificacoes", "tutor", "ia", "demonstracao"]
 
 # Fronteiras entre módulos da ADR 0007: lint-imports
 # Ao criar um módulo (por exemplo, tutor), acrescente-o em root_packages, nos contratos
 # 1, 2 e 4 e num contrato 3 próprio, copiado do de materiais.
 [tool.importlinter]
-root_packages = ["farol", "nucleo", "contas", "disciplinas", "materiais", "notificacoes", "ia", "demonstracao"]
+root_packages = ["farol", "nucleo", "contas", "disciplinas", "materiais", "notificacoes", "tutor", "ia", "demonstracao"]
 include_external_packages = true
 
 [[tool.importlinter.contracts]]
 name = "1. nucleo não depende de nenhum outro módulo do Farol"
 type = "forbidden"
 source_modules = ["nucleo"]
-forbidden_modules = ["farol", "contas", "disciplinas", "materiais", "notificacoes", "ia", "demonstracao"]
+forbidden_modules = ["farol", "contas", "disciplinas", "materiais", "notificacoes", "tutor", "ia", "demonstracao"]
 
 [[tool.importlinter.contracts]]
 name = "2. Camadas de cada módulo: api e tarefas usam servicos, que usa models"
 type = "layers"
-containers = ["nucleo", "contas", "disciplinas", "materiais", "notificacoes", "ia", "demonstracao"]
+containers = ["nucleo", "contas", "disciplinas", "materiais", "notificacoes", "tutor", "ia", "demonstracao"]
 layers = ["(api) | (tarefas)", "(servicos)", "(models)"]
 
 [[tool.importlinter.contracts]]
@@ -95,6 +96,14 @@ ignore_imports = ["** -> materiais.servicos", "*.testes.** -> materiais.**"]
 unmatched_ignore_imports_alerting = "none"
 
 [[tool.importlinter.contracts]]
+name = "3e. Os outros módulos usam tutor só pelo tutor.servicos"
+type = "protected"
+protected_modules = ["tutor.*"]
+allowed_importers = ["tutor", "farol"]
+ignore_imports = ["** -> tutor.servicos", "*.testes.** -> tutor.**"]
+unmatched_ignore_imports_alerting = "none"
+
+[[tool.importlinter.contracts]]
 name = "3f. Os outros módulos usam notificacoes só pelo notificacoes.servicos"
 type = "protected"
 protected_modules = ["notificacoes.*"]
@@ -115,5 +124,5 @@ unmatched_ignore_imports_alerting = "none"
 [[tool.importlinter.contracts]]
 name = "4. Só o módulo ia fala com o provedor de IA"
 type = "forbidden"
-source_modules = ["farol", "nucleo", "contas", "disciplinas", "materiais", "notificacoes", "demonstracao"]
+source_modules = ["farol", "nucleo", "contas", "disciplinas", "materiais", "notificacoes", "tutor", "demonstracao"]
 forbidden_modules = ["anthropic", "openai", "mistralai", "cohere"]

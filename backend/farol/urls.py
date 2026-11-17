@@ -14,6 +14,7 @@ urlpatterns = [
     path("api/", include("disciplinas.api.urls")),
     path("api/", include("materiais.api.urls")),
     path("api/", include("notificacoes.api.urls")),
+    path("api/", include("tutor.api.urls")),
     path("admin/", admin.site.urls),
 ]
 

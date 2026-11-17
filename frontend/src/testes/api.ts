@@ -1,6 +1,11 @@
 import { vi } from 'vitest';
 
-export type RespostaSimulada = { status?: number; corpo?: unknown };
+/** `corpo` vira JSON; `eventos` vira uma resposta SSE (text/event-stream), como a do tutor. */
+export type RespostaSimulada = {
+  status?: number;
+  corpo?: unknown;
+  eventos?: [string, unknown][];
+};
 type Rota = RespostaSimulada | ((chamada: ChamadaSimulada) => RespostaSimulada);
 
 export type ChamadaSimulada = {
@@ -47,7 +52,18 @@ export function simularApi(rotas: Record<string, Rota>) {
     if (!rota) {
       throw new Error(`Chamada não prevista no teste: ${metodo} ${caminho}`);
     }
-    const { status = 200, corpo } = typeof rota === 'function' ? rota(chamada) : rota;
+    const { status = 200, corpo, eventos } = typeof rota === 'function' ? rota(chamada) : rota;
+    if (eventos) {
+      const texto = eventos
+        .map(
+          ([evento, dados]) => `event: ${evento}
+data: ${JSON.stringify(dados)}
+
+`,
+        )
+        .join('');
+      return new Response(texto, { status, headers: { 'Content-Type': 'text/event-stream' } });
+    }
     return new Response(corpo === undefined ? null : JSON.stringify(corpo), {
       status,
       headers: { 'Content-Type': 'application/json' },

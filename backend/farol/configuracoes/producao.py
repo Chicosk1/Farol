@@ -22,6 +22,9 @@ ALLOWED_HOSTS = ambiente.lista(ambiente.obrigatoria("DJANGO_ALLOWED_HOSTS"))
 # S3 compatível fica para a fase 0 e não muda o código (ADR 0008).
 MEDIA_ROOT = Path(ambiente.obrigatoria("FAROL_ARQUIVOS"))
 
+# Sem segredo próprio, os identificadores pseudônimos seriam previsíveis.
+FAROL_SEGREDO_DO_PSEUDONIMO = ambiente.obrigatoria("FAROL_SEGREDO_PSEUDONIMO")
+
 # Em produção, o adaptador de IA é escolhido de propósito: nunca vale o falso por esquecimento.
 FAROL_IA = {"ADAPTADOR": ambiente.obrigatoria("FAROL_IA_ADAPTADOR")}
 

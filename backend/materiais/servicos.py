@@ -2,11 +2,13 @@
 
 import io
 import logging
+from dataclasses import dataclass
 
 from celery import current_app
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import transaction
+from pgvector.django import CosineDistance
 from pypdf import PdfReader
 from pypdf.errors import PyPdfError
 
@@ -310,3 +312,45 @@ def retirar_material(pessoa, perfil: str | None, material_id: int) -> Material:
         material.status = Material.Status.RETIRADO
         material.save(update_fields=["status"])
     return material
+
+
+@dataclass(frozen=True)
+class TrechoEncontrado:
+    """Um trecho achado pela busca, com a origem que vira a citação (aula e página)."""
+
+    id: int
+    material_id: int
+    aula_numero: int
+    pagina: int
+    texto: str
+    similaridade: float  # de 0 a 1; quanto maior, mais parecido com a pergunta
+
+
+def buscar_trechos(
+    disciplina_id: int, vetor: list[float], limite: int = 6
+) -> list[TrechoEncontrado]:
+    """Os `limite` trechos mais próximos do vetor, só da disciplina e só de material pronto.
+
+    Material em processamento, com erro, que precisa de atenção ou retirado nunca entra: o
+    professor é o dono do conteúdo (princípio I) e a retirada vale já na pergunta seguinte
+    (MAT-RF-10, MAT-CS-03). Quem decide se a similaridade basta é quem chama.
+    """
+    achados = (
+        Trecho.objects.filter(
+            material__disciplina_id=disciplina_id, material__status=Material.Status.PRONTO
+        )
+        .annotate(distancia=CosineDistance("vetor", vetor))
+        .select_related("material")
+        .order_by("distancia", "id")[:limite]
+    )
+    return [
+        TrechoEncontrado(
+            id=t.id,
+            material_id=t.material_id,
+            aula_numero=t.material.aula_numero,
+            pagina=t.pagina,
+            texto=t.texto,
+            similaridade=1.0 - float(t.distancia),
+        )
+        for t in achados
+    ]

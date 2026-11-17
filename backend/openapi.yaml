@@ -121,6 +121,85 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/disciplinas/{disciplina_id}/janelas-prova:
+    get:
+      operationId: disciplinas_janelas_prova_list
+      description: As janelas de prova da disciplina, só para o professor dela (TUT-RF-07).
+      summary: Janelas de prova em andamento e agendadas
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Janela'
+          description: ''
+    post:
+      operationId: disciplinas_janelas_prova_create
+      description: Sem início, a janela começa agora; sem fim, fica aberta até ser
+        apagada.
+      summary: Liga o modo prova agora ou agenda uma janela de prova
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NovaJanelaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NovaJanelaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NovaJanelaRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Janela'
+          description: ''
+  /api/disciplinas/{disciplina_id}/janelas-prova/{janela_id}:
+    delete:
+      operationId: disciplinas_janelas_prova_destroy
+      summary: Apaga uma janela de prova (desliga o modo prova)
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: janela_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/disciplinas/{disciplina_id}/materiais:
     get:
       operationId: disciplinas_materiais_list
@@ -174,6 +253,125 @@ paths:
               schema:
                 $ref: '#/components/schemas/MaterialEnviado'
           description: ''
+  /api/disciplinas/{disciplina_id}/tutor:
+    get:
+      operationId: disciplinas_tutor_retrieve
+      summary: 'O tutor da disciplina para o aluno: regras, pausa, uso do dia e conversa'
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstadoDoTutor'
+          description: ''
+  /api/disciplinas/{disciplina_id}/tutor/configuracao:
+    get:
+      operationId: disciplinas_tutor_configuracao_retrieve
+      description: O que o professor controla no tutor da disciplina (TUT-RF-06, TUT-RF-08
+        e TUT-RF-10).
+      summary: Configuração do tutor da disciplina
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuracao'
+          description: ''
+    patch:
+      operationId: disciplinas_tutor_configuracao_partial_update
+      description: Só os campos enviados mudam. O limite aceita 20, 40 ou 60 perguntas
+        por dia.
+      summary: Muda o modo pistas, o limite diário ou a política de uso de IA
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedConfiguracaoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedConfiguracaoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedConfiguracaoRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuracao'
+          description: ''
+  /api/disciplinas/{disciplina_id}/tutor/perguntas:
+    post:
+      operationId: disciplinas_tutor_perguntas_create
+      description: 'Resposta em eventos SSE: inicio {conversa_id}, texto {texto} (aos
+        poucos), citacao {ordem, rotulo, trecho_id, material_id, pagina}, fim {tipo,
+        mensagem_id} ou erro {mensagem}. O tipo do fim é resposta, pistas ou nao_encontrado.'
+      summary: Pergunta ao tutor da disciplina, com a resposta em streaming
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerguntaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PerguntaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PerguntaRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            text/event-stream:
+              schema:
+                type: string
+          description: ''
+        '423':
+          description: O tutor está pausado durante a prova.
+        '429':
+          description: O aluno chegou ao limite de perguntas de hoje.
+        '503':
+          description: O provedor de IA está indisponível.
   /api/eu:
     get:
       operationId: eu_retrieve
@@ -331,6 +529,37 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /api/mensagens/{mensagem_id}/avaliacao:
+    put:
+      operationId: mensagens_avaliacao_update
+      description: Vazio desfaz a marcação. A resposta incorreta entra na fila de
+        revisão da equipe. Mensagem que não é do aluno recebe 404.
+      summary: Avalia uma resposta do tutor como útil, não útil ou incorreta
+      parameters:
+      - in: path
+        name: mensagem_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvaliacaoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AvaliacaoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AvaliacaoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/notificacoes:
     get:
       operationId: notificacoes_retrieve
@@ -395,6 +624,35 @@ paths:
           description: ''
 components:
   schemas:
+    AutorEnum:
+      enum:
+      - aluno
+      - tutor
+      type: string
+      description: |-
+        * `aluno` - Aluno
+        * `tutor` - Tutor
+    AvaliacaoEnum:
+      enum:
+      - util
+      - nao_util
+      - incorreta
+      type: string
+      description: |-
+        * `` - Sem avaliação
+        * `util` - Útil
+        * `nao_util` - Não útil
+        * `incorreta` - Incorreta
+    AvaliacaoRequest:
+      type: object
+      description: util, nao_util ou incorreta; vazio desfaz a marcação.
+      properties:
+        avaliacao:
+          oneOf:
+          - $ref: '#/components/schemas/AvaliacaoEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+      required:
+      - avaliacao
     AvisoDePrivacidade:
       type: object
       properties:
@@ -410,6 +668,9 @@ components:
       - itens
       - titulo
       - versao
+    BlankEnum:
+      enum:
+      - ''
     CienciaDoAvisoRequest:
       type: object
       properties:
@@ -419,6 +680,46 @@ components:
           description: A versão do aviso que a pessoa leu.
       required:
       - versao
+    Citacao:
+      type: object
+      description: A citação como o evento citacao da resposta em streaming.
+      properties:
+        ordem:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        rotulo:
+          type: string
+          readOnly: true
+        trecho_id:
+          type: integer
+          readOnly: true
+        material_id:
+          type: integer
+          readOnly: true
+        pagina:
+          type: integer
+          readOnly: true
+      required:
+      - material_id
+      - ordem
+      - pagina
+      - rotulo
+      - trecho_id
+    Configuracao:
+      type: object
+      properties:
+        modo_pistas:
+          type: boolean
+        limite_diario:
+          allOf:
+          - $ref: '#/components/schemas/LimiteDiarioEnum'
+          title: Limite diário
+          minimum: 0
+          maximum: 32767
+        politica:
+          type: string
+          title: Política de uso de IA
     Disciplina:
       type: object
       properties:
@@ -482,6 +783,36 @@ components:
       - arquivo
       - aula_numero
       - aula_titulo
+    EstadoDoTutor:
+      type: object
+      properties:
+        modo_pistas:
+          type: boolean
+        politica:
+          type: string
+        pausado:
+          type: boolean
+        uso:
+          $ref: '#/components/schemas/UsoDoDia'
+        conversa_id:
+          type: integer
+          nullable: true
+        mensagens:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mensagem'
+        sugestoes:
+          type: array
+          items:
+            type: string
+      required:
+      - conversa_id
+      - mensagens
+      - modo_pistas
+      - pausado
+      - politica
+      - sugestoes
+      - uso
     EtapaEnum:
       enum:
       - enviando
@@ -590,6 +921,33 @@ components:
       required:
       - texto
       - titulo
+    Janela:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        inicio:
+          type: string
+          format: date-time
+          title: Início
+        fim:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - id
+      - inicio
+    LimiteDiarioEnum:
+      enum:
+      - 20
+      - 40
+      - 60
+      type: integer
+      description: |-
+        * `20` - 20 perguntas por dia
+        * `40` - 40 perguntas por dia
+        * `60` - 60 perguntas por dia
     LinhaRejeitada:
       type: object
       properties:
@@ -679,6 +1037,50 @@ components:
       required:
       - material_id
       - status
+    Mensagem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        autor:
+          $ref: '#/components/schemas/AutorEnum'
+        texto:
+          type: string
+        tipo:
+          $ref: '#/components/schemas/MensagemTipoEnum'
+        avaliacao:
+          title: Avaliação
+          oneOf:
+          - $ref: '#/components/schemas/AvaliacaoEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        criada_em:
+          type: string
+          format: date-time
+        citacoes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Citacao'
+          readOnly: true
+      required:
+      - autor
+      - citacoes
+      - id
+      - texto
+    MensagemTipoEnum:
+      enum:
+      - resposta
+      - pistas
+      - nao_encontrado
+      - saudacao
+      - erro
+      type: string
+      description: |-
+        * `resposta` - Resposta
+        * `pistas` - Modo pistas
+        * `nao_encontrado` - Não encontrei no material
+        * `saudacao` - Saudação
+        * `erro` - Erro
     Notificacao:
       type: object
       properties:
@@ -686,7 +1088,7 @@ components:
           type: integer
           readOnly: true
         tipo:
-          $ref: '#/components/schemas/TipoEnum'
+          $ref: '#/components/schemas/NotificacaoTipoEnum'
         texto:
           type: string
           maxLength: 300
@@ -702,6 +1104,16 @@ components:
       - id
       - texto
       - tipo
+    NotificacaoTipoEnum:
+      enum:
+      - material_pronto
+      - material_atencao
+      - material_erro
+      type: string
+      description: |-
+        * `material_pronto` - Material pronto
+        * `material_atencao` - Material precisa de atenção
+        * `material_erro` - Material com erro
     Notificacoes:
       type: object
       properties:
@@ -714,9 +1126,35 @@ components:
       required:
       - nao_lidas
       - notificacoes
+    NovaJanelaRequest:
+      type: object
+      description: Sem início, a janela começa agora (modo prova imediato); sem fim,
+        fica aberta.
+      properties:
+        inicio:
+          type: string
+          format: date-time
+        fim:
+          type: string
+          format: date-time
+          nullable: true
     NullEnum:
       enum:
       - null
+    PatchedConfiguracaoRequest:
+      type: object
+      properties:
+        modo_pistas:
+          type: boolean
+        limite_diario:
+          allOf:
+          - $ref: '#/components/schemas/LimiteDiarioEnum'
+          title: Limite diário
+          minimum: 0
+          maximum: 32767
+        politica:
+          type: string
+          title: Política de uso de IA
     PerfilEnum:
       enum:
       - aluno
@@ -729,6 +1167,15 @@ components:
         * `professor` - Professor
         * `coordenacao` - Coordenação
         * `admin` - Administrador
+    PerguntaRequest:
+      type: object
+      properties:
+        texto:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+      - texto
     Saude:
       type: object
       properties:
@@ -763,16 +1210,6 @@ components:
         * `atencao` - Precisa de atenção
         * `erro` - Erro, tente de novo
         * `retirado` - Retirado
-    TipoEnum:
-      enum:
-      - material_pronto
-      - material_atencao
-      - material_erro
-      type: string
-      description: |-
-        * `material_pronto` - Material pronto
-        * `material_atencao` - Material precisa de atenção
-        * `material_erro` - Material com erro
     TrocaDePerfilRequest:
       type: object
       properties:
@@ -780,6 +1217,16 @@ components:
           $ref: '#/components/schemas/PerfilEnum'
       required:
       - perfil
+    UsoDoDia:
+      type: object
+      properties:
+        usadas:
+          type: integer
+        limite:
+          type: integer
+      required:
+      - limite
+      - usadas
   securitySchemes:
     cookieAuth:
       type: apiKey

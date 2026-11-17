@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "disciplinas",
     "materiais",
     "notificacoes",
+    "tutor",
     "ia",
     "demonstracao",
 ]
@@ -47,6 +48,21 @@ FAROL_ACESSO = {
 # Limites do PDF de uma aula (spec 002, decisão provisória a confirmar com o dono do produto).
 FAROL_PDF_MAX_BYTES = 50 * 1024 * 1024
 FAROL_PDF_MAX_PAGINAS = 300
+
+# Similaridade mínima (0 a 1) para um trecho valer como base da resposta do tutor. Abaixo dela, o
+# tutor responde "não encontrei" sem chamar o modelo (TUT-RF-04). O valor foi calibrado com o
+# adaptador falso e precisa ser recalibrado com o provedor real, pelo conjunto de avaliação.
+FAROL_TUTOR_SIMILARIDADE_MINIMA = 0.3
+
+# Preço do provedor de IA por mil tokens, em reais, para o custo de cada pergunta (TUT-RNF-05).
+# Fica em zero até a escolha do provedor (ADR 0005).
+FAROL_IA_PRECO_POR_MIL_TOKENS = {"entrada": "0", "saida": "0"}
+
+# Segredo do identificador pseudônimo do aluno (nucleo/pseudonimo.py). Fica fora do banco; trocá-lo
+# muda todos os identificadores. O padrão só serve ao desenvolvimento e aos testes.
+FAROL_SEGREDO_DO_PSEUDONIMO = ambiente.opcional(
+    "FAROL_SEGREDO_PSEUDONIMO", "pseudonimo-de-desenvolvimento-nao-use-em-producao"
+)
 
 # Tamanho dos vetores de busca dos trechos. É fixo no banco: trocar o modelo de embeddings por
 # um de outro tamanho exige uma migração (docs/arquitetura.md).
@@ -114,6 +130,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Tarefas em segundo plano: Celery com a fila no Redis (docs/arquitetura.md).
 CELERY_BROKER_URL = ambiente.opcional("REDIS_URL", "redis://localhost:6379/0")
+
+# Redis do contador diário de perguntas ao tutor (TUT-RF-08). O mesmo servidor da fila.
+FAROL_REDIS_URL = CELERY_BROKER_URL
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_IGNORE_RESULT = True
 
