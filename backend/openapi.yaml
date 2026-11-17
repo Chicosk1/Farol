@@ -4,9 +4,577 @@ info:
   version: 0.1.0
   description: API REST do Farol, tutor de estudos com IA da UNIMATER.
 paths:
+  /api/aviso-privacidade:
+    get:
+      operationId: aviso_privacidade_retrieve
+      summary: Texto da versão atual do aviso de privacidade
+      tags:
+      - contas
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvisoDePrivacidade'
+          description: ''
+  /api/dev/entrar:
+    post:
+      operationId: dev_entrar_create
+      description: |-
+        Abre a sessão de uma pessoa fictícia pelo e-mail. A rota só existe com
+        FAROL_LOGIN_DESENVOLVIMENTO ligado (ACE-RNF-03).
+      summary: Entra pelo e-mail, sem login institucional (só desenvolvimento e teste)
+      tags:
+      - desenvolvimento
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntradaDeDesenvolvimentoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EntradaDeDesenvolvimentoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EntradaDeDesenvolvimentoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Eu'
+          description: ''
+  /api/disciplinas:
+    get:
+      operationId: disciplinas_list
+      summary: Disciplinas da pessoa no perfil em uso
+      parameters:
+      - in: query
+        name: busca
+        schema:
+          type: string
+          default: ''
+          maxLength: 100
+      - in: query
+        name: filtro
+        schema:
+          enum:
+          - todas
+          - favoritas
+          - com-tutor
+          type: string
+          default: todas
+          minLength: 1
+        description: |-
+          * `todas` - todas
+          * `favoritas` - favoritas
+          * `com-tutor` - com-tutor
+      tags:
+      - disciplinas
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Disciplina'
+          description: ''
+  /api/disciplinas/{disciplina_id}/favorito:
+    put:
+      operationId: disciplinas_favorito_update
+      summary: Marca a disciplina como favorita
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - disciplinas
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+    delete:
+      operationId: disciplinas_favorito_destroy
+      summary: Marca a disciplina como favorita
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - disciplinas
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/disciplinas/{disciplina_id}/janelas-prova:
+    get:
+      operationId: disciplinas_janelas_prova_list
+      description: As janelas de prova da disciplina, só para o professor dela (TUT-RF-07).
+      summary: Janelas de prova em andamento e agendadas
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Janela'
+          description: ''
+    post:
+      operationId: disciplinas_janelas_prova_create
+      description: Sem início, a janela começa agora; sem fim, fica aberta até ser
+        apagada.
+      summary: Liga o modo prova agora ou agenda uma janela de prova
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NovaJanelaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NovaJanelaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NovaJanelaRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Janela'
+          description: ''
+  /api/disciplinas/{disciplina_id}/janelas-prova/{janela_id}:
+    delete:
+      operationId: disciplinas_janelas_prova_destroy
+      summary: Apaga uma janela de prova (desliga o modo prova)
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: janela_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/disciplinas/{disciplina_id}/materiais:
+    get:
+      operationId: disciplinas_materiais_list
+      description: O professor e a administração veem todos, com status, etapa e avisos;
+        o aluno vê só os prontos, apenas com id, aula, título e páginas.
+      summary: Materiais da disciplina
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - materiais
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MaterialDoProfessor'
+          description: ''
+    post:
+      operationId: disciplinas_materiais_create
+      description: Guarda o PDF, cria o material e põe o processamento na fila (MAT-RF-01
+        a 03).
+      summary: Envia o PDF de uma aula da disciplina
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - materiais
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EnvioDeMaterialRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaterialEnviado'
+          description: ''
+  /api/disciplinas/{disciplina_id}/tutor:
+    get:
+      operationId: disciplinas_tutor_retrieve
+      summary: 'O tutor da disciplina para o aluno: regras, pausa, uso do dia e conversa'
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstadoDoTutor'
+          description: ''
+  /api/disciplinas/{disciplina_id}/tutor/configuracao:
+    get:
+      operationId: disciplinas_tutor_configuracao_retrieve
+      description: O que o professor controla no tutor da disciplina (TUT-RF-06, TUT-RF-08
+        e TUT-RF-10).
+      summary: Configuração do tutor da disciplina
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuracao'
+          description: ''
+    patch:
+      operationId: disciplinas_tutor_configuracao_partial_update
+      description: Só os campos enviados mudam. O limite aceita 20, 40 ou 60 perguntas
+        por dia.
+      summary: Muda o modo pistas, o limite diário ou a política de uso de IA
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedConfiguracaoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedConfiguracaoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedConfiguracaoRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuracao'
+          description: ''
+  /api/disciplinas/{disciplina_id}/tutor/perguntas:
+    post:
+      operationId: disciplinas_tutor_perguntas_create
+      description: 'Resposta em eventos SSE: inicio {conversa_id}, texto {texto} (aos
+        poucos), citacao {ordem, rotulo, trecho_id, material_id, pagina}, fim {tipo,
+        mensagem_id} ou erro {mensagem}. O tipo do fim é resposta, pistas ou nao_encontrado.'
+      summary: Pergunta ao tutor da disciplina, com a resposta em streaming
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerguntaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PerguntaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PerguntaRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            text/event-stream:
+              schema:
+                type: string
+          description: ''
+        '423':
+          description: O tutor está pausado durante a prova.
+        '429':
+          description: O aluno chegou ao limite de perguntas de hoje.
+        '503':
+          description: O provedor de IA está indisponível.
+  /api/eu:
+    get:
+      operationId: eu_retrieve
+      summary: A pessoa que está logada
+      tags:
+      - contas
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Eu'
+          description: ''
+  /api/eu/ciencia-privacidade:
+    post:
+      operationId: eu_ciencia_privacidade_create
+      summary: Registra que a pessoa leu a versão atual do aviso de privacidade
+      tags:
+      - contas
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CienciaDoAvisoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CienciaDoAvisoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CienciaDoAvisoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/eu/perfil-ativo:
+    post:
+      operationId: eu_perfil_ativo_create
+      summary: Troca o perfil em uso, sem sair
+      tags:
+      - contas
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrocaDePerfilRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TrocaDePerfilRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TrocaDePerfilRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Eu'
+          description: ''
+  /api/importacoes:
+    post:
+      operationId: importacoes_create
+      description: Guarda o arquivo e põe o processamento na fila. O relatório sai
+        em GET /importacoes/{id}.
+      summary: Envia um CSV de turmas e matrículas (só administrador)
+      tags:
+      - importacoes
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EnvioDeImportacaoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportacaoCriada'
+          description: ''
+  /api/importacoes/{importacao_id}:
+    get:
+      operationId: importacoes_retrieve
+      summary: Relatório de uma importação (só administrador)
+      parameters:
+      - in: path
+        name: importacao_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - importacoes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Importacao'
+          description: ''
+  /api/materiais/{material_id}:
+    delete:
+      operationId: materiais_destroy
+      summary: Retira um material
+      parameters:
+      - in: path
+        name: material_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - materiais
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/materiais/{material_id}/arquivo:
+    get:
+      operationId: materiais_arquivo_retrieve
+      description: Serve o arquivo só para quem tem acesso à disciplina. O aluno só
+        abre material pronto. O parâmetro pagina é validado; o visualizador abre nessa
+        página (MAT-RF-09).
+      summary: Abre o PDF de um material
+      parameters:
+      - in: path
+        name: material_id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: pagina
+        schema:
+          type: integer
+          minimum: 1
+        description: Página em que o visualizador deve abrir.
+      tags:
+      - materiais
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          description: ''
+  /api/mensagens/{mensagem_id}/avaliacao:
+    put:
+      operationId: mensagens_avaliacao_update
+      description: Vazio desfaz a marcação. A resposta incorreta entra na fila de
+        revisão da equipe. Mensagem que não é do aluno recebe 404.
+      summary: Avalia uma resposta do tutor como útil, não útil ou incorreta
+      parameters:
+      - in: path
+        name: mensagem_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvaliacaoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AvaliacaoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AvaliacaoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/sair:
+    post:
+      operationId: sair_create
+      summary: Encerra a sessão
+      tags:
+      - contas
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
   /api/saude:
     get:
-      operationId: api_saude_retrieve
+      operationId: saude_retrieve
       description: Diz que a API está no ar. Usada pelo Docker Compose e pelo monitoramento;
         não exige login.
       summary: Saúde da API
@@ -24,6 +592,499 @@ paths:
           description: ''
 components:
   schemas:
+    AutorEnum:
+      enum:
+      - aluno
+      - tutor
+      type: string
+      description: |-
+        * `aluno` - Aluno
+        * `tutor` - Tutor
+    AvaliacaoEnum:
+      enum:
+      - util
+      - nao_util
+      - incorreta
+      type: string
+      description: |-
+        * `` - Sem avaliação
+        * `util` - Útil
+        * `nao_util` - Não útil
+        * `incorreta` - Incorreta
+    AvaliacaoRequest:
+      type: object
+      description: util, nao_util ou incorreta; vazio desfaz a marcação.
+      properties:
+        avaliacao:
+          oneOf:
+          - $ref: '#/components/schemas/AvaliacaoEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+      required:
+      - avaliacao
+    AvisoDePrivacidade:
+      type: object
+      properties:
+        versao:
+          type: string
+        titulo:
+          type: string
+        itens:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemDoAviso'
+      required:
+      - itens
+      - titulo
+      - versao
+    BlankEnum:
+      enum:
+      - ''
+    CienciaDoAvisoRequest:
+      type: object
+      properties:
+        versao:
+          type: string
+          minLength: 1
+          description: A versão do aviso que a pessoa leu.
+      required:
+      - versao
+    Citacao:
+      type: object
+      description: A citação como o evento citacao da resposta em streaming.
+      properties:
+        ordem:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        rotulo:
+          type: string
+          readOnly: true
+        trecho_id:
+          type: integer
+          readOnly: true
+        material_id:
+          type: integer
+          readOnly: true
+        pagina:
+          type: integer
+          readOnly: true
+      required:
+      - material_id
+      - ordem
+      - pagina
+      - rotulo
+      - trecho_id
+    Configuracao:
+      type: object
+      properties:
+        modo_pistas:
+          type: boolean
+        limite_diario:
+          allOf:
+          - $ref: '#/components/schemas/LimiteDiarioEnum'
+          title: Limite diário
+          minimum: 0
+          maximum: 32767
+        politica:
+          type: string
+          title: Política de uso de IA
+    Disciplina:
+      type: object
+      properties:
+        id:
+          type: integer
+        codigo:
+          type: string
+        nome:
+          type: string
+        turma:
+          type: string
+        semestre:
+          type: string
+        professor_nome:
+          type: string
+        favorita:
+          type: boolean
+          description: Se a pessoa marcou a disciplina como favorita.
+      required:
+      - codigo
+      - favorita
+      - id
+      - nome
+      - professor_nome
+      - semestre
+      - turma
+    EntradaDeDesenvolvimentoRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+      required:
+      - email
+    EnvioDeImportacaoRequest:
+      type: object
+      properties:
+        arquivo:
+          type: string
+          format: binary
+          description: CSV em UTF-8, separado por vírgula, de até 5 MB.
+      required:
+      - arquivo
+    EnvioDeMaterialRequest:
+      type: object
+      properties:
+        arquivo:
+          type: string
+          format: binary
+          description: O PDF da aula.
+        aula_numero:
+          type: integer
+          maximum: 999
+          minimum: 1
+        aula_titulo:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - arquivo
+      - aula_numero
+      - aula_titulo
+    EstadoDoTutor:
+      type: object
+      properties:
+        modo_pistas:
+          type: boolean
+        politica:
+          type: string
+        pausado:
+          type: boolean
+        uso:
+          $ref: '#/components/schemas/UsoDoDia'
+        conversa_id:
+          type: integer
+          nullable: true
+        mensagens:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mensagem'
+        sugestoes:
+          type: array
+          items:
+            type: string
+      required:
+      - conversa_id
+      - mensagens
+      - modo_pistas
+      - pausado
+      - politica
+      - sugestoes
+      - uso
+    EtapaEnum:
+      enum:
+      - enviando
+      - lendo
+      - dividindo
+      - vetorizando
+      - pronto
+      type: string
+      description: |-
+        * `enviando` - Enviando arquivo
+        * `lendo` - Lendo as páginas
+        * `dividindo` - Dividindo em trechos
+        * `vetorizando` - Gerando a busca semântica
+        * `pronto` - Pronto para o tutor
+    Eu:
+      type: object
+      description: A pessoa que está usando o Farol, com os perfis dela e o perfil
+        em uso.
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        nome:
+          type: string
+        perfis:
+          type: array
+          items:
+            $ref: '#/components/schemas/PerfilEnum'
+        perfil_ativo:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/PerfilEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        precisa_ver_aviso:
+          type: boolean
+          description: Se o aluno ainda precisa ler a versão atual do aviso de privacidade.
+      required:
+      - email
+      - id
+      - nome
+      - perfil_ativo
+      - perfis
+      - precisa_ver_aviso
+    Importacao:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusDaImportacaoEnum'
+          readOnly: true
+        aceitas:
+          type: integer
+          readOnly: true
+          title: Linhas aceitas
+        rejeitadas:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinhaRejeitada'
+        matriculas_encerradas:
+          type: integer
+          readOnly: true
+          title: Matrículas encerradas
+        erro:
+          type: string
+          readOnly: true
+          title: Motivo da recusa
+          description: Problema que impediu de importar o arquivo.
+        aviso:
+          type: string
+          readOnly: true
+        enviada_em:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - aceitas
+      - aviso
+      - enviada_em
+      - erro
+      - id
+      - matriculas_encerradas
+      - rejeitadas
+      - status
+    ImportacaoCriada:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          $ref: '#/components/schemas/StatusDaImportacaoEnum'
+      required:
+      - id
+      - status
+    ItemDoAviso:
+      type: object
+      properties:
+        titulo:
+          type: string
+        texto:
+          type: string
+      required:
+      - texto
+      - titulo
+    Janela:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        inicio:
+          type: string
+          format: date-time
+          title: Início
+        fim:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - id
+      - inicio
+    LimiteDiarioEnum:
+      enum:
+      - 20
+      - 40
+      - 60
+      type: integer
+      description: |-
+        * `20` - 20 perguntas por dia
+        * `40` - 40 perguntas por dia
+        * `60` - 60 perguntas por dia
+    LinhaRejeitada:
+      type: object
+      properties:
+        linha:
+          type: integer
+          description: Número da linha no arquivo; o cabeçalho é a linha 1.
+        motivo:
+          type: string
+      required:
+      - linha
+      - motivo
+    MaterialDoProfessor:
+      type: object
+      description: 'O que o professor e a administração veem: todos os materiais,
+        com o andamento.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        aula_numero:
+          type: integer
+          readOnly: true
+          title: Número da aula
+        aula_titulo:
+          type: string
+          readOnly: true
+          title: Título da aula
+        paginas:
+          type: integer
+          readOnly: true
+          title: Páginas
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusDoMaterialEnum'
+          readOnly: true
+        status_rotulo:
+          type: string
+          readOnly: true
+        etapa:
+          allOf:
+          - $ref: '#/components/schemas/EtapaEnum'
+          readOnly: true
+          title: Etapa do processamento
+        etapa_rotulo:
+          type: string
+          readOnly: true
+        erro:
+          type: string
+          readOnly: true
+          title: Mensagem de erro
+        paginas_sem_texto:
+          type: array
+          items:
+            type: integer
+            maximum: 2147483647
+            minimum: 0
+          readOnly: true
+          title: Páginas sem texto
+        versao:
+          type: integer
+          readOnly: true
+          title: Versão
+        criado_em:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - aula_numero
+      - aula_titulo
+      - criado_em
+      - erro
+      - etapa
+      - etapa_rotulo
+      - id
+      - paginas
+      - paginas_sem_texto
+      - status
+      - status_rotulo
+      - versao
+    MaterialEnviado:
+      type: object
+      properties:
+        material_id:
+          type: integer
+        status:
+          $ref: '#/components/schemas/StatusDoMaterialEnum'
+      required:
+      - material_id
+      - status
+    Mensagem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        autor:
+          $ref: '#/components/schemas/AutorEnum'
+        texto:
+          type: string
+        tipo:
+          $ref: '#/components/schemas/TipoEnum'
+        avaliacao:
+          title: Avaliação
+          oneOf:
+          - $ref: '#/components/schemas/AvaliacaoEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        criada_em:
+          type: string
+          format: date-time
+        citacoes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Citacao'
+          readOnly: true
+      required:
+      - autor
+      - citacoes
+      - id
+      - texto
+    NovaJanelaRequest:
+      type: object
+      description: Sem início, a janela começa agora (modo prova imediato); sem fim,
+        fica aberta.
+      properties:
+        inicio:
+          type: string
+          format: date-time
+        fim:
+          type: string
+          format: date-time
+          nullable: true
+    NullEnum:
+      enum:
+      - null
+    PatchedConfiguracaoRequest:
+      type: object
+      properties:
+        modo_pistas:
+          type: boolean
+        limite_diario:
+          allOf:
+          - $ref: '#/components/schemas/LimiteDiarioEnum'
+          title: Limite diário
+          minimum: 0
+          maximum: 32767
+        politica:
+          type: string
+          title: Política de uso de IA
+    PerfilEnum:
+      enum:
+      - aluno
+      - professor
+      - coordenacao
+      - admin
+      type: string
+      description: |-
+        * `aluno` - Aluno
+        * `professor` - Professor
+        * `coordenacao` - Coordenação
+        * `admin` - Administrador
+    PerguntaRequest:
+      type: object
+      properties:
+        texto:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+      - texto
     Saude:
       type: object
       properties:
@@ -32,6 +1093,63 @@ components:
           description: Sempre "ok" quando a API está no ar.
       required:
       - status
+    StatusDaImportacaoEnum:
+      enum:
+      - pendente
+      - processando
+      - concluida
+      - recusada
+      type: string
+      description: |-
+        * `pendente` - Pendente
+        * `processando` - Processando
+        * `concluida` - Concluída
+        * `recusada` - Recusada
+    StatusDoMaterialEnum:
+      enum:
+      - processando
+      - pronto
+      - atencao
+      - erro
+      - retirado
+      type: string
+      description: |-
+        * `processando` - Processando
+        * `pronto` - Pronto para o tutor
+        * `atencao` - Precisa de atenção
+        * `erro` - Erro, tente de novo
+        * `retirado` - Retirado
+    TipoEnum:
+      enum:
+      - resposta
+      - pistas
+      - nao_encontrado
+      - saudacao
+      - erro
+      type: string
+      description: |-
+        * `resposta` - Resposta
+        * `pistas` - Modo pistas
+        * `nao_encontrado` - Não encontrei no material
+        * `saudacao` - Saudação
+        * `erro` - Erro
+    TrocaDePerfilRequest:
+      type: object
+      properties:
+        perfil:
+          $ref: '#/components/schemas/PerfilEnum'
+      required:
+      - perfil
+    UsoDoDia:
+      type: object
+      properties:
+        usadas:
+          type: integer
+        limite:
+          type: integer
+      required:
+      - limite
+      - usadas
   securitySchemes:
     cookieAuth:
       type: apiKey

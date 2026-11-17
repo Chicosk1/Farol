@@ -4,7 +4,7 @@
 | --- | --- |
 | Spec | [spec.md](./spec.md) |
 | Branch | `003-tutor-da-disciplina` |
-| Status | Em revisão |
+| Status | Aprovada |
 | Atualizado em | 2026-11-13 |
 
 ## Resumo
@@ -53,12 +53,14 @@ Contador diário no Redis: chave `limite:{disciplina}:{aluno}:{AAAA-MM-DD}` com 
 
 | Método e caminho | Entrada | Saída | Erros |
 | --- | --- | --- | --- |
-| `GET /api/disciplinas/{id}/tutor` | | Configuração, se está pausado, uso do dia, sugestões | 403 |
+| `GET /api/disciplinas/{id}/tutor` | | Modo pistas, política, se está pausado, uso do dia, a conversa guardada com as citações e as sugestões | 403 se não for aluno matriculado |
 | `POST /api/disciplinas/{id}/tutor/perguntas` | `{ texto }` (até 1.000 caracteres) | Stream de eventos (SSE): `inicio`, `texto`, `citacao`, `fim` com o tipo da resposta | 400 texto inválido, 423 modo prova, 429 limite atingido, 503 provedor indisponível |
 | `PUT /api/mensagens/{id}/avaliacao` | `{ avaliacao }` | 204 | 403 |
+| `GET /api/disciplinas/{id}/tutor/configuracao` | | Configuração | 403 se não for o professor |
 | `PATCH /api/disciplinas/{id}/tutor/configuracao` | `{ modo_pistas?, limite_diario?, politica? }` | Configuração | 403 se não for o professor |
-| `POST /api/disciplinas/{id}/janelas-prova` | `{ inicio, fim? }` | Janela | 400 se `fim` antes de `inicio` |
-| `DELETE /api/janelas-prova/{id}` | | 204 | |
+| `GET /api/disciplinas/{id}/janelas-prova` | | Janelas em andamento e agendadas | 403 se não for o professor |
+| `POST /api/disciplinas/{id}/janelas-prova` | `{ inicio?, fim? }` (sem `inicio`: modo prova imediato) | Janela | 400 se `fim` antes de `inicio` |
+| `DELETE /api/disciplinas/{id}/janelas-prova/{janela_id}` | | 204 | 404 se a janela não for da disciplina |
 
 Interface do módulo `ia/` (ADR 0005):
 

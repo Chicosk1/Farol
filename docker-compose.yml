@@ -22,8 +22,11 @@ x-backend: &backend
     REDIS_URL: redis://redis:6379/0
     EMAIL_HOST: mailpit
     EMAIL_PORT: "1025"
+    # Pasta dos arquivos enviados, compartilhada pelo backend e pelo worker.
+    FAROL_ARQUIVOS: /arquivos
   volumes:
     - ./backend:/app
+    - arquivos:/arquivos
   depends_on:
     db:
       condition: service_healthy
@@ -115,3 +118,4 @@ services:
 
 volumes:
   dados-db:
+  arquivos:

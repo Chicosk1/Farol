@@ -4,7 +4,7 @@
 | --- | --- |
 | Código | `ACE` |
 | Branch | `001-acesso-e-turmas` |
-| Status | Em revisão |
+| Status | Aprovada |
 | Criada em | 2026-11-13 |
 | Origem | Documento de idealização, seção "Base comum" |
 
@@ -146,3 +146,4 @@ Como aluno, quero instalar o Farol na tela inicial do celular, para abrir como u
 | --- | --- |
 | 2026-11-13 | Criação da spec a partir da idealização e do protótipo |
 | 2026-11-16 | Inclusão de ACE-RNF-03, por causa do login de desenvolvimento usado enquanto o provedor institucional não é definido |
+| 2026-11-16 | Aprovada pelo dono do produto, com as questões em aberto mantidas na tabela acima, cada uma com dono e prazo |

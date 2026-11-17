@@ -4,7 +4,7 @@
 | --- | --- |
 | Código | `TUT` |
 | Branch | `003-tutor-da-disciplina` |
-| Status | Em revisão |
+| Status | Aprovada |
 | Criada em | 2026-11-13 |
 | Origem | Documento de idealização, funcionalidade F1 |
 
@@ -173,3 +173,4 @@ Como aluno, quero ver a política de uso de IA que o professor definiu, para sab
 | Data | Mudança |
 | --- | --- |
 | 2026-11-13 | Criação da spec a partir da idealização e do protótipo |
+| 2026-11-16 | Aprovada pelo dono do produto |

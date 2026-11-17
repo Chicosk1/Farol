@@ -4,6 +4,367 @@
  */
 
 export interface paths {
+    "/api/aviso-privacidade": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Texto da versão atual do aviso de privacidade */
+        get: operations["aviso_privacidade_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/dev/entrar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Entra pelo e-mail, sem login institucional (só desenvolvimento e teste)
+         * @description Abre a sessão de uma pessoa fictícia pelo e-mail. A rota só existe com
+         *     FAROL_LOGIN_DESENVOLVIMENTO ligado (ACE-RNF-03).
+         */
+        post: operations["dev_entrar_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/disciplinas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Disciplinas da pessoa no perfil em uso */
+        get: operations["disciplinas_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/disciplinas/{disciplina_id}/favorito": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Marca a disciplina como favorita */
+        put: operations["disciplinas_favorito_update"];
+        post?: never;
+        /** Marca a disciplina como favorita */
+        delete: operations["disciplinas_favorito_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/disciplinas/{disciplina_id}/janelas-prova": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Janelas de prova em andamento e agendadas
+         * @description As janelas de prova da disciplina, só para o professor dela (TUT-RF-07).
+         */
+        get: operations["disciplinas_janelas_prova_list"];
+        put?: never;
+        /**
+         * Liga o modo prova agora ou agenda uma janela de prova
+         * @description Sem início, a janela começa agora; sem fim, fica aberta até ser apagada.
+         */
+        post: operations["disciplinas_janelas_prova_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/disciplinas/{disciplina_id}/janelas-prova/{janela_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Apaga uma janela de prova (desliga o modo prova) */
+        delete: operations["disciplinas_janelas_prova_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/disciplinas/{disciplina_id}/materiais": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Materiais da disciplina
+         * @description O professor e a administração veem todos, com status, etapa e avisos; o aluno vê só os prontos, apenas com id, aula, título e páginas.
+         */
+        get: operations["disciplinas_materiais_list"];
+        put?: never;
+        /**
+         * Envia o PDF de uma aula da disciplina
+         * @description Guarda o PDF, cria o material e põe o processamento na fila (MAT-RF-01 a 03).
+         */
+        post: operations["disciplinas_materiais_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/disciplinas/{disciplina_id}/tutor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** O tutor da disciplina para o aluno: regras, pausa, uso do dia e conversa */
+        get: operations["disciplinas_tutor_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/disciplinas/{disciplina_id}/tutor/configuracao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Configuração do tutor da disciplina
+         * @description O que o professor controla no tutor da disciplina (TUT-RF-06, TUT-RF-08 e TUT-RF-10).
+         */
+        get: operations["disciplinas_tutor_configuracao_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Muda o modo pistas, o limite diário ou a política de uso de IA
+         * @description Só os campos enviados mudam. O limite aceita 20, 40 ou 60 perguntas por dia.
+         */
+        patch: operations["disciplinas_tutor_configuracao_partial_update"];
+        trace?: never;
+    };
+    "/api/disciplinas/{disciplina_id}/tutor/perguntas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Pergunta ao tutor da disciplina, com a resposta em streaming
+         * @description Resposta em eventos SSE: inicio {conversa_id}, texto {texto} (aos poucos), citacao {ordem, rotulo, trecho_id, material_id, pagina}, fim {tipo, mensagem_id} ou erro {mensagem}. O tipo do fim é resposta, pistas ou nao_encontrado.
+         */
+        post: operations["disciplinas_tutor_perguntas_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/eu": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A pessoa que está logada */
+        get: operations["eu_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/eu/ciencia-privacidade": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Registra que a pessoa leu a versão atual do aviso de privacidade */
+        post: operations["eu_ciencia_privacidade_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/eu/perfil-ativo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Troca o perfil em uso, sem sair */
+        post: operations["eu_perfil_ativo_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/importacoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Envia um CSV de turmas e matrículas (só administrador)
+         * @description Guarda o arquivo e põe o processamento na fila. O relatório sai em GET /importacoes/{id}.
+         */
+        post: operations["importacoes_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/importacoes/{importacao_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Relatório de uma importação (só administrador) */
+        get: operations["importacoes_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/materiais/{material_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Retira um material */
+        delete: operations["materiais_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/materiais/{material_id}/arquivo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Abre o PDF de um material
+         * @description Serve o arquivo só para quem tem acesso à disciplina. O aluno só abre material pronto. O parâmetro pagina é validado; o visualizador abre nessa página (MAT-RF-09).
+         */
+        get: operations["materiais_arquivo_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mensagens/{mensagem_id}/avaliacao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Avalia uma resposta do tutor como útil, não útil ou incorreta
+         * @description Vazio desfaz a marcação. A resposta incorreta entra na fila de revisão da equipe. Mensagem que não é do aluno recebe 404.
+         */
+        put: operations["mensagens_avaliacao_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sair": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Encerra a sessão */
+        post: operations["sair_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/saude": {
         parameters: {
             query?: never;
@@ -15,7 +376,7 @@ export interface paths {
          * Saúde da API
          * @description Diz que a API está no ar. Usada pelo Docker Compose e pelo monitoramento; não exige login.
          */
-        get: operations["api_saude_retrieve"];
+        get: operations["saude_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -28,9 +389,257 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * @description * `aluno` - Aluno
+         *     * `tutor` - Tutor
+         * @enum {string}
+         */
+        AutorEnum: "aluno" | "tutor";
+        /**
+         * @description * `` - Sem avaliação
+         *     * `util` - Útil
+         *     * `nao_util` - Não útil
+         *     * `incorreta` - Incorreta
+         * @enum {string}
+         */
+        AvaliacaoEnum: "util" | "nao_util" | "incorreta";
+        /** @description util, nao_util ou incorreta; vazio desfaz a marcação. */
+        AvaliacaoRequest: {
+            avaliacao: components["schemas"]["AvaliacaoEnum"] | components["schemas"]["BlankEnum"];
+        };
+        AvisoDePrivacidade: {
+            versao: string;
+            titulo: string;
+            itens: components["schemas"]["ItemDoAviso"][];
+        };
+        /** @enum {unknown} */
+        BlankEnum: "";
+        CienciaDoAvisoRequest: {
+            /** @description A versão do aviso que a pessoa leu. */
+            versao: string;
+        };
+        /** @description A citação como o evento citacao da resposta em streaming. */
+        Citacao: {
+            ordem: number;
+            readonly rotulo: string;
+            readonly trecho_id: number;
+            readonly material_id: number;
+            readonly pagina: number;
+        };
+        Configuracao: {
+            modo_pistas?: boolean;
+            /** Limite diário */
+            limite_diario?: components["schemas"]["LimiteDiarioEnum"];
+            /** Política de uso de IA */
+            politica?: string;
+        };
+        Disciplina: {
+            id: number;
+            codigo: string;
+            nome: string;
+            turma: string;
+            semestre: string;
+            professor_nome: string;
+            /** @description Se a pessoa marcou a disciplina como favorita. */
+            favorita: boolean;
+        };
+        EntradaDeDesenvolvimentoRequest: {
+            /** Format: email */
+            email: string;
+        };
+        EnvioDeImportacaoRequest: {
+            /**
+             * Format: binary
+             * @description CSV em UTF-8, separado por vírgula, de até 5 MB.
+             */
+            arquivo: string;
+        };
+        EnvioDeMaterialRequest: {
+            /**
+             * Format: binary
+             * @description O PDF da aula.
+             */
+            arquivo: string;
+            aula_numero: number;
+            aula_titulo: string;
+        };
+        EstadoDoTutor: {
+            modo_pistas: boolean;
+            politica: string;
+            pausado: boolean;
+            uso: components["schemas"]["UsoDoDia"];
+            conversa_id: number | null;
+            mensagens: components["schemas"]["Mensagem"][];
+            sugestoes: string[];
+        };
+        /**
+         * @description * `enviando` - Enviando arquivo
+         *     * `lendo` - Lendo as páginas
+         *     * `dividindo` - Dividindo em trechos
+         *     * `vetorizando` - Gerando a busca semântica
+         *     * `pronto` - Pronto para o tutor
+         * @enum {string}
+         */
+        EtapaEnum: "enviando" | "lendo" | "dividindo" | "vetorizando" | "pronto";
+        /** @description A pessoa que está usando o Farol, com os perfis dela e o perfil em uso. */
+        Eu: {
+            id: number;
+            /** Format: email */
+            email: string;
+            nome: string;
+            perfis: components["schemas"]["PerfilEnum"][];
+            perfil_ativo: (components["schemas"]["PerfilEnum"] | components["schemas"]["NullEnum"]) | null;
+            /** @description Se o aluno ainda precisa ler a versão atual do aviso de privacidade. */
+            precisa_ver_aviso: boolean;
+        };
+        Importacao: {
+            readonly id: number;
+            readonly status: components["schemas"]["StatusDaImportacaoEnum"];
+            /** Linhas aceitas */
+            readonly aceitas: number;
+            rejeitadas: components["schemas"]["LinhaRejeitada"][];
+            /** Matrículas encerradas */
+            readonly matriculas_encerradas: number;
+            /**
+             * Motivo da recusa
+             * @description Problema que impediu de importar o arquivo.
+             */
+            readonly erro: string;
+            readonly aviso: string;
+            /** Format: date-time */
+            readonly enviada_em: string;
+        };
+        ImportacaoCriada: {
+            id: number;
+            status: components["schemas"]["StatusDaImportacaoEnum"];
+        };
+        ItemDoAviso: {
+            titulo: string;
+            texto: string;
+        };
+        Janela: {
+            readonly id: number;
+            /**
+             * Início
+             * Format: date-time
+             */
+            inicio: string;
+            /** Format: date-time */
+            fim?: string | null;
+        };
+        /**
+         * @description * `20` - 20 perguntas por dia
+         *     * `40` - 40 perguntas por dia
+         *     * `60` - 60 perguntas por dia
+         * @enum {integer}
+         */
+        LimiteDiarioEnum: 20 | 40 | 60;
+        LinhaRejeitada: {
+            /** @description Número da linha no arquivo; o cabeçalho é a linha 1. */
+            linha: number;
+            motivo: string;
+        };
+        /** @description O que o professor e a administração veem: todos os materiais, com o andamento. */
+        MaterialDoProfessor: {
+            readonly id: number;
+            /** Número da aula */
+            readonly aula_numero: number;
+            /** Título da aula */
+            readonly aula_titulo: string;
+            /** Páginas */
+            readonly paginas: number;
+            readonly status: components["schemas"]["StatusDoMaterialEnum"];
+            readonly status_rotulo: string;
+            /** Etapa do processamento */
+            readonly etapa: components["schemas"]["EtapaEnum"];
+            readonly etapa_rotulo: string;
+            /** Mensagem de erro */
+            readonly erro: string;
+            /** Páginas sem texto */
+            readonly paginas_sem_texto: number[];
+            /** Versão */
+            readonly versao: number;
+            /** Format: date-time */
+            readonly criado_em: string;
+        };
+        MaterialEnviado: {
+            material_id: number;
+            status: components["schemas"]["StatusDoMaterialEnum"];
+        };
+        Mensagem: {
+            readonly id: number;
+            autor: components["schemas"]["AutorEnum"];
+            texto: string;
+            tipo?: components["schemas"]["TipoEnum"];
+            /** Avaliação */
+            avaliacao?: components["schemas"]["AvaliacaoEnum"] | components["schemas"]["BlankEnum"];
+            /** Format: date-time */
+            criada_em?: string;
+            readonly citacoes: components["schemas"]["Citacao"][];
+        };
+        /** @description Sem início, a janela começa agora (modo prova imediato); sem fim, fica aberta. */
+        NovaJanelaRequest: {
+            /** Format: date-time */
+            inicio?: string;
+            /** Format: date-time */
+            fim?: string | null;
+        };
+        /** @enum {unknown} */
+        NullEnum: null;
+        PatchedConfiguracaoRequest: {
+            modo_pistas?: boolean;
+            /** Limite diário */
+            limite_diario?: components["schemas"]["LimiteDiarioEnum"];
+            /** Política de uso de IA */
+            politica?: string;
+        };
+        /**
+         * @description * `aluno` - Aluno
+         *     * `professor` - Professor
+         *     * `coordenacao` - Coordenação
+         *     * `admin` - Administrador
+         * @enum {string}
+         */
+        PerfilEnum: "aluno" | "professor" | "coordenacao" | "admin";
+        PerguntaRequest: {
+            texto: string;
+        };
         Saude: {
             /** @description Sempre "ok" quando a API está no ar. */
             status: string;
+        };
+        /**
+         * @description * `pendente` - Pendente
+         *     * `processando` - Processando
+         *     * `concluida` - Concluída
+         *     * `recusada` - Recusada
+         * @enum {string}
+         */
+        StatusDaImportacaoEnum: "pendente" | "processando" | "concluida" | "recusada";
+        /**
+         * @description * `processando` - Processando
+         *     * `pronto` - Pronto para o tutor
+         *     * `atencao` - Precisa de atenção
+         *     * `erro` - Erro, tente de novo
+         *     * `retirado` - Retirado
+         * @enum {string}
+         */
+        StatusDoMaterialEnum: "processando" | "pronto" | "atencao" | "erro" | "retirado";
+        /**
+         * @description * `resposta` - Resposta
+         *     * `pistas` - Modo pistas
+         *     * `nao_encontrado` - Não encontrei no material
+         *     * `saudacao` - Saudação
+         *     * `erro` - Erro
+         * @enum {string}
+         */
+        TipoEnum: "resposta" | "pistas" | "nao_encontrado" | "saudacao" | "erro";
+        TrocaDePerfilRequest: {
+            perfil: components["schemas"]["PerfilEnum"];
+        };
+        UsoDoDia: {
+            usadas: number;
+            limite: number;
         };
     };
     responses: never;
@@ -41,7 +650,550 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    api_saude_retrieve: {
+    aviso_privacidade_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvisoDePrivacidade"];
+                };
+            };
+        };
+    };
+    dev_entrar_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EntradaDeDesenvolvimentoRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["EntradaDeDesenvolvimentoRequest"];
+                "multipart/form-data": components["schemas"]["EntradaDeDesenvolvimentoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Eu"];
+                };
+            };
+        };
+    };
+    disciplinas_list: {
+        parameters: {
+            query?: {
+                busca?: string;
+                /**
+                 * @description * `todas` - todas
+                 *     * `favoritas` - favoritas
+                 *     * `com-tutor` - com-tutor
+                 */
+                filtro?: "todas" | "favoritas" | "com-tutor";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Disciplina"][];
+                };
+            };
+        };
+    };
+    disciplinas_favorito_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    disciplinas_favorito_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    disciplinas_janelas_prova_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Janela"][];
+                };
+            };
+        };
+    };
+    disciplinas_janelas_prova_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["NovaJanelaRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["NovaJanelaRequest"];
+                "multipart/form-data": components["schemas"]["NovaJanelaRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Janela"];
+                };
+            };
+        };
+    };
+    disciplinas_janelas_prova_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+                janela_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    disciplinas_materiais_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaterialDoProfessor"][];
+                };
+            };
+        };
+    };
+    disciplinas_materiais_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["EnvioDeMaterialRequest"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaterialEnviado"];
+                };
+            };
+        };
+    };
+    disciplinas_tutor_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EstadoDoTutor"];
+                };
+            };
+        };
+    };
+    disciplinas_tutor_configuracao_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Configuracao"];
+                };
+            };
+        };
+    };
+    disciplinas_tutor_configuracao_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedConfiguracaoRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedConfiguracaoRequest"];
+                "multipart/form-data": components["schemas"]["PatchedConfiguracaoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Configuracao"];
+                };
+            };
+        };
+    };
+    disciplinas_tutor_perguntas_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PerguntaRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PerguntaRequest"];
+                "multipart/form-data": components["schemas"]["PerguntaRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": string;
+                };
+            };
+            /** @description O tutor está pausado durante a prova. */
+            423: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description O aluno chegou ao limite de perguntas de hoje. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description O provedor de IA está indisponível. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    eu_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Eu"];
+                };
+            };
+        };
+    };
+    eu_ciencia_privacidade_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CienciaDoAvisoRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CienciaDoAvisoRequest"];
+                "multipart/form-data": components["schemas"]["CienciaDoAvisoRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    eu_perfil_ativo_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TrocaDePerfilRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TrocaDePerfilRequest"];
+                "multipart/form-data": components["schemas"]["TrocaDePerfilRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Eu"];
+                };
+            };
+        };
+    };
+    importacoes_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["EnvioDeImportacaoRequest"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportacaoCriada"];
+                };
+            };
+        };
+    };
+    importacoes_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                importacao_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Importacao"];
+                };
+            };
+        };
+    };
+    materiais_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                material_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    materiais_arquivo_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Página em que o visualizador deve abrir. */
+                pagina?: number;
+            };
+            header?: never;
+            path: {
+                material_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
+                };
+            };
+        };
+    };
+    mensagens_avaliacao_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mensagem_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AvaliacaoRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AvaliacaoRequest"];
+                "multipart/form-data": components["schemas"]["AvaliacaoRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sair_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    saude_retrieve: {
         parameters: {
             query?: never;
             header?: never;

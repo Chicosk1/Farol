@@ -8,15 +8,23 @@ from . import ambiente
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 INSTALLED_APPS = [
+    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
+    "django.contrib.postgres",
     "django.contrib.sessions",
+    "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
     "drf_spectacular",
     # Módulos do Farol (ADR 0007)
     "nucleo",
     "contas",
+    "disciplinas",
+    "materiais",
+    "tutor",
+    "ia",
+    "demonstracao",
 ]
 
 MIDDLEWARE = [
@@ -25,8 +33,47 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+# Funções dos módulos que o núcleo usa na permissão por disciplina (nucleo/permissoes.py).
+# Indicá-las aqui mantém o núcleo sem depender de contas nem de disciplinas (ADR 0007).
+FAROL_ACESSO = {
+    "PERFIL_ATIVO": "contas.servicos.perfil_ativo",
+    "ACESSO_A_DISCIPLINA": "disciplinas.servicos.tem_acesso",
+}
+
+# Limites do PDF de uma aula (spec 002, decisão provisória a confirmar com o dono do produto).
+FAROL_PDF_MAX_BYTES = 50 * 1024 * 1024
+FAROL_PDF_MAX_PAGINAS = 300
+
+# Similaridade mínima (0 a 1) para um trecho valer como base da resposta do tutor. Abaixo dela, o
+# tutor responde "não encontrei" sem chamar o modelo (TUT-RF-04). O valor foi calibrado com o
+# adaptador falso e precisa ser recalibrado com o provedor real, pelo conjunto de avaliação.
+FAROL_TUTOR_SIMILARIDADE_MINIMA = 0.3
+
+# Preço do provedor de IA por mil tokens, em reais, para o custo de cada pergunta (TUT-RNF-05).
+# Fica em zero até a escolha do provedor (ADR 0005).
+FAROL_IA_PRECO_POR_MIL_TOKENS = {"entrada": "0", "saida": "0"}
+
+# Segredo do identificador pseudônimo do aluno (nucleo/pseudonimo.py). Fica fora do banco; trocá-lo
+# muda todos os identificadores. O padrão só serve ao desenvolvimento e aos testes.
+FAROL_SEGREDO_DO_PSEUDONIMO = ambiente.opcional(
+    "FAROL_SEGREDO_PSEUDONIMO", "pseudonimo-de-desenvolvimento-nao-use-em-producao"
+)
+
+# Tamanho dos vetores de busca dos trechos. É fixo no banco: trocar o modelo de embeddings por
+# um de outro tamanho exige uma migração (docs/arquitetura.md).
+FAROL_DIMENSAO_DO_VETOR = 256
+
+# Provedor de IA, atrás do módulo ia. Por padrão (desenvolvimento e testes) é o adaptador falso;
+# a produção precisa indicar o adaptador do provedor escolhido (ADR 0005).
+FAROL_IA = {"ADAPTADOR": "ia.adaptadores.falso.ProvedorFalso"}
+
+# Atalho para entrar sem o login institucional (POST /api/dev/entrar). Desligado por padrão:
+# só as configurações de desenvolvimento e de teste ligam (ACE-RNF-03).
+FAROL_LOGIN_DESENVOLVIMENTO = False
 
 ROOT_URLCONF = "farol.urls"
 WSGI_APPLICATION = "farol.wsgi.application"
@@ -40,6 +87,7 @@ TEMPLATES = [
             "context_processors": [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
@@ -69,6 +117,11 @@ TIME_ZONE = "America/Sao_Paulo"
 USE_I18N = True
 USE_TZ = True
 
+# Arquivos enviados (importações, e depois os PDFs dos professores). Em desenvolvimento e nos
+# testes ficam numa pasta local; em produção, o armazenamento é escolhido na fase 0 (ADR 0008).
+MEDIA_URL = "media/"
+MEDIA_ROOT = Path(ambiente.opcional("FAROL_ARQUIVOS", str(BASE_DIR / "media")))
+
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
@@ -76,6 +129,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Tarefas em segundo plano: Celery com a fila no Redis (docs/arquitetura.md).
 CELERY_BROKER_URL = ambiente.opcional("REDIS_URL", "redis://localhost:6379/0")
+
+# Redis do contador diário de perguntas ao tutor (TUT-RF-08). O mesmo servidor da fila.
+FAROL_REDIS_URL = CELERY_BROKER_URL
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_IGNORE_RESULT = True
 
@@ -87,7 +143,7 @@ DEFAULT_FROM_EMAIL = ambiente.opcional("DEFAULT_FROM_EMAIL", "Farol <nao-respond
 # API: sessão do Django na mesma origem, sem JWT (ADR 0007). Toda rota exige login,
 # a não ser que diga o contrário, como a rota de saúde.
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework.authentication.SessionAuthentication"],
+    "DEFAULT_AUTHENTICATION_CLASSES": ["nucleo.api.autenticacao.AutenticacaoPorSessao"],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
@@ -101,4 +157,10 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,
+    # Um só nome para o conjunto de perfis, nos campos perfis, perfil_ativo e perfil.
+    "ENUM_NAME_OVERRIDES": {
+        "PerfilEnum": "contas.models.Perfil.choices",
+        "StatusDaImportacaoEnum": "disciplinas.models.StatusDaImportacao",
+        "StatusDoMaterialEnum": "materiais.models.StatusDoMaterial",
+    },
 }

@@ -1,15 +1,13 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider, type QueryClient } from '@tanstack/react-query';
 import { useState, type ReactNode } from 'react';
 
-/** Provedores comuns a todas as telas. Os dados do servidor ficam no TanStack Query (ADR 0007). */
-export function Provedores({ children }: { children: ReactNode }) {
-  const [clienteDeDados] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: { staleTime: 30_000, retry: 1 },
-        },
-      }),
-  );
+import { criarClienteDeDados } from './clienteDeDados';
+
+/**
+ * Provedores comuns a todas as telas. Os dados do servidor ficam no TanStack Query (ADR 0007).
+ * Os testes passam o próprio cliente, por exemplo sem tentativas repetidas.
+ */
+export function Provedores({ children, cliente }: { children: ReactNode; cliente?: QueryClient }) {
+  const [clienteDeDados] = useState(() => cliente ?? criarClienteDeDados());
   return <QueryClientProvider client={clienteDeDados}>{children}</QueryClientProvider>;
 }

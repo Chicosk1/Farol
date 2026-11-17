@@ -14,9 +14,9 @@ As regras que valem para todas as funcionalidades estão na [constituição](../
 
 | Nº | Funcionalidade | Código | Fase do MVP | Status |
 | --- | --- | --- | --- | --- |
-| [001](001-acesso-e-turmas/spec.md) | Acesso e turmas | `ACE` | 1 | Em revisão |
-| [002](002-materiais-da-disciplina/spec.md) | Materiais da disciplina | `MAT` | 1 | Em revisão |
-| [003](003-tutor-da-disciplina/spec.md) | Tutor da disciplina | `TUT` | 1 | Em revisão |
+| [001](001-acesso-e-turmas/spec.md) | Acesso e turmas | `ACE` | 1 | Aprovada |
+| [002](002-materiais-da-disciplina/spec.md) | Materiais da disciplina | `MAT` | 1 | Aprovada |
+| [003](003-tutor-da-disciplina/spec.md) | Tutor da disciplina | `TUT` | 1 | Aprovada |
 | [004](004-duvidas-ao-professor/spec.md) | Dúvidas ao professor | `DUV` | 1 | Em revisão |
 | [005](005-questoes-e-quizzes/spec.md) | Questões e quizzes | `QUE` | 2 | Em revisão |
 | [006](006-revisao-do-dia/spec.md) | Revisão do dia | `REV` | 2 | Em revisão |

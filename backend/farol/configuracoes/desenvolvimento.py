@@ -5,6 +5,8 @@ from .base import *  # noqa: F403
 
 DEBUG = True
 
+FAROL_LOGIN_DESENVOLVIMENTO = True
+
 SECRET_KEY = ambiente.opcional("DJANGO_SECRET_KEY", "desenvolvimento-inseguro-nao-use-em-producao")
 
 ALLOWED_HOSTS = ambiente.lista(

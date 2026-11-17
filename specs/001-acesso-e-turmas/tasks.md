@@ -22,7 +22,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Primeira fatia: arquitetura de pé
 
-A primeira entrega do produto prova a arquitetura em todas as camadas com uma funcionalidade pequena: entrar (com o login de desenvolvimento) e ver as próprias disciplinas. Ela é formada pelas tarefas ACE-T10 a ACE-T19, ACE-T22, ACE-T24, ACE-T25, ACE-T30 a ACE-T33 e ACE-T35, nesta ordem. Cada tarefa leva os próprios testes, escritos antes do código, e vira um commit e um push. O login institucional (ACE-T20 e ACE-T21) fica para quando o provedor for definido.
+A primeira entrega do produto prova a arquitetura em todas as camadas com uma funcionalidade pequena: entrar (com o login de desenvolvimento) e ver as próprias disciplinas. Ela é formada pelas tarefas ACE-T10 a ACE-T19, ACE-T22, ACE-T24, ACE-T25, ACE-T26, ACE-T30, ACE-T27, ACE-T31 a ACE-T33, ACE-T35 e ACE-T36, nesta ordem. Cada tarefa leva os próprios testes, escritos antes do código, e vira um commit e um push. O login institucional (ACE-T20 e ACE-T21) fica para quando o provedor for definido.
 
 ## Produto: fundação do repositório
 
@@ -41,31 +41,36 @@ A primeira entrega do produto prova a arquitetura em todas as camadas com uma fu
 
 - [ ] ACE-T20 [P] [H1] Testes de aceite dos cenários 1 a 3 em `backend/contas/testes/test_login.py` (ACE-RF-01, ACE-RF-02)
 - [ ] ACE-T21 [H1] Login OpenID Connect com django-allauth, restrito ao domínio institucional (ACE-RF-01, ACE-RF-02)
-- [ ] ACE-T22 [H1] Perfis da `Pessoa` e rotas `GET /api/eu`, `POST /api/eu/perfil-ativo` e `POST /api/sair`, com testes (ACE-RF-03)
+- [x] ACE-T22 [H1] Perfis da `Pessoa` e rotas `GET /api/eu`, `POST /api/eu/perfil-ativo` e `POST /api/sair`, com testes (ACE-RF-03)
 - [ ] ACE-T23 [H1] Tela de entrada com o login institucional e troca de perfil no front-end (ACE-RF-01, ACE-RF-03)
-- [ ] ACE-T24 [H1] Login de desenvolvimento: rota `POST /api/dev/entrar`, botões "Entrar como aluna" e "Entrar como professor" e teste de que a rota não existe com as configurações de produção (ACE-RNF-03)
-- [ ] ACE-T25 [H2] Comando `popular_demo` com as pessoas, disciplinas e matrículas fictícias do protótipo, com teste (ACE-RF-04)
+- [x] ACE-T24 [H1] Login de desenvolvimento no back-end: rota `POST /api/dev/entrar` e teste de que a rota não existe com as configurações de produção (ACE-RNF-03)
+- [x] ACE-T25 [H2] Comando `popular_demo` com as pessoas fictícias do protótipo (Ana Souza e Carlos Mendes), com teste (ACE-RF-04)
+- [x] ACE-T26 [H1] Cliente de sessão no front-end (`/api/eu`, entrar, sair, token CSRF) e tela de entrada com os botões "Entrar como aluna" e "Entrar como professor", só em desenvolvimento (ACE-RNF-03)
+- [x] ACE-T27 [H2] Acrescentar ao `popular_demo` as seis disciplinas do 2º período e as matrículas, depois da ACE-T30, com teste (ACE-RF-04)
 
 ## Produto: História 2, ver só as minhas disciplinas (P1)
 
-- [ ] ACE-T30 [H2] Modelos `Disciplina` e `Matricula`, serviço de listagem com busca e rota `GET /api/disciplinas`, com testes dos cenários 1, 2 e 5 (ACE-RF-04, ACE-RF-10)
-- [ ] ACE-T31 [H2] Permissão por disciplina reutilizável em `backend/nucleo/`, com testes de acesso negado (ACE-RF-05)
-- [ ] ACE-T32 [H2] Favoritos: modelo `Favorito`, rotas `PUT` e `DELETE /api/disciplinas/{id}/favorito` e filtro Favoritas, com testes do cenário 3 (ACE-RF-10)
-- [ ] ACE-T33 [H2] Tela de disciplinas com lista, busca e alternância entre grade e lista, com testes de tela e de acessibilidade (ACE-RF-10)
-- [ ] ACE-T35 [H2] Abas Todas e Favoritas e botão de favoritar na tela de disciplinas, com testes (ACE-RF-10)
-- [ ] ACE-T34 [H2] Ligar a aba "Com tutor" ao serviço de materiais, depois da História 1 da spec 002, com testes do cenário 4 (ACE-RF-10)
+- [x] ACE-T30 [H2] Modelos `Disciplina` e `Matricula`, serviço de listagem com busca e rota `GET /api/disciplinas`, com testes dos cenários 1, 2 e 5 (ACE-RF-04, ACE-RF-10)
+- [x] ACE-T31 [H2] Permissão por disciplina reutilizável em `backend/nucleo/`, com testes de acesso negado (ACE-RF-05)
+- [x] ACE-T32 [H2] Favoritos: modelo `Favorito`, rotas `PUT` e `DELETE /api/disciplinas/{id}/favorito` e filtro Favoritas, com testes do cenário 3 (ACE-RF-10)
+- [x] ACE-T33 [H2] Tela de disciplinas com lista, busca e alternância entre grade e lista, com testes de tela e de acessibilidade (ACE-RF-10)
+- [x] ACE-T35 [H2] Abas Todas e Favoritas e botão de favoritar na tela de disciplinas, com testes (ACE-RF-10)
+- [x] ACE-T36 [H2] Disciplinas favoritas no topo da tela inicial, com testes do cenário 3 (ACE-RF-10)
+- [x] ACE-T34 [H2] Ligar a aba "Com tutor" ao serviço de materiais, depois da História 1 da spec 002, com testes do cenário 4 (ACE-RF-10)
 
 ## Produto: História 3, importar turmas (P2)
 
-- [ ] ACE-T40 [P] [H3] Testes com CSVs de exemplo válidos e inválidos em `backend/disciplinas/testes/test_importacao.py` (ACE-RF-06, ACE-RF-07)
-- [ ] ACE-T41 [H3] Importação assíncrona idempotente com relatório (ACE-RF-06, ACE-RF-07)
-- [ ] ACE-T42 [H3] Tela de importação no painel administrativo do Django (ACE-RF-06)
+- [x] ACE-T40 [H3] Testes com CSVs de exemplo válidos e inválidos em `backend/disciplinas/testes/test_importacao.py`, entregues junto da ACE-T41 (ACE-RF-06, ACE-RF-07)
+- [x] ACE-T41 [H3] Modelo `Importacao` e serviço de importação do CSV: validação sem importar nada pela metade, linhas aceitas e rejeitadas com o motivo, idempotência e encerramento das matrículas ausentes (ACE-RF-06, ACE-RF-07)
+- [x] ACE-T43 [H3] Tarefa Celery de importação e rotas `POST /api/importacoes` e `GET /api/importacoes/{id}`, só para o perfil administrador (ACE-RF-06)
+- [x] ACE-T42 [H3] Tela de importação no painel administrativo do Django, com o perfil administrador fictício no `popular_demo` (ACE-RF-06)
 
 ## Produto: História 4, saber o que é registrado (P2)
 
-- [ ] ACE-T50 [P] [H4] Testes do aviso versionado e da exclusão de histórico (ACE-RF-08, ACE-RF-09)
-- [ ] ACE-T51 [H4] Aviso de privacidade versionado e registro da ciência (ACE-RF-08)
-- [ ] ACE-T52 [H4] Tela "Meus dados" com exclusão do histórico (ACE-RF-09)
+- [x] ACE-T50 [H4] Testes do aviso versionado, entregues junto da ACE-T51; os da exclusão de histórico vão com a ACE-T52 (ACE-RF-08, ACE-RF-09)
+- [x] ACE-T51 [H4] Aviso de privacidade versionado no back-end: modelo `CienciaPrivacidade`, `GET /api/aviso-privacidade`, `POST /api/eu/ciencia-privacidade` e `precisa_ver_aviso` em `GET /api/eu` (ACE-RF-08)
+- [x] ACE-T53 [H4] Tela do aviso de privacidade no front-end, que bloqueia o uso até o aluno confirmar que leu (ACE-RF-08)
+- [ ] ACE-T52 [H4] Tela "Meus dados" com exclusão do histórico, depois da spec 003, com os testes da exclusão (ACE-RF-09)
 
 ## Produto: História 5, usar como app (P3)
 
