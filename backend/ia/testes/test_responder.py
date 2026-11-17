@@ -69,7 +69,7 @@ def test_com_o_modo_pistas_nas_regras_e_pedido_de_exercicio_responde_com_pista_e
 
     texto, _ = resposta(regras, [PILHA], "Me dá a resposta do exercício de pilha")
 
-    assert texto.startswith("Vamos por etapas")
+    assert texto.startswith("[PISTAS] Vamos por etapas")  # a marca que o servidor reconhece
     assert "[2]" in texto
     assert "LIFO" not in texto  # a pista não entrega o conteúdo pronto
 
@@ -79,7 +79,7 @@ def test_com_modo_pistas_uma_pergunta_conceitual_continua_sendo_respondida_norma
 
     texto, _ = resposta(regras, [PILHA], "O que é uma pilha?")
 
-    assert "LIFO" in texto and not texto.startswith("Vamos por etapas")
+    assert "LIFO" in texto and "[PISTAS]" not in texto
 
 
 def test_sem_modo_pistas_o_pedido_de_exercicio_e_respondido_com_o_conteudo():

@@ -6,7 +6,9 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 
+from .porta import EventoFim as EventoFim  # reexportados: os outros módulos usam os tipos
 from .porta import EventoResposta, ProvedorDeIA, TrechoNumerado
+from .porta import EventoTexto as EventoTexto
 
 
 def _provedor() -> ProvedorDeIA:

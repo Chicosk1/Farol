@@ -81,8 +81,8 @@ class _Respostas:
         if pistas and candidatos:
             numero = candidatos[0][0].numero
             return (
-                f"Vamos por etapas. Releia o trecho [{numero}] e me diga qual é o primeiro passo "
-                "para resolver o exercício."
+                f"[PISTAS] Vamos por etapas: releia o trecho [{numero}] e me diga qual é o "
+                "primeiro passo para resolver o exercício."
             )
         if not candidatos:  # o servidor só chama o modelo com trechos relevantes; por segurança
             return f"Veja o trecho [{trechos[0].numero}]."
