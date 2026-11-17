@@ -3,8 +3,11 @@
 from collections.abc import Iterator
 from dataclasses import dataclass, field
 
+from django.conf import settings
+
 from ia import servicos as ia
 from ia.servicos import EventoFim, EventoTexto, TrechoNumerado
+from materiais import servicos as materiais
 from materiais.servicos import TrechoEncontrado
 
 from .citacoes import ConversorDeCitacoes
@@ -122,3 +125,34 @@ def gerar_resposta(
         tokens.tokens_entrada,
         tokens.tokens_saida,
     )
+
+
+def _nao_encontrei() -> Iterator[EventoDoTutor]:
+    yield Texto(NAO_ENCONTREI)
+    yield Fim("nao_encontrado", NAO_ENCONTREI)
+
+
+def responder_pergunta(
+    disciplina_id: int, pergunta: str, modo_pistas: bool
+) -> Iterator[EventoDoTutor]:
+    """Busca os trechos da disciplina e responde só com os que passam do limite de similaridade.
+
+    Sem nenhum trecho relevante, responde "Não encontrei isso no material da disciplina." sem
+    chamar o modelo de linguagem (TUT-RF-04), o que também economiza custo. A pergunta já deve
+    chegar sem dados pessoais.
+    """
+    try:
+        vetor = ia.gerar_embedding(pergunta)
+    except ValueError:  # pergunta sem nenhuma palavra útil
+        yield from _nao_encontrei()
+        return
+    limite = settings.FAROL_TUTOR_SIMILARIDADE_MINIMA
+    relevantes = [
+        trecho
+        for trecho in materiais.buscar_trechos(disciplina_id, vetor)
+        if trecho.similaridade >= limite
+    ]
+    if not relevantes:
+        yield from _nao_encontrei()
+        return
+    yield from gerar_resposta(relevantes, pergunta, modo_pistas=modo_pistas)

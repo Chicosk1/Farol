@@ -42,7 +42,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 ## Produto: História 2, saber quando o material não responde (P1)
 
 - [x] TUT-T30 [H2] Testes com perguntas sem base, inclusive administrativas, entregues junto da TUT-T31 (TUT-RF-04, TUT-CS-04)
-- [ ] TUT-T31 [H2] Limite de similaridade e resposta "não encontrei" sem chamar o modelo (TUT-RF-04)
+- [x] TUT-T31 [H2] Limite de similaridade e resposta "não encontrei" sem chamar o modelo (TUT-RF-04)
 
 ## Produto: História 3, pistas em vez da resposta pronta (P1)
 

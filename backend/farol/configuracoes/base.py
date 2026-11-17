@@ -48,6 +48,11 @@ FAROL_ACESSO = {
 FAROL_PDF_MAX_BYTES = 50 * 1024 * 1024
 FAROL_PDF_MAX_PAGINAS = 300
 
+# Similaridade mínima (0 a 1) para um trecho valer como base da resposta do tutor. Abaixo dela, o
+# tutor responde "não encontrei" sem chamar o modelo (TUT-RF-04). O valor foi calibrado com o
+# adaptador falso e precisa ser recalibrado com o provedor real, pelo conjunto de avaliação.
+FAROL_TUTOR_SIMILARIDADE_MINIMA = 0.3
+
 # Segredo do identificador pseudônimo do aluno (nucleo/pseudonimo.py). Fica fora do banco; trocá-lo
 # muda todos os identificadores. O padrão só serve ao desenvolvimento e aos testes.
 FAROL_SEGREDO_DO_PSEUDONIMO = ambiente.opcional(
