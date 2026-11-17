@@ -409,3 +409,48 @@ def criar_nova_versao(pessoa, perfil: str | None, material_id: int, conteudo: by
     nova.arquivo.save(nome, ContentFile(conteudo), save=False)
     nova.save()
     return nova
+
+
+@dataclass(frozen=True)
+class TrechoParaAbrir:
+    """A página citada e onde fica o trecho nela, para destacar (MAT-RF-09)."""
+
+    material_id: int
+    aula_numero: int
+    aula_titulo: str
+    pagina: int
+    texto_da_pagina: str
+    inicio: int
+    fim: int
+    atualizado: bool
+
+
+def trecho_para_abrir(pessoa, perfil: str | None, trecho_id: int) -> TrechoParaAbrir:
+    """O texto da página do trecho, com a posição dele. Levanta MaterialNaoEncontrado ou
+    SemAcessoAoMaterial, com as mesmas regras de abrir o PDF.
+
+    O texto vem da versão citada; o PDF abre na versão atual quando houve substituição.
+    """
+    try:
+        trecho = Trecho.objects.select_related("material").get(pk=trecho_id)
+    except Trecho.DoesNotExist:
+        raise MaterialNaoEncontrado(trecho_id) from None
+    atual = material_para_abrir(pessoa, perfil, trecho.material_id)
+    texto, inicio, fim = trecho.texto, 0, len(trecho.texto)
+    try:
+        paginas = _ler_paginas(trecho.material)
+        da_pagina = paginas[trecho.pagina - 1]
+        if da_pagina[trecho.inicio : trecho.fim] == trecho.texto:
+            texto, inicio, fim = da_pagina, trecho.inicio, trecho.fim
+    except (_ProblemaDoArquivo, IndexError, OSError):
+        pass  # sem o arquivo legível, mostra só o trecho guardado
+    return TrechoParaAbrir(
+        material_id=atual.id,
+        aula_numero=trecho.material.aula_numero,
+        aula_titulo=trecho.material.aula_titulo,
+        pagina=trecho.pagina,
+        texto_da_pagina=texto,
+        inicio=inicio,
+        fim=fim,
+        atualizado=atual.id != trecho.material_id,
+    )

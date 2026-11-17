@@ -76,8 +76,7 @@ describe('tela do tutor (TUT-T24)', () => {
     const conversa = await screen.findByRole('list', { name: 'Conversa com o tutor' });
     expect(within(conversa).getByText('O que é uma lista encadeada?')).toBeInTheDocument();
     const citacao = within(conversa).getByRole('link', { name: /Aula 4, p\. 5/ });
-    expect(citacao).toHaveAttribute('href', '/api/materiais/7/arquivo?pagina=5#page=5');
-    expect(citacao).toHaveAttribute('target', '_blank');
+    expect(citacao).toHaveAttribute('href', '/trechos/31');
     expect(screen.getByText('3 de 40 perguntas hoje')).toBeInTheDocument();
     expect(screen.getByText('Modo pistas ligado')).toBeInTheDocument();
   });
@@ -101,7 +100,7 @@ describe('tela do tutor (TUT-T24)', () => {
     expect(within(conversa).getByText('O que é uma pilha?')).toBeInTheDocument();
     expect(within(conversa).getByRole('link', { name: /Aula 5, p\. 3/ })).toHaveAttribute(
       'href',
-      '/api/materiais/7/arquivo?pagina=3#page=3',
+      '/trechos/31',
     );
     expect(screen.getByText('4 de 40 perguntas hoje')).toBeInTheDocument();
     const pergunta = chamadas.find((c) => c.metodo === 'POST');

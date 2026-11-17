@@ -339,3 +339,10 @@ export type MaterialDoAluno = Pick<
 export function listarMateriaisDoAluno(disciplinaId: number): Promise<MaterialDoAluno[]> {
   return requisitar<MaterialDoAluno[]>(`/api/disciplinas/${disciplinaId}/materiais`);
 }
+
+export type TrechoParaAbrir = components['schemas']['TrechoParaAbrir'];
+
+/** GET /api/trechos/{id}: a página citada com a posição do trecho, para destacar (MAT-RF-09). */
+export function obterTrecho(trechoId: number): Promise<TrechoParaAbrir> {
+  return requisitar<TrechoParaAbrir>(`/api/trechos/${trechoId}`);
+}

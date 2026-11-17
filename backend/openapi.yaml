@@ -650,6 +650,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/Saude'
           description: ''
+  /api/trechos/{trecho_id}:
+    get:
+      operationId: trechos_retrieve
+      summary: A página citada com a posição do trecho, para destacar
+      parameters:
+      - in: path
+        name: trecho_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - materiais
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrechoParaAbrir'
+          description: ''
 components:
   schemas:
     AutorEnum:
@@ -1249,6 +1270,35 @@ components:
         * `erro` - Erro, tente de novo
         * `retirado` - Retirado
         * `substituido` - Substituído pela versão nova
+    TrechoParaAbrir:
+      type: object
+      properties:
+        material_id:
+          type: integer
+        aula_numero:
+          type: integer
+        aula_titulo:
+          type: string
+        pagina:
+          type: integer
+        texto_da_pagina:
+          type: string
+        inicio:
+          type: integer
+        fim:
+          type: integer
+        atualizado:
+          type: boolean
+          description: O material foi substituído por uma versão nova depois da citação.
+      required:
+      - atualizado
+      - aula_numero
+      - aula_titulo
+      - fim
+      - inicio
+      - material_id
+      - pagina
+      - texto_da_pagina
     TrocaDePerfilRequest:
       type: object
       properties:

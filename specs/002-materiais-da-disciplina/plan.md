@@ -49,6 +49,7 @@ O front-end envia o PDF ao Django (upload multipart), que grava o arquivo pela A
 | `POST /api/disciplinas/{id}/materiais` | Multipart: `arquivo`, `aula_numero`, `aula_titulo` | `{ material_id, status }` (202); enfileira o processamento | 400 se não for PDF ou passar do limite, 403 |
 | `GET /api/disciplinas/{id}/materiais` | | Lista com status e etapa (professor vê todos; aluno só os prontos) | 403 |
 | `GET /api/materiais/{id}/arquivo?pagina=N` | | O PDF, servido pelo Django só para quem tem acesso à disciplina, e a posição do trecho a destacar | 403, 404 |
+| `GET /api/trechos/{id}` | | Texto da página citada, com o início e o fim do trecho para destacar, e se o material foi substituído | 403, 404 |
 | `DELETE /api/materiais/{id}` | | 204; status passa a retirado | 403 |
 
 Tarefa assíncrona `materiais.processar(material_id)`: atualiza `etapa` ao fim de cada passo, grava `Trecho`s numa transação e, no fim, cria a notificação para o professor.
@@ -81,3 +82,4 @@ Tarefa assíncrona `materiais.processar(material_id)`: atualiza `etapa` ao fim d
 | Desvio | Por que é necessário | Alternativa mais simples descartada porque |
 | --- | --- | --- |
 | Nenhum | | |
+| 2026-11-17 | Visualizador do trecho: a página citada é mostrada como texto, com o trecho destacado, e um link abre o PDF na mesma página. Destacar dentro do PDF (pdf.js) fica como evolução, a confirmar |
