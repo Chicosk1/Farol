@@ -315,3 +315,16 @@ export type MinhaDuvida = components['schemas']['MinhaDuvida'];
 export function listarMinhasDuvidas(disciplinaId: number): Promise<MinhaDuvida[]> {
   return requisitar<MinhaDuvida[]>(`/api/disciplinas/${disciplinaId}/minhas-duvidas`);
 }
+
+/** POST /api/mensagens/{id}/duvida/previa: o texto exato que vai ao professor (DUV-RF-02). */
+export async function previaDaDuvida(mensagemId: number): Promise<string> {
+  const previa = await enviar<{ texto_filtrado: string }>(
+    `/api/mensagens/${mensagemId}/duvida/previa`,
+  );
+  return previa.texto_filtrado;
+}
+
+/** POST /api/mensagens/{id}/duvida: envia a dúvida ao professor, sem o nome do aluno. */
+export async function enviarDuvida(mensagemId: number): Promise<void> {
+  await enviar<unknown>(`/api/mensagens/${mensagemId}/duvida`);
+}

@@ -1,12 +1,14 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState, type FormEvent } from 'react';
 import { useParams } from 'react-router';
 
 import {
   avaliarResposta,
+  enviarDuvida,
   ErroDaApi,
   listarMinhasDuvidas,
   perguntarAoTutor,
+  previaDaDuvida,
   type AvaliacaoDaResposta,
   type CitacaoDoTutor,
   type EventoDoTutor,
@@ -146,7 +148,72 @@ function DuvidaEnviada({ status }: { status: StatusDaDuvida }) {
   );
 }
 
-function Mensagem({ mensagem, duvida }: { mensagem: MensagemNaTela; duvida?: StatusDaDuvida }) {
+type DuvidaEmPrevia = { mensagemId: number; texto: string };
+
+/** A pré-visualização da dúvida: o texto exato e o aviso de anonimato antes de enviar (DUV-RF-02). */
+function PreviaDaDuvida({
+  previa,
+  aoFechar,
+  aoEnviar,
+  enviando,
+  erro,
+}: {
+  previa: DuvidaEmPrevia;
+  aoFechar: () => void;
+  aoEnviar: () => void;
+  enviando: boolean;
+  erro: string;
+}) {
+  return (
+    <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/50 p-4">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="titulo-duvida"
+        aria-describedby="aviso-duvida"
+        onKeyDown={(evento) => {
+          if (evento.key === 'Escape') aoFechar();
+        }}
+        className="w-full max-w-lg rounded-lg bg-surface p-4 text-ink"
+      >
+        <h2 id="titulo-duvida" className="text-lg font-bold">
+          Enviar dúvida ao professor
+        </h2>
+        <p className="mt-2 text-sm text-ink-muted">O professor vai ler exatamente este texto:</p>
+        <blockquote className="mt-1 whitespace-pre-wrap rounded-lg border border-line p-3">
+          {previa.texto}
+        </blockquote>
+        <p id="aviso-duvida" className="mt-2 text-sm">
+          O professor não verá o seu nome, o seu e-mail nem o horário do envio. Em turmas pequenas,
+          o jeito de escrever ainda pode identificar você.
+        </p>
+        {erro && (
+          <p role="alert" className="mt-2 text-danger-text">
+            {erro}
+          </p>
+        )}
+        <div className="mt-4 flex flex-wrap justify-end gap-2">
+          <Botao variante="secundario" onClick={aoFechar} autoFocus>
+            Cancelar
+          </Botao>
+          <Botao onClick={aoEnviar} disabled={enviando}>
+            Enviar ao professor
+          </Botao>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Mensagem({
+  mensagem,
+  duvida,
+  aoPedirDuvida,
+}: {
+  mensagem: MensagemNaTela;
+  duvida?: StatusDaDuvida;
+  aoPedirDuvida: (mensagemId: number) => void;
+}) {
   if (mensagem.autor === 'aluno') {
     return (
       <li className="ml-auto max-w-[85%] rounded-lg bg-accent-soft p-3 text-ink">
@@ -171,6 +238,15 @@ function Mensagem({ mensagem, duvida }: { mensagem: MensagemNaTela; duvida?: Sta
       </p>
       <Citacoes citacoes={mensagem.citacoes} />
       {duvida && <DuvidaEnviada status={duvida} />}
+      {!duvida && mensagem.tipo === 'nao_encontrado' && mensagem.id !== undefined && (
+        <Botao
+          variante="secundario"
+          className="mt-2"
+          onClick={() => aoPedirDuvida(mensagem.id as number)}
+        >
+          Enviar dúvida ao professor
+        </Botao>
+      )}
       {mensagem.id !== undefined &&
         (mensagem.tipo === 'resposta' || mensagem.tipo === 'pistas') && (
           <AvaliarResposta mensagemId={mensagem.id} inicial={mensagem.avaliacao ?? ''} />
@@ -227,6 +303,35 @@ export function PaginaTutor() {
     queryKey: ['minhas-duvidas', disciplinaId],
     queryFn: () => listarMinhasDuvidas(disciplinaId),
   });
+  const clienteDeDados = useQueryClient();
+  const [previa, setPrevia] = useState<DuvidaEmPrevia | null>(null);
+  const [erroDaDuvida, setErroDaDuvida] = useState('');
+  const [enviandoDuvida, setEnviandoDuvida] = useState(false);
+
+  async function pedirDuvida(mensagemId: number) {
+    setErroDaDuvida('');
+    try {
+      setPrevia({ mensagemId, texto: await previaDaDuvida(mensagemId) });
+    } catch (falha) {
+      setErro(mensagemDeErro(falha));
+    }
+  }
+
+  async function confirmarDuvida() {
+    if (!previa) return;
+    setEnviandoDuvida(true);
+    try {
+      await enviarDuvida(previa.mensagemId);
+      setPrevia(null);
+      setAnuncio('Dúvida enviada ao professor, sem o seu nome.');
+      await clienteDeDados.invalidateQueries({ queryKey: ['minhas-duvidas', disciplinaId] });
+    } catch (falha) {
+      setErroDaDuvida(mensagemDeErro(falha));
+    } finally {
+      setEnviandoDuvida(false);
+    }
+  }
+
   const statusDasDuvidas = new Map(
     (minhasDuvidas.data ?? []).map((duvida) => [duvida.mensagem_id, duvida.status]),
   );
@@ -394,6 +499,7 @@ export function PaginaTutor() {
                     <Mensagem
                       key={mensagem.chave}
                       mensagem={mensagem}
+                      aoPedirDuvida={(id) => void pedirDuvida(id)}
                       duvida={
                         mensagem.id === undefined ? undefined : statusDasDuvidas.get(mensagem.id)
                       }
@@ -437,6 +543,16 @@ export function PaginaTutor() {
             </>
           )}
         </>
+      )}
+
+      {previa && (
+        <PreviaDaDuvida
+          previa={previa}
+          aoFechar={() => setPrevia(null)}
+          aoEnviar={() => void confirmarDuvida()}
+          enviando={enviandoDuvida}
+          erro={erroDaDuvida}
+        />
       )}
 
       {/* A resposta aparece aos poucos na conversa; o leitor de tela recebe só a versão final. */}

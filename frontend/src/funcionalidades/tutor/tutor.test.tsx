@@ -337,4 +337,83 @@ describe('tela do tutor (TUT-T24)', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('O professor marcou como respondida em aula.')).toBeInTheDocument();
   });
+
+  it('envia a dúvida do "não encontrei" depois de mostrar a prévia (DUV-T12)', async () => {
+    let enviada = false;
+    const { chamadas } = simularApi({
+      'GET /api/eu': { corpo: ANA },
+      'GET /api/disciplinas': { corpo: DISCIPLINAS },
+      [`GET ${URL_DO_TUTOR}`]: {
+        corpo: estado({
+          mensagens: [
+            { id: 1, autor: 'aluno', texto: 'Sou [nome], isso cai na prova?', citacoes: [] },
+            {
+              id: 2,
+              autor: 'tutor',
+              tipo: 'nao_encontrado',
+              texto: 'Não encontrei isso no material da disciplina.',
+              citacoes: [],
+            },
+          ],
+        }),
+      },
+      [`GET /api/disciplinas/${ESTRUTURAS.id}/minhas-duvidas`]: () => ({
+        corpo: enviada ? [{ mensagem_id: 2, status: 'aberta' }] : [],
+      }),
+      'POST /api/mensagens/2/duvida/previa': {
+        corpo: { texto_filtrado: 'Sou [nome], isso cai na prova?' },
+      },
+      'POST /api/mensagens/2/duvida': () => {
+        enviada = true;
+        return { status: 201, corpo: { duvida_id: 5, status: 'aberta' } };
+      },
+    });
+    const { container } = renderizarApp(`/disciplinas/${ESTRUTURAS.id}/tutor`);
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Enviar dúvida ao professor' }));
+
+    const dialogo = await screen.findByRole('dialog', { name: 'Enviar dúvida ao professor' });
+    expect(within(dialogo).getByText('Sou [nome], isso cai na prova?')).toBeVisible();
+    expect(within(dialogo).getByText(/não verá o seu nome/)).toBeVisible();
+    expect(chamadas.some((c) => c.caminho === '/api/mensagens/2/duvida')).toBe(false);
+    expect(await violacoesDeAcessibilidade(container)).toEqual([]);
+
+    fireEvent.click(within(dialogo).getByRole('button', { name: 'Enviar ao professor' }));
+
+    expect(
+      await screen.findByText('Dúvida enviada ao professor, sem o seu nome.', { selector: 'li *' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Enviar dúvida ao professor' })).toBeNull();
+  });
+
+  it('cancelar a prévia não envia nada', async () => {
+    const { chamadas } = simularApi({
+      'GET /api/eu': { corpo: ANA },
+      'GET /api/disciplinas': { corpo: DISCIPLINAS },
+      [`GET ${URL_DO_TUTOR}`]: {
+        corpo: estado({
+          mensagens: [
+            { id: 1, autor: 'aluno', texto: 'Isso cai na prova?', citacoes: [] },
+            {
+              id: 2,
+              autor: 'tutor',
+              tipo: 'nao_encontrado',
+              texto: 'Não encontrei isso no material da disciplina.',
+              citacoes: [],
+            },
+          ],
+        }),
+      },
+      [`GET /api/disciplinas/${ESTRUTURAS.id}/minhas-duvidas`]: { corpo: [] },
+      'POST /api/mensagens/2/duvida/previa': { corpo: { texto_filtrado: 'Isso cai na prova?' } },
+    });
+    renderizarApp(`/disciplinas/${ESTRUTURAS.id}/tutor`);
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Enviar dúvida ao professor' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Cancelar' }));
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(chamadas.some((c) => c.caminho === '/api/mensagens/2/duvida')).toBe(false);
+  });
 });
