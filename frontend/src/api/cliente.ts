@@ -17,6 +17,7 @@ export type MensagemDoTutor = components['schemas']['Mensagem'];
 export type CitacaoDoTutor = components['schemas']['Citacao'];
 export type TipoDeMensagem = components['schemas']['TipoEnum'];
 export type ConfiguracaoDoTutor = components['schemas']['Configuracao'];
+export type JanelaDeProva = components['schemas']['Janela'];
 /** A avaliação de uma resposta do tutor; vazio é sem avaliação. */
 export type AvaliacaoDaResposta = components['schemas']['AvaliacaoEnum'] | '';
 
@@ -235,5 +236,27 @@ export function salvarConfiguracaoDoTutor(
     `/api/disciplinas/${disciplinaId}/tutor/configuracao`,
     mudancas,
     'PATCH',
+  );
+}
+
+/** GET /api/disciplinas/{id}/janelas-prova: a janela em andamento e as agendadas (professor). */
+export function listarJanelasDeProva(disciplinaId: number): Promise<JanelaDeProva[]> {
+  return requisitar<JanelaDeProva[]>(`/api/disciplinas/${disciplinaId}/janelas-prova`);
+}
+
+/** POST /api/disciplinas/{id}/janelas-prova: sem início, pausa o tutor agora (modo prova). */
+export function criarJanelaDeProva(
+  disciplinaId: number,
+  dados: { inicio?: string; fim?: string },
+): Promise<JanelaDeProva> {
+  return enviar<JanelaDeProva>(`/api/disciplinas/${disciplinaId}/janelas-prova`, dados);
+}
+
+/** DELETE /api/disciplinas/{id}/janelas-prova/{janela}: apaga a janela (desliga o modo prova). */
+export async function apagarJanelaDeProva(disciplinaId: number, janelaId: number): Promise<void> {
+  await enviar<undefined>(
+    `/api/disciplinas/${disciplinaId}/janelas-prova/${janelaId}`,
+    undefined,
+    'DELETE',
   );
 }

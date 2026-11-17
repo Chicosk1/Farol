@@ -9,6 +9,7 @@ import {
 } from '../../api/cliente';
 import { Botao } from '../../componentes/Botao';
 import { useDisciplinas } from '../disciplinas/consultas';
+import { JanelasDeProva } from './JanelasDeProva';
 
 const LIMITES = [20, 40, 60] as const;
 
@@ -140,6 +141,7 @@ export function PaginaConfiguracaoDoTutor() {
         </p>
       )}
       {configuracao.data && <Formulario disciplinaId={disciplinaId} inicial={configuracao.data} />}
+      <JanelasDeProva disciplinaId={disciplinaId} />
     </main>
   );
 }

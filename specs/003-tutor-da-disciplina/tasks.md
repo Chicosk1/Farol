@@ -56,7 +56,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 - [x] TUT-T50 [H4] Testes de janela imediata, agendada e iniciada no meio da conversa, entregues junto da TUT-T51 (TUT-RF-07)
 - [x] TUT-T51 [H4] Janelas de prova e verificação antes de cada pergunta (TUT-RF-07)
-- [ ] TUT-T52 [H4] Tela de agendamento no painel do professor (TUT-RF-07)
+- [x] TUT-T52 [H4] Tela de agendamento no painel do professor (TUT-RF-07)
 
 ## Produto: História 5, respeitar o limite diário (P2)
 
