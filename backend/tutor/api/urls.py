@@ -24,4 +24,5 @@ urlpatterns = [
         views.apagar_janela,
         name="janela-prova",
     ),
+    path("mensagens/<int:mensagem_id>/avaliacao", views.avaliar, name="mensagem-avaliacao"),
 ]

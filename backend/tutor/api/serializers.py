@@ -67,3 +67,9 @@ class EstadoDoTutorSerializer(serializers.Serializer):
     conversa_id = serializers.IntegerField(allow_null=True)
     mensagens = MensagemSerializer(many=True)
     sugestoes = serializers.ListField(child=serializers.CharField())
+
+
+class AvaliacaoSerializer(serializers.Serializer):
+    """util, nao_util ou incorreta; vazio desfaz a marcação."""
+
+    avaliacao = serializers.ChoiceField(choices=Mensagem.Avaliacao.choices, allow_blank=True)

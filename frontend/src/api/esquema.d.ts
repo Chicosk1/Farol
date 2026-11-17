@@ -328,6 +328,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/mensagens/{mensagem_id}/avaliacao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Avalia uma resposta do tutor como útil, não útil ou incorreta
+         * @description Vazio desfaz a marcação. A resposta incorreta entra na fila de revisão da equipe. Mensagem que não é do aluno recebe 404.
+         */
+        put: operations["mensagens_avaliacao_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sair": {
         parameters: {
             query?: never;
@@ -383,6 +403,10 @@ export interface components {
          * @enum {string}
          */
         AvaliacaoEnum: "util" | "nao_util" | "incorreta";
+        /** @description util, nao_util ou incorreta; vazio desfaz a marcação. */
+        AvaliacaoRequest: {
+            avaliacao: components["schemas"]["AvaliacaoEnum"] | components["schemas"]["BlankEnum"];
+        };
         AvisoDePrivacidade: {
             versao: string;
             titulo: string;
@@ -1122,6 +1146,32 @@ export interface operations {
                 content: {
                     "application/pdf": string;
                 };
+            };
+        };
+    };
+    mensagens_avaliacao_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mensagem_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AvaliacaoRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AvaliacaoRequest"];
+                "multipart/form-data": components["schemas"]["AvaliacaoRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -64,7 +64,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Produto: História 6, avaliar a resposta (P2)
 
-- [ ] TUT-T70 [H6] Avaliação útil, não útil e incorreta, e fila de revisão no painel administrativo (TUT-RF-09)
+- [x] TUT-T70 [H6] Avaliação útil, não útil e incorreta, e fila de revisão no painel administrativo (TUT-RF-09)
 
 ## Produto: História 7, regras de uso de IA (P3)
 

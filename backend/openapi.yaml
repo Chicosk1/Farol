@@ -529,6 +529,37 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /api/mensagens/{mensagem_id}/avaliacao:
+    put:
+      operationId: mensagens_avaliacao_update
+      description: Vazio desfaz a marcação. A resposta incorreta entra na fila de
+        revisão da equipe. Mensagem que não é do aluno recebe 404.
+      summary: Avalia uma resposta do tutor como útil, não útil ou incorreta
+      parameters:
+      - in: path
+        name: mensagem_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvaliacaoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AvaliacaoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AvaliacaoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/sair:
     post:
       operationId: sair_create
@@ -580,6 +611,16 @@ components:
         * `util` - Útil
         * `nao_util` - Não útil
         * `incorreta` - Incorreta
+    AvaliacaoRequest:
+      type: object
+      description: util, nao_util ou incorreta; vazio desfaz a marcação.
+      properties:
+        avaliacao:
+          oneOf:
+          - $ref: '#/components/schemas/AvaliacaoEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+      required:
+      - avaliacao
     AvisoDePrivacidade:
       type: object
       properties:

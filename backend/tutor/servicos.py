@@ -22,7 +22,14 @@ from nucleo.pseudonimo import pseudonimo_do_aluno
 from . import contador
 from .citacoes import ConversorDeCitacoes
 from .models import Citacao as CitacaoGuardada
-from .models import ConfiguracaoTutor, Conversa, JanelaProva, Mensagem, RegistroUso
+from .models import (
+    ConfiguracaoTutor,
+    Conversa,
+    JanelaProva,
+    Mensagem,
+    RegistroUso,
+    RevisaoResposta,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -380,4 +387,47 @@ def estado_do_tutor(aluno, disciplina_id: int) -> EstadoDoTutor:
         mensagens=mensagens,
         # As sugestões só aparecem com a conversa vazia.
         sugestoes=[] if mensagens else sugestoes_de_pergunta(disciplina_id),
+    )
+
+
+class MensagemNaoEncontrada(LookupError):
+    """A mensagem não existe ou não é da conversa deste aluno."""
+
+
+class AvaliacaoInvalida(ValueError):
+    """Só as respostas do tutor recebem avaliação."""
+
+
+def avaliar_resposta(aluno, mensagem_id: int, avaliacao: str) -> Mensagem:
+    """Marca a resposta como útil, não útil ou incorreta; vazio desfaz (TUT-RF-09).
+
+    A resposta incorreta entra na fila de revisão da equipe. Desfazer tira da fila só o que a
+    equipe ainda não revisou: a revisão feita fica guardada.
+    """
+    try:
+        mensagem = Mensagem.objects.get(id=mensagem_id, conversa__aluno=aluno)
+    except Mensagem.DoesNotExist:
+        raise MensagemNaoEncontrada(mensagem_id) from None
+    if mensagem.autor != Mensagem.Autor.TUTOR:
+        raise AvaliacaoInvalida("Só as respostas do tutor podem ser avaliadas.")
+    with transaction.atomic():
+        mensagem.avaliacao = avaliacao
+        mensagem.save(update_fields=["avaliacao"])
+        if avaliacao == Mensagem.Avaliacao.INCORRETA:
+            RevisaoResposta.objects.get_or_create(mensagem=mensagem)
+        else:
+            RevisaoResposta.objects.filter(
+                mensagem=mensagem, status=RevisaoResposta.Status.PENDENTE
+            ).delete()
+    return mensagem
+
+
+def pergunta_respondida(resposta: Mensagem) -> Mensagem | None:
+    """A pergunta do aluno que veio logo antes da resposta, para a revisão da equipe."""
+    return (
+        Mensagem.objects.filter(
+            conversa_id=resposta.conversa_id, autor=Mensagem.Autor.ALUNO, id__lt=resposta.id
+        )
+        .order_by("-id")
+        .first()
     )

@@ -10,10 +10,11 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from nucleo.permissoes import acesso_a_disciplina
+from nucleo.permissoes import acesso_a_disciplina, exige_perfil_ativo
 from tutor import servicos
 
 from .serializers import (
+    AvaliacaoSerializer,
     ConfiguracaoSerializer,
     EstadoDoTutorSerializer,
     JanelaSerializer,
@@ -154,3 +155,27 @@ class ConfiguracaoDoTutor(APIView):
 def estado(request: Request, disciplina_id: int) -> Response:
     dados = servicos.estado_do_tutor(request.user, disciplina_id)
     return Response(EstadoDoTutorSerializer(dados).data)
+
+
+@extend_schema(
+    summary="Avalia uma resposta do tutor como útil, não útil ou incorreta",
+    description=(
+        "Vazio desfaz a marcação. A resposta incorreta entra na fila de revisão da equipe. "
+        "Mensagem que não é do aluno recebe 404."
+    ),
+    request=AvaliacaoSerializer,
+    responses={204: None},
+    tags=["tutor"],
+)
+@api_view(["PUT"])
+@permission_classes([exige_perfil_ativo("aluno")])
+def avaliar(request: Request, mensagem_id: int) -> Response:
+    entrada = AvaliacaoSerializer(data=request.data)
+    entrada.is_valid(raise_exception=True)
+    try:
+        servicos.avaliar_resposta(request.user, mensagem_id, entrada.validated_data["avaliacao"])
+    except servicos.MensagemNaoEncontrada:
+        raise Http404 from None
+    except servicos.AvaliacaoInvalida as invalida:
+        return Response({"avaliacao": [str(invalida)]}, status=status.HTTP_400_BAD_REQUEST)
+    return Response(status=status.HTTP_204_NO_CONTENT)
