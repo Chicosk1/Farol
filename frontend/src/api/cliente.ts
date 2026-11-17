@@ -328,3 +328,28 @@ export async function previaDaDuvida(mensagemId: number): Promise<string> {
 export async function enviarDuvida(mensagemId: number): Promise<void> {
   await enviar<unknown>(`/api/mensagens/${mensagemId}/duvida`);
 }
+
+export type DuvidaDoProfessor = components['schemas']['DuvidaDoProfessor'];
+
+/** GET /api/disciplinas/{id}/duvidas: as dúvidas abertas ou respondidas, sem dados dos alunos. */
+export function listarDuvidasDaDisciplina(
+  disciplinaId: number,
+  status: 'aberta' | 'respondida',
+): Promise<DuvidaDoProfessor[]> {
+  return requisitar<DuvidaDoProfessor[]>(
+    `/api/disciplinas/${disciplinaId}/duvidas?status=${status}`,
+  );
+}
+
+/** PATCH /api/disciplinas/{id}/duvidas/{duvida}: respondida em aula ou oculta (DUV-RF-07). */
+export function mudarStatusDaDuvida(
+  disciplinaId: number,
+  duvidaId: number,
+  status: 'respondida' | 'oculta',
+): Promise<DuvidaDoProfessor> {
+  return enviar<DuvidaDoProfessor>(
+    `/api/disciplinas/${disciplinaId}/duvidas/${duvidaId}`,
+    { status },
+    'PATCH',
+  );
+}

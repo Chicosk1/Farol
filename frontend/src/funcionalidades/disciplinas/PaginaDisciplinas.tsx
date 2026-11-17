@@ -156,6 +156,15 @@ export function PaginaDisciplinas() {
                             Materiais
                           </Link>
                         )}
+                        {perfil === 'professor' && (
+                          <Link
+                            to={`/disciplinas/${disciplina.id}/duvidas`}
+                            aria-label={`Dúvidas de ${disciplina.nome}`}
+                            className="mt-2 ml-4 inline-flex min-h-12 items-center font-bold text-accent underline"
+                          >
+                            Dúvidas
+                          </Link>
+                        )}
                       </div>
                       <button
                         type="button"
