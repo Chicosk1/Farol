@@ -331,3 +331,36 @@ def perguntar(aluno, disciplina_id: int, texto: str) -> Iterator[tuple[str, dict
     ).first() or Conversa.objects.create(aluno=aluno, disciplina_id=disciplina_id)
     Mensagem.objects.create(conversa=conversa, autor=Mensagem.Autor.ALUNO, texto=filtrada)
     return _acompanhar(aluno, conversa, filtrada, chain([primeiro], eventos))
+
+
+@dataclass
+class EstadoDoTutor:
+    """O que a tela do tutor mostra ao abrir (TUT-RF-07, 08, 10 e 12)."""
+
+    modo_pistas: bool
+    politica: str
+    pausado: bool
+    usadas: int
+    limite: int
+    conversa_id: int | None
+    mensagens: list[Mensagem] = field(default_factory=list)
+
+
+def estado_do_tutor(aluno, disciplina_id: int) -> EstadoDoTutor:
+    """A configuração da disciplina, a pausa, o uso do dia e a conversa do próprio aluno."""
+    configuracao = configuracao_do_tutor(disciplina_id)
+    conversa = Conversa.objects.filter(aluno=aluno, disciplina_id=disciplina_id).first()
+    mensagens = (
+        list(conversa.mensagens.prefetch_related("citacoes__trecho__material").order_by("id"))
+        if conversa
+        else []
+    )
+    return EstadoDoTutor(
+        modo_pistas=configuracao.modo_pistas,
+        politica=configuracao.politica,
+        pausado=tutor_pausado(disciplina_id),
+        usadas=contador.usadas(disciplina_id, aluno.id),
+        limite=configuracao.limite_diario,
+        conversa_id=conversa.id if conversa else None,
+        mensagens=mensagens,
+    )

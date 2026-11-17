@@ -15,6 +15,7 @@ from tutor import servicos
 
 from .serializers import (
     ConfiguracaoSerializer,
+    EstadoDoTutorSerializer,
     JanelaSerializer,
     NovaJanelaSerializer,
     PerguntaSerializer,
@@ -141,3 +142,15 @@ class ConfiguracaoDoTutor(APIView):
         entrada.is_valid(raise_exception=True)
         configuracao = servicos.atualizar_configuracao(disciplina_id, **entrada.validated_data)
         return Response(ConfiguracaoSerializer(configuracao).data)
+
+
+@extend_schema(
+    summary="O tutor da disciplina para o aluno: regras, pausa, uso do dia e conversa",
+    responses=EstadoDoTutorSerializer,
+    tags=["tutor"],
+)
+@api_view(["GET"])
+@permission_classes([acesso_a_disciplina("aluno")])
+def estado(request: Request, disciplina_id: int) -> Response:
+    dados = servicos.estado_do_tutor(request.user, disciplina_id)
+    return Response(EstadoDoTutorSerializer(dados).data)

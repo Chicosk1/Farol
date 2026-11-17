@@ -142,6 +142,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/disciplinas/{disciplina_id}/tutor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** O tutor da disciplina para o aluno: regras, pausa, uso do dia e conversa */
+        get: operations["disciplinas_tutor_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/disciplinas/{disciplina_id}/tutor/configuracao": {
         parameters: {
             query?: never;
@@ -352,14 +369,38 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * @description * `aluno` - Aluno
+         *     * `tutor` - Tutor
+         * @enum {string}
+         */
+        AutorEnum: "aluno" | "tutor";
+        /**
+         * @description * `` - Sem avaliação
+         *     * `util` - Útil
+         *     * `nao_util` - Não útil
+         *     * `incorreta` - Incorreta
+         * @enum {string}
+         */
+        AvaliacaoEnum: "util" | "nao_util" | "incorreta";
         AvisoDePrivacidade: {
             versao: string;
             titulo: string;
             itens: components["schemas"]["ItemDoAviso"][];
         };
+        /** @enum {unknown} */
+        BlankEnum: "";
         CienciaDoAvisoRequest: {
             /** @description A versão do aviso que a pessoa leu. */
             versao: string;
+        };
+        /** @description A citação como o evento citacao da resposta em streaming. */
+        Citacao: {
+            ordem: number;
+            readonly rotulo: string;
+            readonly trecho_id: number;
+            readonly material_id: number;
+            readonly pagina: number;
         };
         Configuracao: {
             modo_pistas?: boolean;
@@ -397,6 +438,14 @@ export interface components {
             arquivo: string;
             aula_numero: number;
             aula_titulo: string;
+        };
+        EstadoDoTutor: {
+            modo_pistas: boolean;
+            politica: string;
+            pausado: boolean;
+            uso: components["schemas"]["UsoDoDia"];
+            conversa_id: number | null;
+            mensagens: components["schemas"]["Mensagem"][];
         };
         /**
          * @description * `enviando` - Enviando arquivo
@@ -492,6 +541,17 @@ export interface components {
             material_id: number;
             status: components["schemas"]["StatusDoMaterialEnum"];
         };
+        Mensagem: {
+            readonly id: number;
+            autor: components["schemas"]["AutorEnum"];
+            texto: string;
+            tipo?: components["schemas"]["TipoEnum"];
+            /** Avaliação */
+            avaliacao?: components["schemas"]["AvaliacaoEnum"] | components["schemas"]["BlankEnum"];
+            /** Format: date-time */
+            criada_em?: string;
+            readonly citacoes: components["schemas"]["Citacao"][];
+        };
         /** @description Sem início, a janela começa agora (modo prova imediato); sem fim, fica aberta. */
         NovaJanelaRequest: {
             /** Format: date-time */
@@ -540,8 +600,21 @@ export interface components {
          * @enum {string}
          */
         StatusDoMaterialEnum: "processando" | "pronto" | "atencao" | "erro" | "retirado";
+        /**
+         * @description * `resposta` - Resposta
+         *     * `pistas` - Modo pistas
+         *     * `nao_encontrado` - Não encontrei no material
+         *     * `saudacao` - Saudação
+         *     * `erro` - Erro
+         * @enum {string}
+         */
+        TipoEnum: "resposta" | "pistas" | "nao_encontrado" | "saudacao" | "erro";
         TrocaDePerfilRequest: {
             perfil: components["schemas"]["PerfilEnum"];
+        };
+        UsoDoDia: {
+            usadas: number;
+            limite: number;
         };
     };
     responses: never;
@@ -774,6 +847,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MaterialEnviado"];
+                };
+            };
+        };
+    };
+    disciplinas_tutor_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EstadoDoTutor"];
                 };
             };
         };

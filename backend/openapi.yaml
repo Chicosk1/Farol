@@ -253,6 +253,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/MaterialEnviado'
           description: ''
+  /api/disciplinas/{disciplina_id}/tutor:
+    get:
+      operationId: disciplinas_tutor_retrieve
+      summary: 'O tutor da disciplina para o aluno: regras, pausa, uso do dia e conversa'
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tutor
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstadoDoTutor'
+          description: ''
   /api/disciplinas/{disciplina_id}/tutor/configuracao:
     get:
       operationId: disciplinas_tutor_configuracao_retrieve
@@ -540,6 +561,25 @@ paths:
           description: ''
 components:
   schemas:
+    AutorEnum:
+      enum:
+      - aluno
+      - tutor
+      type: string
+      description: |-
+        * `aluno` - Aluno
+        * `tutor` - Tutor
+    AvaliacaoEnum:
+      enum:
+      - util
+      - nao_util
+      - incorreta
+      type: string
+      description: |-
+        * `` - Sem avaliação
+        * `util` - Útil
+        * `nao_util` - Não útil
+        * `incorreta` - Incorreta
     AvisoDePrivacidade:
       type: object
       properties:
@@ -555,6 +595,9 @@ components:
       - itens
       - titulo
       - versao
+    BlankEnum:
+      enum:
+      - ''
     CienciaDoAvisoRequest:
       type: object
       properties:
@@ -564,6 +607,32 @@ components:
           description: A versão do aviso que a pessoa leu.
       required:
       - versao
+    Citacao:
+      type: object
+      description: A citação como o evento citacao da resposta em streaming.
+      properties:
+        ordem:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        rotulo:
+          type: string
+          readOnly: true
+        trecho_id:
+          type: integer
+          readOnly: true
+        material_id:
+          type: integer
+          readOnly: true
+        pagina:
+          type: integer
+          readOnly: true
+      required:
+      - material_id
+      - ordem
+      - pagina
+      - rotulo
+      - trecho_id
     Configuracao:
       type: object
       properties:
@@ -641,6 +710,31 @@ components:
       - arquivo
       - aula_numero
       - aula_titulo
+    EstadoDoTutor:
+      type: object
+      properties:
+        modo_pistas:
+          type: boolean
+        politica:
+          type: string
+        pausado:
+          type: boolean
+        uso:
+          $ref: '#/components/schemas/UsoDoDia'
+        conversa_id:
+          type: integer
+          nullable: true
+        mensagens:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mensagem'
+      required:
+      - conversa_id
+      - mensagens
+      - modo_pistas
+      - pausado
+      - politica
+      - uso
     EtapaEnum:
       enum:
       - enviando
@@ -865,6 +959,36 @@ components:
       required:
       - material_id
       - status
+    Mensagem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        autor:
+          $ref: '#/components/schemas/AutorEnum'
+        texto:
+          type: string
+        tipo:
+          $ref: '#/components/schemas/TipoEnum'
+        avaliacao:
+          title: Avaliação
+          oneOf:
+          - $ref: '#/components/schemas/AvaliacaoEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        criada_em:
+          type: string
+          format: date-time
+        citacoes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Citacao'
+          readOnly: true
+      required:
+      - autor
+      - citacoes
+      - id
+      - texto
     NovaJanelaRequest:
       type: object
       description: Sem início, a janela começa agora (modo prova imediato); sem fim,
@@ -949,6 +1073,20 @@ components:
         * `atencao` - Precisa de atenção
         * `erro` - Erro, tente de novo
         * `retirado` - Retirado
+    TipoEnum:
+      enum:
+      - resposta
+      - pistas
+      - nao_encontrado
+      - saudacao
+      - erro
+      type: string
+      description: |-
+        * `resposta` - Resposta
+        * `pistas` - Modo pistas
+        * `nao_encontrado` - Não encontrei no material
+        * `saudacao` - Saudação
+        * `erro` - Erro
     TrocaDePerfilRequest:
       type: object
       properties:
@@ -956,6 +1094,16 @@ components:
           $ref: '#/components/schemas/PerfilEnum'
       required:
       - perfil
+    UsoDoDia:
+      type: object
+      properties:
+        usadas:
+          type: integer
+        limite:
+          type: integer
+      required:
+      - limite
+      - usadas
   securitySchemes:
     cookieAuth:
       type: apiKey
