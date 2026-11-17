@@ -50,7 +50,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Produto: acabamento
 
-- [ ] MAT-T90 Medir o tempo de processamento de um PDF de 40 páginas (MAT-RNF-01)
+- [x] MAT-T90 Medir o tempo de processamento de um PDF de 40 páginas (MAT-RNF-01)
 - [x] MAT-T91 Teste de permissão de envio e retirada, entregue junto das MAT-T21 e MAT-T51 em test_api_envio.py e test_api_retirada.py (MAT-RNF-02)
 
 ## Dependências
