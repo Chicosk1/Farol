@@ -308,3 +308,14 @@ export function listarNotificacoes(): Promise<Notificacoes> {
 export async function marcarNotificacaoComoLida(notificacaoId: number): Promise<void> {
   await enviar<undefined>(`/api/notificacoes/${notificacaoId}/lida`);
 }
+
+/** O que a aluna vê de um material: só os prontos, sem status, etapa nem erro. */
+export type MaterialDoAluno = Pick<
+  MaterialDoProfessor,
+  'id' | 'aula_numero' | 'aula_titulo' | 'paginas'
+>;
+
+/** GET /api/disciplinas/{id}/materiais: para a aluna, só os materiais prontos (MAT-RF-08). */
+export function listarMateriaisDoAluno(disciplinaId: number): Promise<MaterialDoAluno[]> {
+  return requisitar<MaterialDoAluno[]>(`/api/disciplinas/${disciplinaId}/materiais`);
+}

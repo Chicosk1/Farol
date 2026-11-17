@@ -10,7 +10,9 @@ import {
   type MaterialDoProfessor,
 } from '../../api/cliente';
 import { Botao } from '../../componentes/Botao';
+import { useEu } from '../contas/sessao';
 import { useDisciplinas } from '../disciplinas/consultas';
+import { MateriaisDoAluno } from './MateriaisDoAluno';
 
 const NAO_E_PDF = 'Envie um arquivo PDF. Slides podem ser exportados como PDF.';
 /** Enquanto algum material processa, a lista se atualiza sozinha nesse intervalo. */
@@ -68,7 +70,25 @@ function ItemDeMaterial({
 }
 
 /** Os materiais da disciplina para o professor: envio do PDF e etapas ao vivo (MAT-RF-01 a 03). */
+/** A tela de materiais: a aluna vê e abre os prontos; o professor envia e acompanha. */
 export function PaginaMateriais() {
+  const disciplinaId = Number(useParams().id);
+  const disciplina = useDisciplinas('').data?.find((d) => d.id === disciplinaId);
+  const perfil = useEu().data?.perfil_ativo;
+  if (perfil === 'aluno') {
+    return (
+      <main id="conteudo" className="mx-auto flex max-w-3xl flex-col gap-4 p-4 text-ink">
+        <h1 className="text-2xl font-extrabold">
+          {disciplina ? `Materiais de ${disciplina.nome}` : 'Materiais da disciplina'}
+        </h1>
+        <MateriaisDoAluno disciplinaId={disciplinaId} />
+      </main>
+    );
+  }
+  return <MateriaisDoProfessor />;
+}
+
+function MateriaisDoProfessor() {
   const disciplinaId = Number(useParams().id);
   const disciplina = useDisciplinas('').data?.find((d) => d.id === disciplinaId);
   const clienteDeDados = useQueryClient();

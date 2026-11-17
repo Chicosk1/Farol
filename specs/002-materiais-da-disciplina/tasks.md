@@ -35,6 +35,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 - [x] MAT-T30 [H2] Testes de visibilidade: aluno só vê material pronto, entregues junto da MAT-T31 (MAT-RF-07)
 - [x] MAT-T31 [H2] Lista de materiais do aluno e visualizador de PDF com página inicial (MAT-RF-08, MAT-RF-09)
+- [x] MAT-T33 [H2] Tela de materiais da disciplina para a aluna no front-end, com a lista por aula e o PDF aberto na primeira página; a MAT-T31 entregou só o back-end (MAT-RF-08, MAT-RF-09)
 - [ ] MAT-T32 [H2] Destaque do trecho citado no visualizador (MAT-RF-09)
 
 ## Produto: História 3, avisar PDF sem texto (P2)
