@@ -765,6 +765,13 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description O aluno chegou ao limite de perguntas de hoje. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             /** @description O provedor de IA está indisponível. */
             503: {
                 headers: {

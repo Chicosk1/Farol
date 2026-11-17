@@ -129,6 +129,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Tarefas em segundo plano: Celery com a fila no Redis (docs/arquitetura.md).
 CELERY_BROKER_URL = ambiente.opcional("REDIS_URL", "redis://localhost:6379/0")
+
+# Redis do contador diário de perguntas ao tutor (TUT-RF-08). O mesmo servidor da fila.
+FAROL_REDIS_URL = CELERY_BROKER_URL
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_IGNORE_RESULT = True
 

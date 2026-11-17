@@ -59,7 +59,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 ## Produto: História 5, respeitar o limite diário (P2)
 
 - [x] TUT-T60 [H5] Testes do limite, da virada do dia e da mudança de limite, entregues junto da TUT-T61 (TUT-RF-08)
-- [ ] TUT-T61 [H5] Contador diário no Redis e resposta 429 (TUT-RF-08)
+- [x] TUT-T61 [H5] Contador diário no Redis e resposta 429 (TUT-RF-08)
 
 ## Produto: História 6, avaliar a resposta (P2)
 

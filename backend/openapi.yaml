@@ -291,6 +291,8 @@ paths:
           description: ''
         '423':
           description: O tutor está pausado durante a prova.
+        '429':
+          description: O aluno chegou ao limite de perguntas de hoje.
         '503':
           description: O provedor de IA está indisponível.
   /api/eu:

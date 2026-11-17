@@ -15,6 +15,7 @@ dependencies = [
     "pgvector~=0.5.1",
     "psycopg[binary]~=3.3.9",
     "pypdf~=7.1.0",
+    "redis~=8.1",
 ]
 
 [project.optional-dependencies]

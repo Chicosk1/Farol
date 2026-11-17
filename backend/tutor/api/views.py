@@ -33,6 +33,7 @@ def _evento_sse(tipo: str, dados: dict) -> str:
     responses={
         (200, "text/event-stream"): OpenApiTypes.STR,
         423: OpenApiResponse(description="O tutor está pausado durante a prova."),
+        429: OpenApiResponse(description="O aluno chegou ao limite de perguntas de hoje."),
         503: OpenApiResponse(description="O provedor de IA está indisponível."),
     },
     tags=["tutor"],
@@ -46,6 +47,14 @@ def perguntar(request: Request, disciplina_id: int):
         eventos = servicos.perguntar(request.user, disciplina_id, entrada.validated_data["texto"])
     except servicos.TutorPausado:
         return Response({"detail": PAUSADO}, status=status.HTTP_423_LOCKED)
+    except servicos.LimiteAtingido as atingido:
+        return Response(
+            {
+                "detail": f"Você chegou ao limite de {atingido.limite} perguntas de hoje. "
+                "O limite volta amanhã."
+            },
+            status=status.HTTP_429_TOO_MANY_REQUESTS,
+        )
     except servicos.ProvedorIndisponivel:
         return Response(
             {"detail": "O tutor está indisponível agora. Tente de novo em instantes."},

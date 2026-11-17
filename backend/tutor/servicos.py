@@ -19,6 +19,7 @@ from materiais.servicos import TrechoEncontrado
 from nucleo.privacidade import remover_dados_pessoais, sem_marcas
 from nucleo.pseudonimo import pseudonimo_do_aluno
 
+from . import contador
 from .citacoes import ConversorDeCitacoes
 from .models import Citacao as CitacaoGuardada
 from .models import ConfiguracaoTutor, Conversa, JanelaProva, Mensagem, RegistroUso
@@ -183,6 +184,14 @@ class TutorPausado(RuntimeError):
     """A disciplina está numa janela de prova: o aluno não pode perguntar (TUT-RF-07)."""
 
 
+class LimiteAtingido(RuntimeError):
+    """O aluno já fez hoje todas as perguntas que o limite da disciplina permite (TUT-RF-08)."""
+
+    def __init__(self, limite: int):
+        super().__init__(limite)
+        self.limite = limite
+
+
 def tutor_pausado(disciplina_id: int, agora: datetime | None = None) -> bool:
     """A disciplina tem uma janela de prova que já começou e ainda não acabou."""
     agora = agora or timezone.now()
@@ -291,12 +300,15 @@ def perguntar(aluno, disciplina_id: int, texto: str) -> Iterator[tuple[str, dict
     # O modo prova é verificado antes de qualquer processamento (plan.md, princípio III).
     if tutor_pausado(disciplina_id):
         raise TutorPausado
-    filtrada = remover_dados_pessoais(texto.strip(), nomes=[aluno.nome])
     configuracao, _ = ConfiguracaoTutor.objects.get_or_create(disciplina_id=disciplina_id)
+    if not contador.reservar(disciplina_id, aluno.id, configuracao.limite_diario):
+        raise LimiteAtingido(configuracao.limite_diario)
+    filtrada = remover_dados_pessoais(texto.strip(), nomes=[aluno.nome])
     eventos = responder_pergunta(disciplina_id, filtrada, modo_pistas=configuracao.modo_pistas)
     try:
         primeiro = next(eventos)
     except Exception as erro:
+        contador.devolver(disciplina_id, aluno.id)  # a pergunta não foi respondida
         raise ProvedorIndisponivel(str(erro)) from erro
 
     conversa = Conversa.objects.filter(
