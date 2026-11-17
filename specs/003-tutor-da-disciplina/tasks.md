@@ -38,7 +38,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 - [x] TUT-T23 [H1] Rota de perguntas com streaming por SSE (TUT-RF-13)
 - [x] TUT-T26 [H1] Rota `GET /api/disciplinas/{id}/tutor` para a tela do aluno: modo pistas, política, pausa, uso do dia e a conversa guardada com as citações, antes da TUT-T24 (TUT-RF-07, TUT-RF-08, TUT-RF-10, TUT-RF-12)
 - [ ] TUT-T24 [H1] Tela do tutor no React com citações clicáveis e região `aria-live` (TUT-RF-02, TUT-RNF-03, TUT-RNF-04)
-- [ ] TUT-T25 [H1] Sugestões de pergunta geradas a partir dos títulos das aulas (TUT-RF-14)
+- [x] TUT-T25 [H1] Sugestões de pergunta geradas a partir dos títulos das aulas (TUT-RF-14)
 
 ## Produto: História 2, saber quando o material não responde (P1)
 

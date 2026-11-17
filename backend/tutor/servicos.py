@@ -344,6 +344,21 @@ class EstadoDoTutor:
     limite: int
     conversa_id: int | None
     mensagens: list[Mensagem] = field(default_factory=list)
+    sugestoes: list[str] = field(default_factory=list)
+
+
+QUANTAS_SUGESTOES = 3
+
+
+def sugestoes_de_pergunta(disciplina_id: int) -> list[str]:
+    """Perguntas iniciais a partir dos títulos das aulas prontas, da mais recente (TUT-RF-14)."""
+    aulas: dict[int, str] = {}
+    for material in reversed(list(materiais.listar_materiais("aluno", disciplina_id))):
+        aulas.setdefault(material.aula_numero, material.aula_titulo)  # uma por aula
+    return [
+        f"Quais são as ideias principais da aula {numero}, {titulo}?"
+        for numero, titulo in list(aulas.items())[:QUANTAS_SUGESTOES]
+    ]
 
 
 def estado_do_tutor(aluno, disciplina_id: int) -> EstadoDoTutor:
@@ -363,4 +378,6 @@ def estado_do_tutor(aluno, disciplina_id: int) -> EstadoDoTutor:
         limite=configuracao.limite_diario,
         conversa_id=conversa.id if conversa else None,
         mensagens=mensagens,
+        # As sugestões só aparecem com a conversa vazia.
+        sugestoes=[] if mensagens else sugestoes_de_pergunta(disciplina_id),
     )

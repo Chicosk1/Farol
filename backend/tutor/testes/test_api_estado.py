@@ -66,6 +66,7 @@ def test_tutor_novo_mostra_o_padrao_sem_conversa_e_com_o_uso_zerado(cliente_alun
         "uso": {"usadas": 0, "limite": 40},
         "conversa_id": None,
         "mensagens": [],
+        "sugestoes": ["Quais são as ideias principais da aula 4, Listas encadeadas?"],
     }
 
 

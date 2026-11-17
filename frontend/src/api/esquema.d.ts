@@ -446,6 +446,7 @@ export interface components {
             uso: components["schemas"]["UsoDoDia"];
             conversa_id: number | null;
             mensagens: components["schemas"]["Mensagem"][];
+            sugestoes: string[];
         };
         /**
          * @description * `enviando` - Enviando arquivo

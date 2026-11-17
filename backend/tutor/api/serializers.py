@@ -66,3 +66,4 @@ class EstadoDoTutorSerializer(serializers.Serializer):
     uso = UsoDoDiaSerializer(source="*")
     conversa_id = serializers.IntegerField(allow_null=True)
     mensagens = MensagemSerializer(many=True)
+    sugestoes = serializers.ListField(child=serializers.CharField())

@@ -728,12 +728,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Mensagem'
+        sugestoes:
+          type: array
+          items:
+            type: string
       required:
       - conversa_id
       - mensagens
       - modo_pistas
       - pausado
       - politica
+      - sugestoes
       - uso
     EtapaEnum:
       enum:
