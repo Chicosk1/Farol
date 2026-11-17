@@ -3,6 +3,7 @@ import { Link, Outlet, useNavigate } from 'react-router';
 import { Botao } from '../componentes/Botao';
 import { AvisoDePrivacidade } from '../funcionalidades/contas/AvisoDePrivacidade';
 import { useEu, useSair } from '../funcionalidades/contas/sessao';
+import { SinoDeNotificacoes } from '../funcionalidades/notificacoes/SinoDeNotificacoes';
 
 /** Cabeçalho comum às telas de quem entrou: navegação principal e o botão Sair. */
 export function Layout() {
@@ -29,12 +30,15 @@ export function Layout() {
             <Link to="/">Início</Link>
             <Link to="/disciplinas">Disciplinas</Link>
           </nav>
-          <Botao
-            variante="secundario"
-            onClick={() => sair.mutate(undefined, { onSuccess: () => navegar('/entrar') })}
-          >
-            Sair
-          </Botao>
+          <div className="flex items-center gap-2">
+            <SinoDeNotificacoes />
+            <Botao
+              variante="secundario"
+              onClick={() => sair.mutate(undefined, { onSuccess: () => navegar('/entrar') })}
+            >
+              Sair
+            </Botao>
+          </div>
         </header>
         <Outlet />
       </div>

@@ -13,6 +13,7 @@ export type Disciplina = components['schemas']['Disciplina'];
 export type AvisoDePrivacidade = components['schemas']['AvisoDePrivacidade'];
 export type FiltroDeDisciplinas = 'todas' | 'favoritas' | 'com-tutor';
 export type MaterialDoProfessor = components['schemas']['MaterialDoProfessor'];
+export type Notificacoes = components['schemas']['Notificacoes'];
 
 /** Resposta da API fora da faixa de sucesso (2xx), com o status e o corpo devolvidos. */
 export class ErroDaApi extends Error {
@@ -176,4 +177,14 @@ export async function enviarMaterial(
 /** DELETE /api/materiais/{id}: retira o material; o tutor deixa de usá-lo (MAT-RF-10). */
 export async function retirarMaterial(materialId: number): Promise<void> {
   await enviar<undefined>(`/api/materiais/${materialId}`, undefined, 'DELETE');
+}
+
+/** GET /api/notificacoes: as notificações mais recentes e quantas não foram lidas. */
+export function listarNotificacoes(): Promise<Notificacoes> {
+  return requisitar<Notificacoes>('/api/notificacoes');
+}
+
+/** POST /api/notificacoes/{id}/lida. */
+export async function marcarNotificacaoComoLida(notificacaoId: number): Promise<void> {
+  await enviar<undefined>(`/api/notificacoes/${notificacaoId}/lida`);
 }
