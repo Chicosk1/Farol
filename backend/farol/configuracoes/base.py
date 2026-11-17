@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "contas",
     "disciplinas",
     "materiais",
+    "notificacoes",
     "ia",
     "demonstracao",
 ]

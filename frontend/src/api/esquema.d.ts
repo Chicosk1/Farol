@@ -226,6 +226,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/notificacoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** As notificações da pessoa, das mais novas, e quantas não foram lidas */
+        get: operations["notificacoes_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notificacoes/{notificacao_id}/lida": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Marca a notificação como lida */
+        post: operations["notificacoes_lida_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sair": {
         parameters: {
             query?: never;
@@ -383,6 +417,19 @@ export interface components {
             material_id: number;
             status: components["schemas"]["StatusDoMaterialEnum"];
         };
+        Notificacao: {
+            readonly id: number;
+            tipo: components["schemas"]["TipoEnum"];
+            texto: string;
+            link?: string;
+            lida?: boolean;
+            /** Format: date-time */
+            criada_em?: string;
+        };
+        Notificacoes: {
+            notificacoes: components["schemas"]["Notificacao"][];
+            nao_lidas: number;
+        };
         /** @enum {unknown} */
         NullEnum: null;
         /**
@@ -414,6 +461,13 @@ export interface components {
          * @enum {string}
          */
         StatusDoMaterialEnum: "processando" | "pronto" | "atencao" | "erro" | "retirado";
+        /**
+         * @description * `material_pronto` - Material pronto
+         *     * `material_atencao` - Material precisa de atenção
+         *     * `material_erro` - Material com erro
+         * @enum {string}
+         */
+        TipoEnum: "material_pronto" | "material_atencao" | "material_erro";
         TrocaDePerfilRequest: {
             perfil: components["schemas"]["PerfilEnum"];
         };
@@ -736,6 +790,45 @@ export interface operations {
                 content: {
                     "application/pdf": string;
                 };
+            };
+        };
+    };
+    notificacoes_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Notificacoes"];
+                };
+            };
+        };
+    };
+    notificacoes_lida_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                notificacao_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
