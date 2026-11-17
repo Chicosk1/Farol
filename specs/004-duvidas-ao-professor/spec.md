@@ -4,7 +4,7 @@
 | --- | --- |
 | Código | `DUV` |
 | Branch | `004-duvidas-ao-professor` |
-| Status | Em revisão |
+| Status | Aprovada |
 | Criada em | 2026-11-13 |
 | Origem | Documento de idealização, funcionalidades F1 e F3 |
 
@@ -63,7 +63,7 @@ Como aluno, quero saber quando o professor marcou a minha dúvida como respondid
 
 - Turma muito pequena: mesmo sem nome, o estilo do texto pode identificar o aluno. O aviso da pré-visualização deixa isso claro.
 - O aluno apaga o histórico (ACE-RF-09) depois de enviar: a dúvida continua para o professor, porque já não tem ligação com o aluno.
-- Envio em massa: [PRECISA ESCLARECER: limitar o número de dúvidas por aluno por dia? Sugestão: 5]
+- Envio em massa: cada aluno envia no máximo 5 dúvidas por disciplina por dia; a sexta recebe "Você já enviou 5 dúvidas hoje nesta disciplina. Tente de novo amanhã." (decisão provisória)
 - Texto ofensivo: o professor pode ocultar a dúvida; a ocultação fica registrada.
 
 ## Requisitos
@@ -103,7 +103,6 @@ Como aluno, quero saber quando o professor marcou a minha dúvida como respondid
 
 | Questão | Dono | Prazo |
 | --- | --- | --- |
-| Limite de dúvidas por aluno por dia | Dono do produto | Antes do plano final |
 | O professor deve poder responder por escrito, além de "respondida em aula" | Professores do piloto | Fase 0 |
 
 ## Histórico
@@ -111,3 +110,4 @@ Como aluno, quero saber quando o professor marcou a minha dúvida como respondid
 | Data | Mudança |
 | --- | --- |
 | 2026-11-13 | Criação da spec a partir da idealização e do protótipo |
+| 2026-11-17 | Aprovada. Decisão provisória: no máximo 5 dúvidas por aluno, por disciplina e por dia, a confirmar com o dono do produto |

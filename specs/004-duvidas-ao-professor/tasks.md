@@ -30,6 +30,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 - [ ] DUV-T20 [P] [H2] Teste de que nenhuma rota do professor devolve dados do aluno (DUV-RF-03, DUV-RNF-01, DUV-CS-01)
 - [ ] DUV-T21 [H2] Rota de listagem para o professor e marcação de vista (DUV-RF-05)
 - [ ] DUV-T22 [H2] Notificação de nova dúvida (DUV-RF-06)
+- [ ] DUV-T23 [H2] Tela de dúvidas do professor no front-end, com a marca "Nova", as abas abertas e respondidas e os botões "Respondida em aula" e "Ocultar", até o radar da spec 007 existir (DUV-RF-05, DUV-RF-07)
 
 ## Produto: Histórias 3 e 4, acompanhar a resposta (P2 e P3)
 

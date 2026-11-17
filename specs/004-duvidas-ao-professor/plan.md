@@ -4,7 +4,7 @@
 | --- | --- |
 | Spec | [spec.md](./spec.md) |
 | Branch | `004-duvidas-ao-professor` |
-| Status | Em revisão |
+| Status | Aprovada |
 | Atualizado em | 2026-11-13 |
 
 ## Resumo
@@ -38,7 +38,7 @@ A dúvida é um registro separado da conversa: guarda só o texto filtrado, a di
 | Entidade | Campos | Observações |
 | --- | --- | --- |
 | `Duvida` | `disciplina`, `texto` (filtrado), `data` (só o dia), `status` (aberta, respondida, oculta), `vista` (booleano), `ocultada_por`, `ocultada_em` | Não tem chave para o aluno |
-| `EnvioDuvida` | `mensagem` (FK Mensagem do aluno, única), `duvida` (FK) | Consultada só por rotas do aluno |
+| `EnvioDuvida` | `mensagem` (FK para a resposta "não encontrei" do tutor, única), `duvida` (FK), `enviada_em` | Consultada só por rotas do aluno; conta o limite de 5 por dia |
 | `Notificacao` | `pessoa`, `tipo`, `referencia`, `lida` | Compartilhada com a spec 002 |
 
 ## Contratos
@@ -46,9 +46,9 @@ A dúvida é um registro separado da conversa: guarda só o texto filtrado, a di
 | Método e caminho | Entrada | Saída | Erros |
 | --- | --- | --- | --- |
 | `POST /api/mensagens/{id}/duvida/previa` | | `{ texto_filtrado }` | 400 se a mensagem não for "não encontrei", 409 se já enviada |
-| `POST /api/mensagens/{id}/duvida` | | `{ duvida_id, status }` | 409 se já enviada |
-| `GET /api/disciplinas/{id}/duvidas` | `?status=aberta\|respondida` | Lista para o professor: texto, data, status, vista | 403 se não for o professor |
-| `PATCH /api/duvidas/{id}` | `{ status }` | Dúvida | 403 |
+| `POST /api/mensagens/{id}/duvida` | | `{ duvida_id, status }` | 409 se já enviada, 429 depois de 5 dúvidas no dia |
+| `GET /api/disciplinas/{id}/duvidas` | `?status=aberta\|respondida` | Lista para o professor: texto, data, status, vista; depois de listar, as abertas passam a vistas | 403 se não for o professor |
+| `PATCH /api/disciplinas/{id}/duvidas/{duvida_id}` | `{ status }` (respondida ou oculta) | Dúvida | 403 se não for o professor, 404 se a dúvida não for da disciplina |
 | `GET /api/notificacoes` | | Notificações da pessoa | |
 
 ## Como o protótipo implementa
