@@ -17,7 +17,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ### Pendências do protótipo
 
-- [ ] DUV-T05 [H1] Modal de pré-visualização antes do envio, com o aviso de anonimato, em `prototipo/js/screens/aluno-tutor.js` (DUV-RF-02)
+- [x] DUV-T05 [H1] Modal de pré-visualização antes do envio, com o aviso de anonimato, em `prototipo/js/screens/aluno-tutor.js` (DUV-RF-02)
 
 ## Produto: História 1, enviar a dúvida (P1)
 

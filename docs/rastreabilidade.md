@@ -13,7 +13,7 @@ A coluna Testes mostra os testes do produto que citam o requisito com `@pytest.m
 | [001 Acesso e turmas](../specs/001-acesso-e-turmas/spec.md) | 11 | 9 de 11 | 2 | 3 | 1 | 5 | 38 de 42 | 3 |
 | [002 Materiais da disciplina](../specs/002-materiais-da-disciplina/spec.md) | 11 | 11 de 11 | 2 | 5 | 1 | 3 | 24 de 24 | 0 |
 | [003 Tutor da disciplina](../specs/003-tutor-da-disciplina/spec.md) | 14 | 14 de 14 | 6 | 5 | 2 | 1 | 36 de 38 | 0 |
-| [004 Dúvidas ao professor](../specs/004-duvidas-ao-professor/spec.md) | 9 | 8 de 9 | 5 | 0 | 1 | 3 | 13 de 15 | 0 |
+| [004 Dúvidas ao professor](../specs/004-duvidas-ao-professor/spec.md) | 9 | 8 de 9 | 5 | 0 | 1 | 3 | 14 de 15 | 0 |
 | [005 Questões e quizzes](../specs/005-questoes-e-quizzes/spec.md) | 11 | 0 de 11 | 5 | 1 | 3 | 2 | 6 de 20 | 1 |
 | [006 Revisão do dia](../specs/006-revisao-do-dia/spec.md) | 10 | 0 de 10 | 5 | 3 | 1 | 1 | 5 de 17 | 1 |
 | [007 Radar da turma](../specs/007-radar-da-turma/spec.md) | 11 | 0 de 11 | 6 | 3 | 1 | 1 | 5 de 18 | 0 |
@@ -23,7 +23,6 @@ A coluna Testes mostra os testes do produto que citam o requisito com `@pytest.m
 Tarefas já especificadas que aproximam o protótipo do comportamento descrito nas specs:
 
 - `ACE-T06` [H4] Aviso de privacidade na primeira entrada da aluna, com botão "Entendi", em `prototipo/js/screens/aluno-inicio.js` (ACE-RF-08) ([tarefas](../specs/001-acesso-e-turmas/tasks.md))
-- `DUV-T05` [H1] Modal de pré-visualização antes do envio, com o aviso de anonimato, em `prototipo/js/screens/aluno-tutor.js` (DUV-RF-02) ([tarefas](../specs/004-duvidas-ao-professor/tasks.md))
 - `QUE-T07` [H3] Botão "Perguntar ao tutor sobre isso" no retorno de cada questão errada em `prototipo/js/screens/aluno-pratica.js` (QUE-RF-09) ([tarefas](../specs/005-questoes-e-quizzes/tasks.md))
 - `REV-T06` [H1] Incluir na revisão do dia as questões aprovadas pelo professor na tela de Questões (REV-RF-01) ([tarefas](../specs/006-revisao-do-dia/tasks.md))
 
@@ -83,7 +82,7 @@ Tarefas já especificadas que aproximam o protótipo do comportamento descrito n
 | Requisito | Descrição | Protótipo | Código do protótipo | Testes | Tarefas feitas | Tarefas pendentes |
 | --- | --- | --- | --- | --- | --- | --- |
 | `DUV-RF-01` | O sistema DEVE oferecer "Enviar dúvida ao professor" em toda resposta do tipo "não encontrei" do tutor. | Coberto | [aluno-tutor.js](../prototipo/js/screens/aluno-tutor.js) | [duvidas/testes/test_envio.py](../backend/duvidas/testes/test_envio.py) (2) | DUV-T01, DUV-T11 |  |
-| `DUV-RF-02` | Antes do envio, o sistema DEVE mostrar ao aluno o texto que será enviado, já sem dados pessoais, e pedir confirmação. | Não coberto |  | [duvidas/testes/test_envio.py](../backend/duvidas/testes/test_envio.py) (1) | DUV-T10, DUV-T11, DUV-T12 | DUV-T05 |
+| `DUV-RF-02` | Antes do envio, o sistema DEVE mostrar ao aluno o texto que será enviado, já sem dados pessoais, e pedir confirmação. | Não coberto | [aluno-tutor.js](../prototipo/js/screens/aluno-tutor.js) | [duvidas/testes/test_envio.py](../backend/duvidas/testes/test_envio.py) (1) | DUV-T05, DUV-T10, DUV-T11, DUV-T12 |  |
 | `DUV-RF-03` | A dúvida DEVE chegar ao professor sem nome, RA, e-mail, turma ou horário exato do aluno. | Coberto | [aluno-tutor.js](../prototipo/js/screens/aluno-tutor.js) | [duvidas/testes/test_professor.py](../backend/duvidas/testes/test_professor.py) (1) | DUV-T01, DUV-T11, DUV-T20 |  |
 | `DUV-RF-04` | O sistema DEVE impedir o envio repetido da mesma dúvida a partir da mesma mensagem. | Coberto | [aluno-tutor.js](../prototipo/js/screens/aluno-tutor.js) | [duvidas/testes/test_envio.py](../backend/duvidas/testes/test_envio.py) (1) | DUV-T01, DUV-T10, DUV-T11 |  |
 | `DUV-RF-05` | O professor DEVE ver as dúvidas da disciplina no radar, da mais recente para a mais antiga, com a marca "Nova" nas que ainda não viu. | Coberto | [prof-radar.js](../prototipo/js/screens/prof-radar.js) | [duvidas/testes/test_professor.py](../backend/duvidas/testes/test_professor.py) (2) | DUV-T02, DUV-T21, DUV-T23 |  |

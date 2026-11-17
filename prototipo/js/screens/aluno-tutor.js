@@ -1,5 +1,5 @@
 /* Aluno: tutor da disciplina. Respostas com citação, modo pistas, modo prova e envio anônimo de dúvidas ao professor. */
-/* Specs: TUT-RF-02, TUT-RF-04, TUT-RF-05, TUT-RF-07, TUT-RF-08, TUT-RF-09, TUT-RF-10, TUT-RF-13, TUT-RF-14, DUV-RF-01, DUV-RF-03, DUV-RF-04. Rastreabilidade em docs/rastreabilidade.md. */
+/* Specs: DUV-RF-02, TUT-RF-02, TUT-RF-04, TUT-RF-05, TUT-RF-07, TUT-RF-08, TUT-RF-09, TUT-RF-10, TUT-RF-13, TUT-RF-14, DUV-RF-01, DUV-RF-03, DUV-RF-04. Rastreabilidade em docs/rastreabilidade.md. */
 (function () {
   'use strict';
   const F = window.Farol;
@@ -209,11 +209,31 @@
       const index = Number(el.dataset.index);
       const chat = F.store.state.chats[id];
       const question = [...chat.slice(0, index)].reverse().find((m) => m.from === 'aluno');
+      // Prévia antes do envio (DUV-RF-02): o texto exato, sem e-mail nem CPF, e o aviso de anonimato.
+      const texto = (question ? question.text : 'Dúvida sem texto')
+        .replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, '[e-mail]')
+        .replace(/\d{3}\.?\d{3}\.?\d{3}-?\d{2}/g, '[CPF]');
+      F.openModal({
+        title: 'Enviar dúvida ao professor',
+        subtitle: 'O professor vai ler exatamente este texto',
+        body: `<blockquote class="panel">${F.esc(texto)}</blockquote>
+          <p class="small muted">${F.icon('lock')}O professor não verá o seu nome, o seu e-mail nem o horário do envio. Em turmas pequenas, o jeito de escrever ainda pode identificar você.</p>
+          <div class="fr-bubble-actions">
+            <button type="button" class="fr-btn fr-btn--outline" data-modal-close>Cancelar</button>
+            <button type="button" class="fr-btn fr-btn--primary" data-action="tutor-confirm-doubt" data-index="${index}" data-disc="${id}" data-texto="${F.esc(texto)}">Enviar ao professor</button>
+          </div>`,
+      });
+    },
+    'tutor-confirm-doubt': (el) => {
+      const id = el.dataset.disc;
+      const index = Number(el.dataset.index);
       F.store.update((s) => {
         s.chats[id][index].sent = true;
-        s.doubts.unshift({ id: `n${Date.now()}`, texto: question ? question.text : 'Dúvida sem texto', quando: F.nowLabel(), status: 'aberta', nova: true });
+        s.doubts.unshift({ id: `n${Date.now()}`, texto: el.dataset.texto, quando: F.nowLabel(), status: 'aberta', nova: true });
       }, { render: false });
-      el.closest('.fr-bubble').outerHTML = tutorBubble(F.store.state.chats[id][index], index, id);
+      F.closeModal();
+      const bolha = document.querySelector(`.fr-bubble[data-msg="${index}"]`);
+      if (bolha) bolha.outerHTML = tutorBubble(F.store.state.chats[id][index], index, id);
       F.toast('Dúvida enviada ao professor, sem o seu nome.');
     },
     'tutor-rate': (el) => {
