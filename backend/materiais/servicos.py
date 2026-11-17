@@ -15,6 +15,7 @@ from pypdf.errors import PyPdfError
 from contas.servicos import Perfil
 from disciplinas import servicos as disciplinas
 from ia import servicos as ia
+from notificacoes import servicos as notificacoes
 
 from .models import Material, Trecho
 from .trechos import dividir_em_trechos
@@ -161,7 +162,33 @@ def processar_material(material_id: int) -> Material:
     except Exception:
         logger.exception("Falha ao processar o material %s", material_id)
         _marcar_erro(material, MENSAGEM_DE_ERRO_GERAL)
+    _avisar_professor(material)
     return material
+
+
+def _avisar_professor(material: Material) -> None:
+    """O aviso no sino de quem enviou: pronto, precisa de atenção ou erro (MAT-RF-06)."""
+    aula = f"Aula {material.aula_numero}, {material.aula_titulo},"
+    avisos = {
+        Material.Status.PRONTO: (
+            notificacoes.Tipo.MATERIAL_PRONTO,
+            f"{aula} está pronta para o tutor.",
+        ),
+        Material.Status.ATENCAO: (
+            notificacoes.Tipo.MATERIAL_ATENCAO,
+            f"{aula} precisa de atenção: {material.erro}",
+        ),
+        Material.Status.ERRO: (
+            notificacoes.Tipo.MATERIAL_ERRO,
+            f"{aula} não pôde ser processada. {material.erro}",
+        ),
+    }
+    if material.status not in avisos or material.enviado_por_id is None:
+        return
+    tipo, texto = avisos[material.status]
+    notificacoes.notificar(
+        material.enviado_por, tipo, texto, link=f"/disciplinas/{material.disciplina_id}/materiais"
+    )
 
 
 def _validar_pdf(conteudo: bytes, nome: str) -> None:

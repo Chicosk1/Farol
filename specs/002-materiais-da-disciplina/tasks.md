@@ -27,9 +27,9 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 - [x] MAT-T20 [H1] Testes de envio, validação e etapas, entregues junto das MAT-T21 e MAT-T22 (MAT-RF-01, MAT-RF-02, MAT-RF-03)
 - [x] MAT-T21 [H1] Rota de envio do PDF (multipart), com validação de tipo e tamanho (MAT-RF-01, MAT-RF-02)
 - [x] MAT-T22 [H1] Tarefa `materiais.processar`: extração por página, divisão em trechos e vetores (MAT-RF-03, MAT-RF-04)
-- [ ] MAT-T23 [H1] Módulo `notificacoes` com o modelo `Notificacao`, o serviço `notificar` e as rotas `GET /api/notificacoes` e `POST /api/notificacoes/{id}/lida`; a tarefa de processamento avisa o professor quando o material fica pronto ou falha (MAT-RF-06)
-- [ ] MAT-T25 [H1] Sino de notificações no cabeçalho do front-end (MAT-RF-06)
-- [ ] MAT-T24 [H1] Tela de materiais do professor com status ao vivo (MAT-RF-03)
+- [x] MAT-T23 [H1] Módulo `notificacoes` com o modelo `Notificacao`, o serviço `notificar` e as rotas `GET /api/notificacoes` e `POST /api/notificacoes/{id}/lida`; a tarefa de processamento avisa o professor quando o material fica pronto ou falha (MAT-RF-06)
+- [x] MAT-T25 [H1] Sino de notificações no cabeçalho do front-end (MAT-RF-06)
+- [x] MAT-T24 [H1] Tela de materiais do professor com status ao vivo (MAT-RF-03)
 
 ## Produto: História 2, consultar os materiais (P1)
 

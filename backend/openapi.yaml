@@ -560,6 +560,38 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/notificacoes:
+    get:
+      operationId: notificacoes_retrieve
+      summary: As notificações da pessoa, das mais novas, e quantas não foram lidas
+      tags:
+      - notificacoes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notificacoes'
+          description: ''
+  /api/notificacoes/{notificacao_id}/lida:
+    post:
+      operationId: notificacoes_lida_create
+      summary: Marca a notificação como lida
+      parameters:
+      - in: path
+        name: notificacao_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - notificacoes
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/sair:
     post:
       operationId: sair_create
@@ -1016,7 +1048,7 @@ components:
         texto:
           type: string
         tipo:
-          $ref: '#/components/schemas/TipoEnum'
+          $ref: '#/components/schemas/MensagemTipoEnum'
         avaliacao:
           title: Avaliação
           oneOf:
@@ -1035,6 +1067,65 @@ components:
       - citacoes
       - id
       - texto
+    MensagemTipoEnum:
+      enum:
+      - resposta
+      - pistas
+      - nao_encontrado
+      - saudacao
+      - erro
+      type: string
+      description: |-
+        * `resposta` - Resposta
+        * `pistas` - Modo pistas
+        * `nao_encontrado` - Não encontrei no material
+        * `saudacao` - Saudação
+        * `erro` - Erro
+    Notificacao:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        tipo:
+          $ref: '#/components/schemas/NotificacaoTipoEnum'
+        texto:
+          type: string
+          maxLength: 300
+        link:
+          type: string
+          maxLength: 200
+        lida:
+          type: boolean
+        criada_em:
+          type: string
+          format: date-time
+      required:
+      - id
+      - texto
+      - tipo
+    NotificacaoTipoEnum:
+      enum:
+      - material_pronto
+      - material_atencao
+      - material_erro
+      type: string
+      description: |-
+        * `material_pronto` - Material pronto
+        * `material_atencao` - Material precisa de atenção
+        * `material_erro` - Material com erro
+    Notificacoes:
+      type: object
+      properties:
+        notificacoes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notificacao'
+        nao_lidas:
+          type: integer
+      required:
+      - nao_lidas
+      - notificacoes
     NovaJanelaRequest:
       type: object
       description: Sem início, a janela começa agora (modo prova imediato); sem fim,
@@ -1119,20 +1210,6 @@ components:
         * `atencao` - Precisa de atenção
         * `erro` - Erro, tente de novo
         * `retirado` - Retirado
-    TipoEnum:
-      enum:
-      - resposta
-      - pistas
-      - nao_encontrado
-      - saudacao
-      - erro
-      type: string
-      description: |-
-        * `resposta` - Resposta
-        * `pistas` - Modo pistas
-        * `nao_encontrado` - Não encontrei no material
-        * `saudacao` - Saudação
-        * `erro` - Erro
     TrocaDePerfilRequest:
       type: object
       properties:

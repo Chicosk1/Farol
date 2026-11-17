@@ -12,10 +12,12 @@ export type Perfil = components['schemas']['PerfilEnum'];
 export type Disciplina = components['schemas']['Disciplina'];
 export type AvisoDePrivacidade = components['schemas']['AvisoDePrivacidade'];
 export type FiltroDeDisciplinas = 'todas' | 'favoritas' | 'com-tutor';
+export type MaterialDoProfessor = components['schemas']['MaterialDoProfessor'];
+export type Notificacoes = components['schemas']['Notificacoes'];
 export type EstadoDoTutor = components['schemas']['EstadoDoTutor'];
 export type MensagemDoTutor = components['schemas']['Mensagem'];
 export type CitacaoDoTutor = components['schemas']['Citacao'];
-export type TipoDeMensagem = components['schemas']['TipoEnum'];
+export type TipoDeMensagem = components['schemas']['MensagemTipoEnum'];
 export type ConfiguracaoDoTutor = components['schemas']['Configuracao'];
 export type JanelaDeProva = components['schemas']['Janela'];
 /** A avaliação de uma resposta do tutor; vazio é sem avaliação. */
@@ -259,4 +261,50 @@ export async function apagarJanelaDeProva(disciplinaId: number, janelaId: number
     undefined,
     'DELETE',
   );
+}
+
+/** GET /api/disciplinas/{id}/materiais: para o professor, todos, com status e etapa. */
+export function listarMateriaisDoProfessor(disciplinaId: number): Promise<MaterialDoProfessor[]> {
+  return requisitar<MaterialDoProfessor[]>(`/api/disciplinas/${disciplinaId}/materiais`);
+}
+
+/** POST /api/disciplinas/{id}/materiais (multipart): envia o PDF; o processamento vai para a fila. */
+export async function enviarMaterial(
+  disciplinaId: number,
+  dados: { arquivo: File; aulaNumero: number; aulaTitulo: string },
+): Promise<void> {
+  const formulario = new FormData();
+  formulario.append('arquivo', dados.arquivo);
+  formulario.append('aula_numero', String(dados.aulaNumero));
+  formulario.append('aula_titulo', dados.aulaTitulo);
+  const cabecalhos = new Headers({ Accept: 'application/json' });
+  const csrf = tokenCsrf();
+  if (csrf) {
+    cabecalhos.set('X-CSRFToken', csrf);
+  }
+  // Sem Content-Type: o navegador põe o multipart com a fronteira certa.
+  const resposta = await fetch(`/api/disciplinas/${disciplinaId}/materiais`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: cabecalhos,
+    body: formulario,
+  });
+  if (!resposta.ok) {
+    throw new ErroDaApi(resposta.status, await lerCorpo(resposta));
+  }
+}
+
+/** DELETE /api/materiais/{id}: retira o material; o tutor deixa de usá-lo (MAT-RF-10). */
+export async function retirarMaterial(materialId: number): Promise<void> {
+  await enviar<undefined>(`/api/materiais/${materialId}`, undefined, 'DELETE');
+}
+
+/** GET /api/notificacoes: as notificações mais recentes e quantas não foram lidas. */
+export function listarNotificacoes(): Promise<Notificacoes> {
+  return requisitar<Notificacoes>('/api/notificacoes');
+}
+
+/** POST /api/notificacoes/{id}/lida. */
+export async function marcarNotificacaoComoLida(notificacaoId: number): Promise<void> {
+  await enviar<undefined>(`/api/notificacoes/${notificacaoId}/lida`);
 }
