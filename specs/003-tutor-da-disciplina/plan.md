@@ -53,7 +53,7 @@ Contador diário no Redis: chave `limite:{disciplina}:{aluno}:{AAAA-MM-DD}` com 
 
 | Método e caminho | Entrada | Saída | Erros |
 | --- | --- | --- | --- |
-| `GET /api/disciplinas/{id}/tutor` | | Configuração, se está pausado, uso do dia, sugestões | 403 |
+| `GET /api/disciplinas/{id}/tutor` | | Modo pistas, política, se está pausado, uso do dia, a conversa guardada com as citações e as sugestões | 403 se não for aluno matriculado |
 | `POST /api/disciplinas/{id}/tutor/perguntas` | `{ texto }` (até 1.000 caracteres) | Stream de eventos (SSE): `inicio`, `texto`, `citacao`, `fim` com o tipo da resposta | 400 texto inválido, 423 modo prova, 429 limite atingido, 503 provedor indisponível |
 | `PUT /api/mensagens/{id}/avaliacao` | `{ avaliacao }` | 204 | 403 |
 | `GET /api/disciplinas/{id}/tutor/configuracao` | | Configuração | 403 se não for o professor |
