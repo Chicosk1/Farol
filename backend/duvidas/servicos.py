@@ -58,3 +58,23 @@ def enviar(aluno, mensagem_id: int) -> Duvida:
     except IntegrityError:
         raise DuvidaJaEnviada(mensagem_id) from None  # dois toques ao mesmo tempo
     return duvida
+
+
+class StatusInvalido(ValueError):
+    """O professor só lista as abertas ou as respondidas."""
+
+
+def duvidas_para_o_professor(disciplina_id: int, status: str = Duvida.Status.ABERTA) -> list[dict]:
+    """As dúvidas da disciplina, da mais recente, com a marca "nova" (DUV-RF-05).
+
+    Depois de listadas, as abertas passam a vistas: na próxima vez, já não são novas.
+    """
+    if status not in (Duvida.Status.ABERTA, Duvida.Status.RESPONDIDA):
+        raise StatusInvalido(status)
+    duvidas = list(Duvida.objects.filter(disciplina_id=disciplina_id, status=status))
+    lista = [
+        {"id": d.id, "texto": d.texto, "data": d.data, "status": d.status, "nova": not d.vista}
+        for d in duvidas
+    ]
+    Duvida.objects.filter(id__in=[d.id for d in duvidas if not d.vista]).update(vista=True)
+    return lista

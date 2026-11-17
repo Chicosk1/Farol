@@ -88,6 +88,37 @@ paths:
                 items:
                   $ref: '#/components/schemas/Disciplina'
           description: ''
+  /api/disciplinas/{disciplina_id}/duvidas:
+    get:
+      operationId: disciplinas_duvidas_list
+      summary: As dúvidas da disciplina para o professor, sem dados do aluno
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - aberta
+          - respondida
+        description: 'Padrão: aberta'
+      tags:
+      - duvidas
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DuvidaDoProfessor'
+          description: ''
   /api/disciplinas/{disciplina_id}/favorito:
     put:
       operationId: disciplinas_favorito_update
@@ -798,6 +829,27 @@ components:
       - professor_nome
       - semestre
       - turma
+    DuvidaDoProfessor:
+      type: object
+      description: 'O que o professor vê: nunca o aluno, nem a hora do envio (DUV-RF-03).'
+      properties:
+        id:
+          type: integer
+        texto:
+          type: string
+        data:
+          type: string
+          format: date
+        status:
+          type: string
+        nova:
+          type: boolean
+      required:
+      - data
+      - id
+      - nova
+      - status
+      - texto
     DuvidaEnviada:
       type: object
       properties:

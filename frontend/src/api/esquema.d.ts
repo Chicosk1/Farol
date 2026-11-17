@@ -59,6 +59,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/disciplinas/{disciplina_id}/duvidas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** As dúvidas da disciplina para o professor, sem dados do aluno */
+        get: operations["disciplinas_duvidas_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/disciplinas/{disciplina_id}/favorito": {
         parameters: {
             query?: never;
@@ -511,6 +528,15 @@ export interface components {
             /** @description Se a pessoa marcou a disciplina como favorita. */
             favorita: boolean;
         };
+        /** @description O que o professor vê: nunca o aluno, nem a hora do envio (DUV-RF-03). */
+        DuvidaDoProfessor: {
+            id: number;
+            texto: string;
+            /** Format: date */
+            data: string;
+            status: string;
+            nova: boolean;
+        };
         DuvidaEnviada: {
             duvida_id: number;
             status: string;
@@ -812,6 +838,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Disciplina"][];
+                };
+            };
+        };
+    };
+    disciplinas_duvidas_list: {
+        parameters: {
+            query?: {
+                /** @description Padrão: aberta */
+                status?: "aberta" | "respondida";
+            };
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DuvidaDoProfessor"][];
                 };
             };
         };

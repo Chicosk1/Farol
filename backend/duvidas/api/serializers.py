@@ -8,3 +8,13 @@ class PreviaSerializer(serializers.Serializer):
 class DuvidaEnviadaSerializer(serializers.Serializer):
     duvida_id = serializers.IntegerField()
     status = serializers.CharField()
+
+
+class DuvidaDoProfessorSerializer(serializers.Serializer):
+    """O que o professor vê: nunca o aluno, nem a hora do envio (DUV-RF-03)."""
+
+    id = serializers.IntegerField()
+    texto = serializers.CharField()
+    data = serializers.DateField()
+    status = serializers.CharField()
+    nova = serializers.BooleanField()
