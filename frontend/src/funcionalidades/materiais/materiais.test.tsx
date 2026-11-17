@@ -186,4 +186,42 @@ describe('materiais da disciplina para o professor (MAT-T24)', () => {
 
     await waitFor(() => expect(roteador.state.location.pathname).toBe(PAGINA));
   });
+
+  it('envia a nova versão de um material e mostra a versão nova processando (MAT-T52)', async () => {
+    const { chamadas } = simular(
+      [
+        [material()],
+        [
+          material({ status: 'substituido', status_rotulo: 'Substituído pela versão nova' }),
+          material({
+            id: 9,
+            versao: 2,
+            status: 'processando',
+            status_rotulo: 'Processando',
+            etapa: 'lendo',
+            etapa_rotulo: 'Lendo as páginas',
+          }),
+        ],
+      ],
+      {
+        'POST /api/materiais/7/versoes': {
+          status: 202,
+          corpo: { material_id: 9, status: 'processando' },
+        },
+      },
+    );
+    renderizarApp(PAGINA);
+
+    fireEvent.change(await screen.findByLabelText('Enviar nova versão da aula 4'), {
+      target: { files: [pdf('aula-4-corrigida.pdf')] },
+    });
+
+    expect(await screen.findByText('versão 2')).toBeInTheDocument();
+    expect(screen.getByText('Substituído pela versão nova')).toBeInTheDocument();
+    expect(chamadas.find((c) => c.caminho === '/api/materiais/7/versoes')?.formulario).toEqual({
+      arquivo: 'aula-4-corrigida.pdf',
+    });
+    // Só a versão em uso oferece nova versão e retirada.
+    expect(screen.getAllByRole('button', { name: /Retirar a aula 4/ })).toHaveLength(1);
+  });
 });
