@@ -108,6 +108,13 @@ DATABASES = {
     }
 }
 
+# Sessão: expira depois de um período sem uso (ACE-RNF-02). Cada requisição renova o prazo; o
+# padrão de 12 horas é a sugestão da spec, a confirmar com a TI.
+FAROL_SESSAO_HORAS = int(ambiente.opcional("FAROL_SESSAO_HORAS", "12"))
+SESSION_COOKIE_AGE = FAROL_SESSAO_HORAS * 3600
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_SAMESITE = "Lax"
+
 # Pessoa é o usuário desde a primeira migração: o Django não permite trocar depois.
 AUTH_USER_MODEL = "contas.Pessoa"
 

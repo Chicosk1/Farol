@@ -79,7 +79,7 @@ A primeira entrega do produto prova a arquitetura em todas as camadas com uma fu
 ## Produto: acabamento
 
 - [ ] ACE-T90 Auditoria de acessibilidade das telas desta spec (ACE-RNF-01)
-- [ ] ACE-T91 Configurar HTTPS e expiração de sessão (ACE-RNF-02)
+- [x] ACE-T91 Configurar HTTPS e expiração de sessão (ACE-RNF-02)
 
 ## Dependências
 

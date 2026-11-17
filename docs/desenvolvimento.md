@@ -160,3 +160,11 @@ Os dados de teste e de demonstração são sempre fictícios. Nenhum dado real d
 | Banco num estado estranho depois de trocar de branch | `docker compose down -v` e `docker compose up --build`, para recriar o banco do zero |
 
 A pasta `frontend/node_modules`, vazia no seu computador, é só o ponto de montagem: as dependências ficam dentro do container.
+
+## HTTPS e sessão em produção
+
+Em produção, o Django exige HTTPS (ACE-RNF-02): redireciona HTTP para HTTPS, só envia os cookies por
+conexão segura e liga o HSTS. O certificado fica no proxy à frente do Django, que precisa repassar o
+cabeçalho `X-Forwarded-Proto: https`. A sessão expira depois de `FAROL_SESSAO_HORAS` horas sem uso
+(padrão 12), e cada requisição renova o prazo. `DJANGO_HSTS_SEGUNDOS` ajusta o HSTS (padrão de um
+ano; use um valor pequeno no primeiro deploy).
