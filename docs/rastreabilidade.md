@@ -12,7 +12,7 @@ A coluna Testes mostra os testes do produto que citam o requisito com `@pytest.m
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | [001 Acesso e turmas](../specs/001-acesso-e-turmas/spec.md) | 11 | 9 de 11 | 2 | 3 | 1 | 5 | 37 de 42 | 3 |
 | [002 Materiais da disciplina](../specs/002-materiais-da-disciplina/spec.md) | 11 | 11 de 11 | 2 | 5 | 1 | 3 | 24 de 24 | 0 |
-| [003 Tutor da disciplina](../specs/003-tutor-da-disciplina/spec.md) | 14 | 14 de 14 | 6 | 5 | 2 | 1 | 34 de 38 | 0 |
+| [003 Tutor da disciplina](../specs/003-tutor-da-disciplina/spec.md) | 14 | 14 de 14 | 6 | 5 | 2 | 1 | 35 de 38 | 0 |
 | [004 Dúvidas ao professor](../specs/004-duvidas-ao-professor/spec.md) | 9 | 8 de 9 | 5 | 0 | 1 | 3 | 13 de 15 | 0 |
 | [005 Questões e quizzes](../specs/005-questoes-e-quizzes/spec.md) | 11 | 0 de 11 | 5 | 1 | 3 | 2 | 6 de 20 | 1 |
 | [006 Revisão do dia](../specs/006-revisao-do-dia/spec.md) | 10 | 0 de 10 | 5 | 3 | 1 | 1 | 5 de 17 | 1 |

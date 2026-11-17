@@ -76,7 +76,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 - [x] TUT-T90 [P] Filtro de dados pessoais com testes de CPF, e-mail, telefone e nomes (TUT-RF-11)
 - [x] TUT-T91 [P] Registro de uso com identificador pseudônimo por disciplina (TUT-RF-12)
-- [ ] TUT-T92 Teste de carga para a meta de 3 segundos (TUT-RNF-01)
+- [x] TUT-T92 Teste de carga para a meta de 3 segundos (TUT-RNF-01)
 - [x] TUT-T93 Painel de custo por aluno e alerta de orçamento (TUT-RNF-05)
 
 ## Dependências

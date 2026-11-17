@@ -168,3 +168,14 @@ conexão segura e liga o HSTS. O certificado fica no proxy à frente do Django, 
 cabeçalho `X-Forwarded-Proto: https`. A sessão expira depois de `FAROL_SESSAO_HORAS` horas sem uso
 (padrão 12), e cada requisição renova o prazo. `DJANGO_HSTS_SEGUNDOS` ajusta o HSTS (padrão de um
 ano; use um valor pequeno no primeiro deploy).
+
+## Medições de desempenho
+
+- `docker compose run --rm backend python manage.py medir_processamento`: tempo para um PDF de
+  40 páginas ficar pronto (meta de 2 minutos, MAT-RNF-01). Não deixa nada no banco.
+- `docker compose run --rm backend python manage.py medir_tutor --disciplina ID`: tempo até a
+  primeira palavra do tutor, com perguntas simultâneas (meta de 3 segundos no p95, TUT-RNF-01).
+  Usa o material da disciplina e não guarda conversas.
+
+Com o provedor falso, as medições cobrem só a parte do Farol. Os números que valem para as metas
+saem no servidor, com o provedor de IA real.
