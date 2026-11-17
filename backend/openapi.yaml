@@ -1405,12 +1405,14 @@ components:
       - material_atencao
       - material_erro
       - duvida_nova
+      - orcamento_ia
       type: string
       description: |-
         * `material_pronto` - Material pronto
         * `material_atencao` - Material precisa de atenção
         * `material_erro` - Material com erro
         * `duvida_nova` - Dúvida nova
+        * `orcamento_ia` - Custo de IA acima do orçamento
     Notificacoes:
       type: object
       properties:

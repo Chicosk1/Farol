@@ -487,3 +487,77 @@ def apagar_historico(aluno) -> None:
     têm ligação com o aluno.
     """
     Conversa.objects.filter(aluno=aluno).delete()
+
+
+@dataclass
+class CustoDaDisciplina:
+    """O uso do tutor numa disciplina num mês, para o orçamento de IA (TUT-RNF-05)."""
+
+    disciplina_id: int
+    disciplina_nome: str
+    perguntas: int
+    alunos: int
+    custo_total: Decimal
+    custo_por_aluno: Decimal
+    acima_do_orcamento: bool
+
+
+def custos_do_mes(ano: int, mes: int) -> list[CustoDaDisciplina]:
+    """Custo total e por aluno de cada disciplina no mês, do maior custo por aluno ao menor.
+
+    Os alunos são contados pelo pseudônimo do registro de uso: a conta não identifica ninguém.
+    """
+    from django.db.models import Count, Sum
+
+    orcamento = Decimal(settings.FAROL_IA_ORCAMENTO_POR_ALUNO_MES)
+    linhas = (
+        RegistroUso.objects.filter(criado_em__year=ano, criado_em__month=mes)
+        .values("disciplina_id", "disciplina__nome")
+        .annotate(
+            perguntas=Count("id"),
+            alunos=Count("aluno_pseudonimo", distinct=True),
+            custo_total=Sum("custo"),
+        )
+    )
+    custos = []
+    for linha in linhas:
+        total = linha["custo_total"] or Decimal(0)
+        por_aluno = (total / linha["alunos"]).quantize(Decimal("0.0001"))
+        custos.append(
+            CustoDaDisciplina(
+                disciplina_id=linha["disciplina_id"],
+                disciplina_nome=linha["disciplina__nome"],
+                perguntas=linha["perguntas"],
+                alunos=linha["alunos"],
+                custo_total=total,
+                custo_por_aluno=por_aluno,
+                acima_do_orcamento=por_aluno > orcamento,
+            )
+        )
+    return sorted(custos, key=lambda custo: custo.custo_por_aluno, reverse=True)
+
+
+def verificar_orcamento(hoje=None) -> int:
+    """Avisa os administradores das disciplinas acima do orçamento no mês, uma vez por mês.
+
+    Devolve quantos avisos novos foram criados.
+    """
+    from contas import servicos as contas
+    from notificacoes import servicos as notificacoes
+
+    hoje = hoje or timezone.localdate()
+    novos = 0
+    for custo in custos_do_mes(hoje.year, hoje.month):
+        if not custo.acima_do_orcamento:
+            continue
+        link = f"/admin/tutor/registrouso/custos/?mes={hoje:%Y-%m}#disciplina-{custo.disciplina_id}"
+        texto = (
+            f"Custo de IA acima do orçamento em {custo.disciplina_nome}: "
+            f"R$ {custo.custo_por_aluno:.2f} por aluno em {hoje:%m/%Y}."
+        )
+        for pessoa in contas.administradores():
+            if notificacoes.ja_avisada(pessoa, notificacoes.Tipo.ORCAMENTO_IA, link):
+                continue
+            notificacoes.notificar(pessoa, notificacoes.Tipo.ORCAMENTO_IA, texto, link=link)
+            novos += 1
+    return novos

@@ -25,3 +25,8 @@ def marcar_como_lida(pessoa, notificacao_id: int) -> None:
     atualizadas = Notificacao.objects.filter(id=notificacao_id, pessoa=pessoa).update(lida=True)
     if not atualizadas:
         raise NotificacaoNaoEncontrada(notificacao_id)
+
+
+def ja_avisada(pessoa, tipo: str, link: str) -> bool:
+    """A pessoa já tem um aviso deste tipo para o mesmo link (evita repetir o alerta)."""
+    return Notificacao.objects.filter(pessoa=pessoa, tipo=tipo, link=link).exists()

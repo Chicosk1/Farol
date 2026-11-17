@@ -816,9 +816,10 @@ export interface components {
          *     * `material_atencao` - Material precisa de atenção
          *     * `material_erro` - Material com erro
          *     * `duvida_nova` - Dúvida nova
+         *     * `orcamento_ia` - Custo de IA acima do orçamento
          * @enum {string}
          */
-        NotificacaoTipoEnum: "material_pronto" | "material_atencao" | "material_erro" | "duvida_nova";
+        NotificacaoTipoEnum: "material_pronto" | "material_atencao" | "material_erro" | "duvida_nova" | "orcamento_ia";
         Notificacoes: {
             notificacoes: components["schemas"]["Notificacao"][];
             nao_lidas: number;
