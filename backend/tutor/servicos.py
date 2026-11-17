@@ -457,3 +457,33 @@ def pergunta_sem_resposta(aluno, mensagem_id: int) -> PerguntaSemResposta | None
     if pergunta is None:
         return None
     return PerguntaSemResposta(mensagem.id, mensagem.conversa.disciplina_id, pergunta.texto)
+
+
+def historico_do_aluno(aluno) -> list[dict]:
+    """As conversas do aluno com o tutor, uma por disciplina (ACE-RF-09)."""
+    from django.db.models import Count, Max
+
+    conversas = (
+        Conversa.objects.filter(aluno=aluno)
+        .select_related("disciplina")
+        .annotate(total=Count("mensagens"), ultima=Max("mensagens__criada_em"))
+        .order_by("-ultima")
+    )
+    return [
+        {
+            "disciplina_id": conversa.disciplina_id,
+            "disciplina_nome": conversa.disciplina.nome,
+            "mensagens": conversa.total,
+            "ultima_em": conversa.ultima or conversa.criada_em,
+        }
+        for conversa in conversas
+    ]
+
+
+def apagar_historico(aluno) -> None:
+    """Exclui do banco as conversas do aluno, com as mensagens e as citações (ACE-RF-09).
+
+    O registro de uso, só com o pseudônimo, e as dúvidas enviadas ao professor ficam: eles não
+    têm ligação com o aluno.
+    """
+    Conversa.objects.filter(aluno=aluno).delete()

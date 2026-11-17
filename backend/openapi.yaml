@@ -501,6 +501,35 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/eu/historico:
+    get:
+      operationId: eu_historico_list
+      description: 'O histórico do aluno com o tutor: ver e apagar (ACE-RF-09).'
+      summary: As conversas do aluno com o tutor, por disciplina
+      tags:
+      - tutor
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConversaDoHistorico'
+          description: ''
+    delete:
+      operationId: eu_historico_destroy
+      description: 'O histórico do aluno com o tutor: ver e apagar (ACE-RF-09).'
+      summary: Apaga todo o histórico do aluno com o tutor
+      tags:
+      - tutor
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/eu/perfil-ativo:
     post:
       operationId: eu_perfil_ativo_create
@@ -863,6 +892,23 @@ components:
         politica:
           type: string
           title: Política de uso de IA
+    ConversaDoHistorico:
+      type: object
+      properties:
+        disciplina_id:
+          type: integer
+        disciplina_nome:
+          type: string
+        mensagens:
+          type: integer
+        ultima_em:
+          type: string
+          format: date-time
+      required:
+      - disciplina_id
+      - disciplina_nome
+      - mensagens
+      - ultima_em
     Disciplina:
       type: object
       properties:

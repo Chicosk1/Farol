@@ -25,4 +25,5 @@ urlpatterns = [
         name="janela-prova",
     ),
     path("mensagens/<int:mensagem_id>/avaliacao", views.avaliar, name="mensagem-avaliacao"),
+    path("eu/historico", views.Historico.as_view(), name="historico"),
 ]

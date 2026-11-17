@@ -364,3 +364,15 @@ export type MaterialDoAluno = Pick<
 export function listarMateriaisDoAluno(disciplinaId: number): Promise<MaterialDoAluno[]> {
   return requisitar<MaterialDoAluno[]>(`/api/disciplinas/${disciplinaId}/materiais`);
 }
+
+export type ConversaDoHistorico = components['schemas']['ConversaDoHistorico'];
+
+/** GET /api/eu/historico: as conversas do aluno com o tutor, por disciplina (ACE-RF-09). */
+export function obterHistorico(): Promise<ConversaDoHistorico[]> {
+  return requisitar<ConversaDoHistorico[]>('/api/eu/historico');
+}
+
+/** DELETE /api/eu/historico: apaga todas as conversas do aluno com o tutor. */
+export async function apagarHistorico(): Promise<void> {
+  await enviar<undefined>('/api/eu/historico', undefined, 'DELETE');
+}

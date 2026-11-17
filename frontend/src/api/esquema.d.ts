@@ -288,6 +288,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/eu/historico": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * As conversas do aluno com o tutor, por disciplina
+         * @description O histórico do aluno com o tutor: ver e apagar (ACE-RF-09).
+         */
+        get: operations["eu_historico_list"];
+        put?: never;
+        post?: never;
+        /**
+         * Apaga todo o histórico do aluno com o tutor
+         * @description O histórico do aluno com o tutor: ver e apagar (ACE-RF-09).
+         */
+        delete: operations["eu_historico_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/eu/perfil-ativo": {
         parameters: {
             query?: never;
@@ -551,6 +575,13 @@ export interface components {
             limite_diario?: components["schemas"]["LimiteDiarioEnum"];
             /** Política de uso de IA */
             politica?: string;
+        };
+        ConversaDoHistorico: {
+            disciplina_id: number;
+            disciplina_nome: string;
+            mensagens: number;
+            /** Format: date-time */
+            ultima_em: string;
         };
         Disciplina: {
             id: number;
@@ -1274,6 +1305,43 @@ export interface operations {
                 "multipart/form-data": components["schemas"]["CienciaDoAvisoRequest"];
             };
         };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    eu_historico_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversaDoHistorico"][];
+                };
+            };
+        };
+    };
+    eu_historico_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description No response body */
             204: {
