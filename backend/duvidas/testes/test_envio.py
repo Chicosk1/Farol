@@ -6,6 +6,7 @@ from rest_framework.test import APIClient
 from contas.models import Perfil, Pessoa
 from disciplinas.models import Disciplina, Matricula
 from duvidas.models import Duvida, EnvioDuvida
+from notificacoes.models import Notificacao
 from tutor.models import Conversa, Mensagem
 
 NAO_ENCONTREI = "Não encontrei isso no material da disciplina."
@@ -120,3 +121,19 @@ def test_cada_aluno_envia_no_maximo_5_duvidas_por_disciplina_por_dia(
 
 def test_o_professor_nao_envia_duvida(cliente_professor, resposta):
     assert enviar(cliente_professor, resposta).status_code == 403
+
+
+@pytest.mark.requisito("DUV-RF-06")
+def test_a_duvida_nova_avisa_o_professor_no_sino_sem_o_nome_do_aluno(
+    cliente_aluna, resposta, professor, disciplina
+):
+    enviar(cliente_aluna, resposta)
+
+    aviso = Notificacao.objects.get()
+    assert aviso.pessoa == professor
+    assert aviso.tipo == "duvida_nova"
+    assert aviso.texto == (
+        "Nova dúvida em Estruturas de Dados: Sou [nome], a prova cobre árvores AVL?"
+    )
+    assert aviso.link == f"/disciplinas/{disciplina.id}/duvidas"
+    assert "Ana" not in aviso.texto

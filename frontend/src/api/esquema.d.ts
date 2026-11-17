@@ -697,9 +697,10 @@ export interface components {
          * @description * `material_pronto` - Material pronto
          *     * `material_atencao` - Material precisa de atenção
          *     * `material_erro` - Material com erro
+         *     * `duvida_nova` - Dúvida nova
          * @enum {string}
          */
-        NotificacaoTipoEnum: "material_pronto" | "material_atencao" | "material_erro";
+        NotificacaoTipoEnum: "material_pronto" | "material_atencao" | "material_erro" | "duvida_nova";
         Notificacoes: {
             notificacoes: components["schemas"]["Notificacao"][];
             nao_lidas: number;

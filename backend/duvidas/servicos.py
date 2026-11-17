@@ -3,6 +3,8 @@
 from django.db import IntegrityError, transaction
 from django.utils import timezone
 
+from disciplinas import servicos as disciplinas
+from notificacoes import servicos as notificacoes
 from tutor import servicos as tutor
 
 from .models import Duvida, EnvioDuvida
@@ -57,7 +59,22 @@ def enviar(aluno, mensagem_id: int) -> Duvida:
             EnvioDuvida.objects.create(mensagem_id=mensagem_id, duvida=duvida)
     except IntegrityError:
         raise DuvidaJaEnviada(mensagem_id) from None  # dois toques ao mesmo tempo
+    _avisar_professor(duvida)
     return duvida
+
+
+def _avisar_professor(duvida: Duvida) -> None:
+    """O aviso no sino do professor, com o começo do texto e sem nada do aluno (DUV-RF-06)."""
+    nome, professor = disciplinas.disciplina_e_professor(duvida.disciplina_id)
+    if professor is None:
+        return
+    trecho = duvida.texto if len(duvida.texto) <= 80 else duvida.texto[:79] + "…"
+    notificacoes.notificar(
+        professor,
+        notificacoes.Tipo.DUVIDA_NOVA,
+        f"Nova dúvida em {nome}: {trecho}",
+        link=f"/disciplinas/{duvida.disciplina_id}/duvidas",
+    )
 
 
 class StatusInvalido(ValueError):

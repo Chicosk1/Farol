@@ -85,6 +85,12 @@ def garantir_matricula(aluno, disciplina: Disciplina) -> tuple[Matricula, bool]:
     return matricula, criada
 
 
+def disciplina_e_professor(disciplina_id: int) -> tuple[str, object]:
+    """O nome da disciplina e o professor responsável, para avisos como o de dúvida nova."""
+    disciplina = Disciplina.objects.select_related("professor").get(pk=disciplina_id)
+    return disciplina.nome, disciplina.professor
+
+
 def tem_acesso(pessoa, perfil: str | None, disciplina_id: int) -> bool:
     """Se a pessoa, no perfil em uso, pode acessar a disciplina (ACE-RF-05).
 
