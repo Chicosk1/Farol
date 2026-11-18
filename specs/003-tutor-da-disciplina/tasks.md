@@ -28,7 +28,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 - [x] TUT-T10 Acrescentar ao módulo `ia` a função `responder` (regras, trechos numerados e pergunta, em streaming) e o provedor falso para os testes; o `gerar_embedding` já veio com a MAT-T13
 - [x] TUT-T11 [P] Modelos `Conversa`, `Mensagem`, `Citacao`, `ConfiguracaoTutor`, `JanelaProva`, `RegistroUso` e `RevisaoResposta`
 - [x] TUT-T14 Adaptador `ia/adaptadores/compativel_openai.py`: respostas em streaming e vetores de 256 dimensões pela API compatível com a da OpenAI, com testes contra um servidor HTTP falso (ADR 0009)
-- [ ] TUT-T15 Serviço `ollama` no Docker Compose, no perfil `ia`, com o comando que baixa os modelos e o passo a passo em `docs/desenvolvimento.md` (ADR 0009)
+- [x] TUT-T15 Serviço `ollama` no Docker Compose, no perfil `ia`, com o comando que baixa os modelos e o passo a passo em `docs/desenvolvimento.md` (ADR 0009)
 - [ ] TUT-T12 [P] Montar o conjunto de 100 perguntas de Estruturas de Dados com resposta e trecho esperados em `backend/tutor/avaliacao/`
 - [ ] TUT-T13 Script de avaliação que roda o conjunto e calcula a taxa de citação correta, ligado ao GitHub Actions (TUT-CS-01, TUT-CS-03, TUT-CS-04)
 
