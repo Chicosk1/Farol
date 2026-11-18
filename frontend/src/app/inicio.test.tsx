@@ -2,7 +2,7 @@ import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { violacoesDeAcessibilidade } from '../testes/acessibilidade';
-import { ANA, DISCIPLINAS, ESTRUTURAS, simularApi } from '../testes/api';
+import { ANA, CARLOS, DISCIPLINAS, ESTRUTURAS, simularApi } from '../testes/api';
 import { renderizarApp } from '../testes/renderizar';
 import { quando } from './datas';
 
@@ -147,6 +147,46 @@ describe('início do aluno no formato do protótipo (ACE-T75)', () => {
     simularApi({ 'GET /api/eu': { corpo: ANA }, 'GET /api/disciplinas': { corpo: DISCIPLINAS } });
     const { container } = renderizarApp('/');
     await screen.findByRole('list', { name: 'Suas disciplinas' });
+
+    expect(await violacoesDeAcessibilidade(container)).toEqual([]);
+  });
+});
+
+describe('início do professor (ACE-T76)', () => {
+  it('mostra as turmas que leciona, cada uma com os atalhos de trabalho', async () => {
+    simularApi({
+      'GET /api/eu': { corpo: CARLOS },
+      'GET /api/disciplinas': { corpo: [ESTRUTURAS] },
+    });
+    renderizarApp('/');
+
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Olá, Carlos' }),
+    ).toBeInTheDocument();
+    const turmas = await screen.findByRole('list', { name: 'Suas turmas' });
+    for (const atalho of ['Materiais de', 'Dúvidas de', 'Configurar o tutor de']) {
+      expect(
+        within(turmas).getByRole('link', { name: `${atalho} Estruturas de Dados` }),
+      ).toBeInTheDocument();
+    }
+    expect(within(turmas).queryByRole('button', { name: /^Favoritar/ })).toBeNull();
+    expect(screen.queryByRole('heading', { name: /^Tutor/ })).toBeNull();
+  });
+
+  it('sem turmas, explica de onde elas vêm', async () => {
+    simularApi({ 'GET /api/eu': { corpo: CARLOS } });
+    renderizarApp('/');
+
+    expect(await screen.findByRole('heading', { name: 'Nenhuma turma ainda' })).toBeInTheDocument();
+  });
+
+  it('não tem violações de acessibilidade', async () => {
+    simularApi({
+      'GET /api/eu': { corpo: CARLOS },
+      'GET /api/disciplinas': { corpo: [ESTRUTURAS] },
+    });
+    const { container } = renderizarApp('/');
+    await screen.findByRole('list', { name: 'Suas turmas' });
 
     expect(await violacoesDeAcessibilidade(container)).toEqual([]);
   });
