@@ -16,7 +16,7 @@ A coluna Testes mostra os testes do produto que citam o requisito com `@pytest.m
 | [004 Dúvidas ao professor](../specs/004-duvidas-ao-professor/spec.md) | 9 | 8 de 9 | 5 | 0 | 1 | 3 | 15 de 16 | 0 |
 | [005 Questões e quizzes](../specs/005-questoes-e-quizzes/spec.md) | 11 | 9 de 11 | 5 | 1 | 3 | 2 | 19 de 22 | 0 |
 | [006 Revisão do dia](../specs/006-revisao-do-dia/spec.md) | 10 | 8 de 10 | 5 | 3 | 1 | 1 | 15 de 17 | 0 |
-| [007 Radar da turma](../specs/007-radar-da-turma/spec.md) | 11 | 9 de 11 | 6 | 3 | 1 | 1 | 14 de 18 | 0 |
+| [007 Radar da turma](../specs/007-radar-da-turma/spec.md) | 11 | 9 de 11 | 6 | 3 | 1 | 1 | 16 de 18 | 0 |
 
 ## Pendências do protótipo
 
@@ -126,13 +126,13 @@ Tarefas já especificadas que aproximam o protótipo do comportamento descrito n
 | Requisito | Descrição | Protótipo | Código do protótipo | Testes | Tarefas feitas | Tarefas pendentes |
 | --- | --- | --- | --- | --- | --- | --- |
 | `RAD-RF-01` | O radar DEVE ser recalculado todo dia, de madrugada, com os dados da semana corrente. | Simulado | [data.js](../prototipo/js/data.js) |  | RAD-T01, RAD-T21 |  |
-| `RAD-RF-02` | O radar DEVE mostrar os indicadores da semana: alunos ativos e total de matriculados, perguntas ao tutor, acerto médio nos quizzes e dúvidas sem resposta. | Coberto | [prof-radar.js](../prototipo/js/screens/prof-radar.js) | [radar/testes/test_radar.py](../backend/radar/testes/test_radar.py) (1) | RAD-T01 | RAD-T40 |
+| `RAD-RF-02` | O radar DEVE mostrar os indicadores da semana: alunos ativos e total de matriculados, perguntas ao tutor, acerto médio nos quizzes e dúvidas sem resposta. | Coberto | [prof-radar.js](../prototipo/js/screens/prof-radar.js) | [radar/testes/test_radar.py](../backend/radar/testes/test_radar.py) (1) | RAD-T01, RAD-T40 |  |
 | `RAD-RF-03` | O radar DEVE mostrar até 5 tópicos com mais alunos distintos na semana, cada um com 2 ou 3 perguntas de exemplo e o atalho para o material relacionado. | Coberto | [prof-radar.js](../prototipo/js/screens/prof-radar.js) | [radar/testes/test_radar.py](../backend/radar/testes/test_radar.py) (1) | RAD-T02, RAD-T21 |  |
 | `RAD-RF-04` | Um tópico SÓ DEVE aparecer se vier de pelo menos 5 alunos distintos. | Simulado | [prof-radar.js](../prototipo/js/screens/prof-radar.js) | [radar/testes/test_radar.py](../backend/radar/testes/test_radar.py) (1) | RAD-T02, RAD-T20, RAD-T21 |  |
 | `RAD-RF-05` | As perguntas de exemplo DEVEM passar pela remoção de dados pessoais, e o professor DEVE poder ocultar um exemplo. | Não coberto |  | [radar/testes/test_radar.py](../backend/radar/testes/test_radar.py) (1) | RAD-T22 |  |
 | `RAD-RF-06` | O radar NÃO DEVE exibir nome, RA, e-mail, horário exato ou qualquer contagem por aluno. | Coberto | [prof-radar.js](../prototipo/js/screens/prof-radar.js) | [radar/testes/test_radar.py](../backend/radar/testes/test_radar.py) (1) | RAD-T02, RAD-T24 |  |
 | `RAD-RF-07` | O radar DEVE mostrar a taxa de acerto por tópico e por questão, e só exibir taxas calculadas com pelo menos 5 alunos distintos. | Parcial | [prof-radar.js](../prototipo/js/screens/prof-radar.js) | [radar/testes/test_radar.py](../backend/radar/testes/test_radar.py) (1) | RAD-T03, RAD-T20, RAD-T23 |  |
 | `RAD-RF-08` | O radar DEVE sugerir 3 tópicos para retomar na próxima aula, combinando mais dúvidas e menor acerto. | Coberto | [prof-radar.js](../prototipo/js/screens/prof-radar.js) | [radar/testes/test_radar.py](../backend/radar/testes/test_radar.py) (1) | RAD-T04, RAD-T30 |  |
-| `RAD-RF-09` | O professor DEVE poder escolher a semana exibida entre a atual e as anteriores do semestre. | Coberto | [prof-radar.js](../prototipo/js/screens/prof-radar.js) | [radar/testes/test_radar.py](../backend/radar/testes/test_radar.py) (1) | RAD-T01 | RAD-T40 |
+| `RAD-RF-09` | O professor DEVE poder escolher a semana exibida entre a atual e as anteriores do semestre. | Coberto | [prof-radar.js](../prototipo/js/screens/prof-radar.js) | [radar/testes/test_radar.py](../backend/radar/testes/test_radar.py) (1) | RAD-T01, RAD-T40 |  |
 | `RAD-RF-10` | Com o resumo semanal ligado, o professor DEVE receber toda segunda-feira, até as 7h, um e-mail com os tópicos sugeridos, os tópicos com mais dúvidas e as dúvidas sem resposta. | Simulado | [prof-disciplina.js](../prototipo/js/screens/prof-disciplina.js) | [radar/testes/test_radar.py](../backend/radar/testes/test_radar.py) (1) | RAD-T05, RAD-T50 |  |
-| `RAD-RF-11` | O radar DEVE oferecer o atalho "Gerar 5 questões de revisão" a partir dos tópicos sugeridos. | Coberto | [prof-radar.js](../prototipo/js/screens/prof-radar.js) |  | RAD-T04 | RAD-T31 |
+| `RAD-RF-11` | O radar DEVE oferecer o atalho "Gerar 5 questões de revisão" a partir dos tópicos sugeridos. | Coberto | [prof-radar.js](../prototipo/js/screens/prof-radar.js) |  | RAD-T04, RAD-T31 |  |

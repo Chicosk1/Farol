@@ -32,11 +32,11 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 ## Produto: História 3, o que retomar (P1)
 
 - [x] RAD-T30 [H3] Pontuação e escolha dos 3 tópicos sugeridos (RAD-RF-08)
-- [ ] RAD-T31 [H3] Atalho para gerar questões das aulas sugeridas (RAD-RF-11)
+- [x] RAD-T31 [H3] Atalho para gerar questões das aulas sugeridas (RAD-RF-11)
 
 ## Produto: História 4, indicadores e semanas (P2)
 
-- [ ] RAD-T40 [H4] Indicadores, seletor de semana e tela do radar no React (RAD-RF-02, RAD-RF-09, RAD-RNF-01)
+- [x] RAD-T40 [H4] Indicadores, seletor de semana e tela do radar no React (RAD-RF-02, RAD-RF-09, RAD-RNF-01)
 
 ## Produto: História 5, resumo por e-mail (P2)
 

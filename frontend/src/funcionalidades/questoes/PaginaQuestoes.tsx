@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
-import { Link, useParams } from 'react-router';
+import { Link, useParams, useSearchParams } from 'react-router';
 
 import {
   ErroDaApi,
@@ -72,8 +72,9 @@ function Gerador({ disciplinaId }: { disciplinaId: number }) {
     queryFn: () => listarMateriaisDoProfessor(disciplinaId),
   });
   const prontos = (materiais.data ?? []).filter((m) => m.status === 'pronto');
-  const [escolhida, setEscolhida] = useState<number | null>(null);
-  const [quantidade, setQuantidade] = useState<number>(5);
+  const [parametros] = useSearchParams();
+  const [escolhida, setEscolhida] = useState<number | null>(Number(parametros.get('aula')) || null);
+  const [quantidade, setQuantidade] = useState<number>(Number(parametros.get('quantidade')) || 5);
   const aula = escolhida ?? prontos[0]?.id ?? null;
   const gerar = useMutation({
     mutationFn: () => gerarRascunhos(aula!, quantidade),

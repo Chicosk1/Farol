@@ -25,12 +25,14 @@ function Formulario({
   const [modoPistas, setModoPistas] = useState(inicial.modo_pistas ?? true);
   const [limite, setLimite] = useState(inicial.limite_diario ?? 40);
   const [politica, setPolitica] = useState(inicial.politica ?? '');
+  const [resumoSemanal, setResumoSemanal] = useState(inicial.resumo_semanal ?? true);
   const salvar = useMutation({
     mutationFn: () =>
       salvarConfiguracaoDoTutor(disciplinaId, {
         modo_pistas: modoPistas,
         limite_diario: limite,
         politica,
+        resumo_semanal: resumoSemanal,
       }),
     onSuccess: (salva) => clienteDeDados.setQueryData(['tutor-configuracao', disciplinaId], salva),
   });
@@ -91,6 +93,31 @@ function Formulario({
               ))}
             </select>
           </span>
+        </div>
+      </section>
+
+      <section className="panel" aria-labelledby="titulo-radar">
+        <h2 id="titulo-radar" className="card-heading">
+          <Icone nome="radar" />
+          Radar
+        </h2>
+        <div className="switch-row">
+          <div className="switch-text">
+            <label htmlFor="resumo-semanal" className="strong">
+              Resumo semanal por e-mail
+            </label>
+            <p id="resumo-semanal-ajuda" className="small muted">
+              Toda segunda, às 6h30, com os tópicos de mais dúvida e as dúvidas sem resposta.
+            </p>
+          </div>
+          <input
+            id="resumo-semanal"
+            type="checkbox"
+            className="switch"
+            checked={resumoSemanal}
+            onChange={(evento) => setResumoSemanal(evento.target.checked)}
+            aria-describedby="resumo-semanal-ajuda"
+          />
         </div>
       </section>
 

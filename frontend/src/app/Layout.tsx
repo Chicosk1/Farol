@@ -69,6 +69,13 @@ function itensDoProfessor(disciplinaId: string | undefined): Item[] {
   const base = `/disciplinas/${disciplinaId}`;
   return [
     {
+      rotulo: 'Radar da turma',
+      curto: 'Radar',
+      icone: 'radar',
+      para: `${base}/radar`,
+      atual: (c) => c === `${base}/radar`,
+    },
+    {
       rotulo: 'Materiais',
       curto: 'Materiais',
       icone: 'files',

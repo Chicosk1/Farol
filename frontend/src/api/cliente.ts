@@ -521,3 +521,22 @@ export function obterLembrete(): Promise<Lembrete> {
 export function salvarLembrete(lembrete: Lembrete): Promise<Lembrete> {
   return enviar<Lembrete>('/api/eu/lembrete', lembrete, 'PUT');
 }
+
+export type Radar = components['schemas']['Radar'];
+export type SemanaDoRadar = components['schemas']['Semana'];
+
+/** GET /api/disciplinas/{id}/radar: o radar da semana, só com dados agregados (RAD-RF-06). */
+export function obterRadar(disciplinaId: number, semana?: string): Promise<Radar> {
+  const filtro = semana ? `?semana=${semana}` : '';
+  return requisitar<Radar>(`/api/disciplinas/${disciplinaId}/radar${filtro}`);
+}
+
+/** GET /api/disciplinas/{id}/radar/semanas: as semanas do seletor (RAD-RF-09). */
+export function listarSemanasDoRadar(disciplinaId: number): Promise<SemanaDoRadar[]> {
+  return requisitar<SemanaDoRadar[]>(`/api/disciplinas/${disciplinaId}/radar/semanas`);
+}
+
+/** POST /api/disciplinas/{id}/radar/exemplos-ocultos: esconde uma pergunta de exemplo. */
+export async function ocultarExemploDoRadar(disciplinaId: number, texto: string): Promise<void> {
+  await enviar<undefined>(`/api/disciplinas/${disciplinaId}/radar/exemplos-ocultos`, { texto });
+}

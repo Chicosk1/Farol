@@ -56,6 +56,7 @@ describe('configuração do tutor pelo professor (TUT-T43)', () => {
       modo_pistas: false,
       limite_diario: 60,
       politica: 'Use o tutor para estudar, não para copiar.',
+      resumo_semanal: true,
     });
   });
 
