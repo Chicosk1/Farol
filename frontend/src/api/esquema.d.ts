@@ -328,6 +328,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/materiais/{material_id}/versoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Envia a versão nova de um material
+         * @description A versão anterior continua em uso até a nova ficar pronta (MAT-RF-11).
+         */
+        post: operations["materiais_versoes_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/mensagens/{mensagem_id}/avaliacao": {
         parameters: {
             query?: never;
@@ -342,6 +362,40 @@ export interface paths {
          */
         put: operations["mensagens_avaliacao_update"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notificacoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** As notificações da pessoa, das mais novas, e quantas não foram lidas */
+        get: operations["notificacoes_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notificacoes/{notificacao_id}/lida": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Marca a notificação como lida */
+        post: operations["notificacoes_lida_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -570,12 +624,41 @@ export interface components {
             readonly id: number;
             autor: components["schemas"]["AutorEnum"];
             texto: string;
-            tipo?: components["schemas"]["TipoEnum"];
+            tipo?: components["schemas"]["MensagemTipoEnum"];
             /** Avaliação */
             avaliacao?: components["schemas"]["AvaliacaoEnum"] | components["schemas"]["BlankEnum"];
             /** Format: date-time */
             criada_em?: string;
             readonly citacoes: components["schemas"]["Citacao"][];
+        };
+        /**
+         * @description * `resposta` - Resposta
+         *     * `pistas` - Modo pistas
+         *     * `nao_encontrado` - Não encontrei no material
+         *     * `saudacao` - Saudação
+         *     * `erro` - Erro
+         * @enum {string}
+         */
+        MensagemTipoEnum: "resposta" | "pistas" | "nao_encontrado" | "saudacao" | "erro";
+        Notificacao: {
+            readonly id: number;
+            tipo: components["schemas"]["NotificacaoTipoEnum"];
+            texto: string;
+            link?: string;
+            lida?: boolean;
+            /** Format: date-time */
+            criada_em?: string;
+        };
+        /**
+         * @description * `material_pronto` - Material pronto
+         *     * `material_atencao` - Material precisa de atenção
+         *     * `material_erro` - Material com erro
+         * @enum {string}
+         */
+        NotificacaoTipoEnum: "material_pronto" | "material_atencao" | "material_erro";
+        Notificacoes: {
+            notificacoes: components["schemas"]["Notificacao"][];
+            nao_lidas: number;
         };
         /** @description Sem início, a janela começa agora (modo prova imediato); sem fim, fica aberta. */
         NovaJanelaRequest: {
@@ -583,6 +666,13 @@ export interface components {
             inicio?: string;
             /** Format: date-time */
             fim?: string | null;
+        };
+        NovaVersaoRequest: {
+            /**
+             * Format: binary
+             * @description O PDF corrigido da aula.
+             */
+            arquivo: string;
         };
         /** @enum {unknown} */
         NullEnum: null;
@@ -622,18 +712,10 @@ export interface components {
          *     * `atencao` - Precisa de atenção
          *     * `erro` - Erro, tente de novo
          *     * `retirado` - Retirado
+         *     * `substituido` - Substituído pela versão nova
          * @enum {string}
          */
-        StatusDoMaterialEnum: "processando" | "pronto" | "atencao" | "erro" | "retirado";
-        /**
-         * @description * `resposta` - Resposta
-         *     * `pistas` - Modo pistas
-         *     * `nao_encontrado` - Não encontrei no material
-         *     * `saudacao` - Saudação
-         *     * `erro` - Erro
-         * @enum {string}
-         */
-        TipoEnum: "resposta" | "pistas" | "nao_encontrado" | "saudacao" | "erro";
+        StatusDoMaterialEnum: "processando" | "pronto" | "atencao" | "erro" | "retirado" | "substituido";
         TrocaDePerfilRequest: {
             perfil: components["schemas"]["PerfilEnum"];
         };
@@ -1149,6 +1231,31 @@ export interface operations {
             };
         };
     };
+    materiais_versoes_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                material_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["NovaVersaoRequest"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaterialEnviado"];
+                };
+            };
+        };
+    };
     mensagens_avaliacao_update: {
         parameters: {
             query?: never;
@@ -1165,6 +1272,45 @@ export interface operations {
                 "multipart/form-data": components["schemas"]["AvaliacaoRequest"];
             };
         };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    notificacoes_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Notificacoes"];
+                };
+            };
+        };
+    };
+    notificacoes_lida_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                notificacao_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description No response body */
             204: {

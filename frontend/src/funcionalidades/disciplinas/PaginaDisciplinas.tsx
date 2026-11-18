@@ -46,7 +46,7 @@ export function PaginaDisciplinas() {
   const [aba, setAba] = useState<FiltroDeDisciplinas>('todas');
   const disciplinas = useDisciplinas(useTextoEstavel(digitado), aba);
   const favoritar = useDefinirFavorito();
-  const ehAluno = useEu().data?.perfil_ativo === 'aluno';
+  const perfil = useEu().data?.perfil_ativo;
 
   return (
     <main id="conteudo" className="mx-auto max-w-5xl p-4">
@@ -129,13 +129,22 @@ export function PaginaDisciplinas() {
                           {disciplina.codigo} · {disciplina.turma}
                         </p>
                         <p className="text-sm text-ink-muted">Prof. {disciplina.professor_nome}</p>
-                        {ehAluno && (
+                        {perfil === 'aluno' && (
                           <Link
                             to={`/disciplinas/${disciplina.id}/tutor`}
                             aria-label={`Tutor de ${disciplina.nome}`}
                             className="mt-2 inline-flex min-h-12 items-center font-bold text-accent underline"
                           >
                             Tutor
+                          </Link>
+                        )}
+                        {(perfil === 'professor' || perfil === 'aluno') && (
+                          <Link
+                            to={`/disciplinas/${disciplina.id}/materiais`}
+                            aria-label={`Materiais de ${disciplina.nome}`}
+                            className="mt-2 inline-flex min-h-12 items-center font-bold text-accent underline"
+                          >
+                            Materiais
                           </Link>
                         )}
                       </div>

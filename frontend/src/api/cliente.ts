@@ -12,10 +12,12 @@ export type Perfil = components['schemas']['PerfilEnum'];
 export type Disciplina = components['schemas']['Disciplina'];
 export type AvisoDePrivacidade = components['schemas']['AvisoDePrivacidade'];
 export type FiltroDeDisciplinas = 'todas' | 'favoritas' | 'com-tutor';
+export type MaterialDoProfessor = components['schemas']['MaterialDoProfessor'];
+export type Notificacoes = components['schemas']['Notificacoes'];
 export type EstadoDoTutor = components['schemas']['EstadoDoTutor'];
 export type MensagemDoTutor = components['schemas']['Mensagem'];
 export type CitacaoDoTutor = components['schemas']['Citacao'];
-export type TipoDeMensagem = components['schemas']['TipoEnum'];
+export type TipoDeMensagem = components['schemas']['MensagemTipoEnum'];
 /** A avaliação de uma resposta do tutor; vazio é sem avaliação. */
 export type AvaliacaoDaResposta = components['schemas']['AvaliacaoEnum'] | '';
 
@@ -218,4 +220,81 @@ export async function avaliarResposta(
   avaliacao: AvaliacaoDaResposta,
 ): Promise<void> {
   await enviar<undefined>(`/api/mensagens/${mensagemId}/avaliacao`, { avaliacao }, 'PUT');
+}
+
+/** GET /api/disciplinas/{id}/materiais: para o professor, todos, com status e etapa. */
+export function listarMateriaisDoProfessor(disciplinaId: number): Promise<MaterialDoProfessor[]> {
+  return requisitar<MaterialDoProfessor[]>(`/api/disciplinas/${disciplinaId}/materiais`);
+}
+
+/** POST /api/disciplinas/{id}/materiais (multipart): envia o PDF; o processamento vai para a fila. */
+export async function enviarMaterial(
+  disciplinaId: number,
+  dados: { arquivo: File; aulaNumero: number; aulaTitulo: string },
+): Promise<void> {
+  const formulario = new FormData();
+  formulario.append('arquivo', dados.arquivo);
+  formulario.append('aula_numero', String(dados.aulaNumero));
+  formulario.append('aula_titulo', dados.aulaTitulo);
+  const cabecalhos = new Headers({ Accept: 'application/json' });
+  const csrf = tokenCsrf();
+  if (csrf) {
+    cabecalhos.set('X-CSRFToken', csrf);
+  }
+  // Sem Content-Type: o navegador põe o multipart com a fronteira certa.
+  const resposta = await fetch(`/api/disciplinas/${disciplinaId}/materiais`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: cabecalhos,
+    body: formulario,
+  });
+  if (!resposta.ok) {
+    throw new ErroDaApi(resposta.status, await lerCorpo(resposta));
+  }
+}
+
+/** POST /api/materiais/{id}/versoes (multipart): a versão nova substitui a anterior quando fica pronta. */
+export async function enviarNovaVersao(materialId: number, arquivo: File): Promise<void> {
+  const formulario = new FormData();
+  formulario.append('arquivo', arquivo);
+  const cabecalhos = new Headers({ Accept: 'application/json' });
+  const csrf = tokenCsrf();
+  if (csrf) {
+    cabecalhos.set('X-CSRFToken', csrf);
+  }
+  const resposta = await fetch(`/api/materiais/${materialId}/versoes`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: cabecalhos,
+    body: formulario,
+  });
+  if (!resposta.ok) {
+    throw new ErroDaApi(resposta.status, await lerCorpo(resposta));
+  }
+}
+
+/** DELETE /api/materiais/{id}: retira o material; o tutor deixa de usá-lo (MAT-RF-10). */
+export async function retirarMaterial(materialId: number): Promise<void> {
+  await enviar<undefined>(`/api/materiais/${materialId}`, undefined, 'DELETE');
+}
+
+/** GET /api/notificacoes: as notificações mais recentes e quantas não foram lidas. */
+export function listarNotificacoes(): Promise<Notificacoes> {
+  return requisitar<Notificacoes>('/api/notificacoes');
+}
+
+/** POST /api/notificacoes/{id}/lida. */
+export async function marcarNotificacaoComoLida(notificacaoId: number): Promise<void> {
+  await enviar<undefined>(`/api/notificacoes/${notificacaoId}/lida`);
+}
+
+/** O que a aluna vê de um material: só os prontos, sem status, etapa nem erro. */
+export type MaterialDoAluno = Pick<
+  MaterialDoProfessor,
+  'id' | 'aula_numero' | 'aula_titulo' | 'paginas'
+>;
+
+/** GET /api/disciplinas/{id}/materiais: para a aluna, só os materiais prontos (MAT-RF-08). */
+export function listarMateriaisDoAluno(disciplinaId: number): Promise<MaterialDoAluno[]> {
+  return requisitar<MaterialDoAluno[]>(`/api/disciplinas/${disciplinaId}/materiais`);
 }

@@ -12,6 +12,8 @@ export type ChamadaSimulada = {
   metodo: string;
   caminho: string;
   corpo: unknown;
+  /** Os campos de um envio multipart; arquivos aparecem pelo nome. */
+  formulario?: Record<string, string>;
   cabecalhos: Record<string, string>;
 };
 
@@ -19,6 +21,11 @@ export type ChamadaSimulada = {
  * Troca o fetch por uma API simulada. As rotas são chaves como 'GET /api/eu'. Uma rota que o teste
  * não descreveu falha na hora, para o teste não depender de uma chamada que ninguém previu.
  */
+/** Rotas que o cabeçalho chama em toda tela; um teste pode trocar a resposta pela sua. */
+const PADROES: Record<string, RespostaSimulada> = {
+  'GET /api/notificacoes': { corpo: { notificacoes: [], nao_lidas: 0 } },
+};
+
 export function simularApi(rotas: Record<string, Rota>) {
   const chamadas: ChamadaSimulada[] = [];
   const fetchFalso = vi.fn(async (entrada: RequestInfo | URL, init: RequestInit = {}) => {
@@ -28,11 +35,20 @@ export function simularApi(rotas: Record<string, Rota>) {
       metodo,
       caminho,
       corpo: typeof init.body === 'string' ? JSON.parse(init.body) : undefined,
+      formulario:
+        init.body instanceof FormData
+          ? Object.fromEntries(
+              [...init.body.entries()].map(([campo, valor]) => [
+                campo,
+                typeof valor === 'string' ? valor : valor.name,
+              ]),
+            )
+          : undefined,
       cabecalhos: Object.fromEntries(new Headers(init.headers).entries()),
     };
     chamadas.push(chamada);
 
-    const rota = rotas[`${metodo} ${caminho}`];
+    const rota = rotas[`${metodo} ${caminho}`] ?? PADROES[`${metodo} ${caminho}`];
     if (!rota) {
       throw new Error(`Chamada não prevista no teste: ${metodo} ${caminho}`);
     }

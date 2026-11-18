@@ -27,14 +27,15 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 - [x] MAT-T20 [H1] Testes de envio, validação e etapas, entregues junto das MAT-T21 e MAT-T22 (MAT-RF-01, MAT-RF-02, MAT-RF-03)
 - [x] MAT-T21 [H1] Rota de envio do PDF (multipart), com validação de tipo e tamanho (MAT-RF-01, MAT-RF-02)
 - [x] MAT-T22 [H1] Tarefa `materiais.processar`: extração por página, divisão em trechos e vetores (MAT-RF-03, MAT-RF-04)
-- [ ] MAT-T23 [H1] Módulo `notificacoes` com o modelo `Notificacao`, o serviço `notificar` e as rotas `GET /api/notificacoes` e `POST /api/notificacoes/{id}/lida`; a tarefa de processamento avisa o professor quando o material fica pronto ou falha (MAT-RF-06)
-- [ ] MAT-T25 [H1] Sino de notificações no cabeçalho do front-end (MAT-RF-06)
-- [ ] MAT-T24 [H1] Tela de materiais do professor com status ao vivo (MAT-RF-03)
+- [x] MAT-T23 [H1] Módulo `notificacoes` com o modelo `Notificacao`, o serviço `notificar` e as rotas `GET /api/notificacoes` e `POST /api/notificacoes/{id}/lida`; a tarefa de processamento avisa o professor quando o material fica pronto ou falha (MAT-RF-06)
+- [x] MAT-T25 [H1] Sino de notificações no cabeçalho do front-end (MAT-RF-06)
+- [x] MAT-T24 [H1] Tela de materiais do professor com status ao vivo (MAT-RF-03)
 
 ## Produto: História 2, consultar os materiais (P1)
 
 - [x] MAT-T30 [H2] Testes de visibilidade: aluno só vê material pronto, entregues junto da MAT-T31 (MAT-RF-07)
 - [x] MAT-T31 [H2] Lista de materiais do aluno e visualizador de PDF com página inicial (MAT-RF-08, MAT-RF-09)
+- [x] MAT-T33 [H2] Tela de materiais da disciplina para a aluna no front-end, com a lista por aula e o PDF aberto na primeira página; a MAT-T31 entregou só o back-end (MAT-RF-08, MAT-RF-09)
 - [ ] MAT-T32 [H2] Destaque do trecho citado no visualizador (MAT-RF-09)
 
 ## Produto: História 3, avisar PDF sem texto (P2)
@@ -45,12 +46,12 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 - [x] MAT-T50 [H4] Teste: material retirado não é usado na pergunta seguinte, entregue junto da MAT-T51 e completado pela spec 003 (MAT-RF-10, MAT-CS-03)
 - [x] MAT-T51 [H4] Retirada de material e marcação das questões de origem (MAT-RF-10)
-- [ ] MAT-T52 [H4] Envio de nova versão com troca atômica ao ficar pronta (MAT-RF-11)
+- [x] MAT-T52 [H4] Envio de nova versão com troca atômica ao ficar pronta (MAT-RF-11)
 
 ## Produto: acabamento
 
 - [ ] MAT-T90 Medir o tempo de processamento de um PDF de 40 páginas (MAT-RNF-01)
-- [ ] MAT-T91 Teste de permissão de envio e retirada (MAT-RNF-02)
+- [x] MAT-T91 Teste de permissão de envio e retirada, entregue junto das MAT-T21 e MAT-T51 em test_api_envio.py e test_api_retirada.py (MAT-RNF-02)
 
 ## Dependências
 
