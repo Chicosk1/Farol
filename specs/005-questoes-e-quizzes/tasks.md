@@ -29,8 +29,8 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Produto: História 1, gerar rascunhos (P1)
 
-- [ ] QUE-T20 [P] [H1] Testes de geração, validação e descarte automático (QUE-RF-02, QUE-RF-03)
-- [ ] QUE-T21 [H1] Tarefa de geração no Celery com prompt fixo e validação do trecho (QUE-RF-02, QUE-RF-03)
+- [x] QUE-T20 [P] [H1] Testes de geração, validação e descarte automático (QUE-RF-02, QUE-RF-03)
+- [x] QUE-T21 [H1] Tarefa de geração no Celery com prompt fixo e validação do trecho (QUE-RF-02, QUE-RF-03)
 - [ ] QUE-T22 [H1] Rota de pedido de geração e tela com progresso (QUE-RF-01)
 
 ## Produto: História 2, revisar e publicar (P1)

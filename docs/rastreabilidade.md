@@ -14,7 +14,7 @@ A coluna Testes mostra os testes do produto que citam o requisito com `@pytest.m
 | [002 Materiais da disciplina](../specs/002-materiais-da-disciplina/spec.md) | 11 | 11 de 11 | 2 | 5 | 1 | 3 | 28 de 28 | 0 |
 | [003 Tutor da disciplina](../specs/003-tutor-da-disciplina/spec.md) | 14 | 14 de 14 | 6 | 5 | 2 | 1 | 49 de 50 | 0 |
 | [004 Dúvidas ao professor](../specs/004-duvidas-ao-professor/spec.md) | 9 | 8 de 9 | 5 | 0 | 1 | 3 | 15 de 16 | 0 |
-| [005 Questões e quizzes](../specs/005-questoes-e-quizzes/spec.md) | 11 | 3 de 11 | 5 | 1 | 3 | 2 | 9 de 21 | 0 |
+| [005 Questões e quizzes](../specs/005-questoes-e-quizzes/spec.md) | 11 | 3 de 11 | 5 | 1 | 3 | 2 | 11 de 21 | 0 |
 | [006 Revisão do dia](../specs/006-revisao-do-dia/spec.md) | 10 | 0 de 10 | 5 | 3 | 1 | 1 | 5 de 17 | 0 |
 | [007 Radar da turma](../specs/007-radar-da-turma/spec.md) | 11 | 0 de 11 | 6 | 3 | 1 | 1 | 5 de 18 | 0 |
 
@@ -95,8 +95,8 @@ Tarefas já especificadas que aproximam o protótipo do comportamento descrito n
 | Requisito | Descrição | Protótipo | Código do protótipo | Testes | Tarefas feitas | Tarefas pendentes |
 | --- | --- | --- | --- | --- | --- | --- |
 | `QUE-RF-01` | O professor DEVE poder escolher uma aula com material pronto e pedir de 5 a 20 questões. | Parcial | [prof-questoes.js](../prototipo/js/screens/prof-questoes.js) |  | QUE-T01, QUE-T06 | QUE-T22 |
-| `QUE-RF-02` | O sistema DEVE gerar, em segundo plano, rascunhos de múltipla escolha com 4 alternativas, 1 correta, justificativa e trecho de origem. | Simulado | [data.js](../prototipo/js/data.js), [prof-questoes.js](../prototipo/js/screens/prof-questoes.js) | [ia/testes/test_compativel_openai.py](../backend/ia/testes/test_compativel_openai.py) (1), [ia/testes/test_gerar_questoes.py](../backend/ia/testes/test_gerar_questoes.py) (1), [questoes/testes/test_esquema.py](../backend/questoes/testes/test_esquema.py) (1) | QUE-T01, QUE-T11, QUE-T12 | QUE-T20, QUE-T21 |
-| `QUE-RF-03` | O sistema DEVE descartar automaticamente rascunhos sem trecho de origem válido ou fora do formato. | Não coberto |  | [questoes/testes/test_esquema.py](../backend/questoes/testes/test_esquema.py) (3) | QUE-T11 | QUE-T20, QUE-T21 |
+| `QUE-RF-02` | O sistema DEVE gerar, em segundo plano, rascunhos de múltipla escolha com 4 alternativas, 1 correta, justificativa e trecho de origem. | Simulado | [data.js](../prototipo/js/data.js), [prof-questoes.js](../prototipo/js/screens/prof-questoes.js) | [ia/testes/test_compativel_openai.py](../backend/ia/testes/test_compativel_openai.py) (1), [ia/testes/test_gerar_questoes.py](../backend/ia/testes/test_gerar_questoes.py) (1), [questoes/testes/test_esquema.py](../backend/questoes/testes/test_esquema.py) (1), [questoes/testes/test_geracao.py](../backend/questoes/testes/test_geracao.py) (2) | QUE-T01, QUE-T11, QUE-T12, QUE-T20, QUE-T21 |  |
+| `QUE-RF-03` | O sistema DEVE descartar automaticamente rascunhos sem trecho de origem válido ou fora do formato. | Não coberto |  | [questoes/testes/test_esquema.py](../backend/questoes/testes/test_esquema.py) (3), [questoes/testes/test_geracao.py](../backend/questoes/testes/test_geracao.py) (3) | QUE-T11, QUE-T20, QUE-T21 |  |
 | `QUE-RF-04` | Rascunhos NÃO DEVEM ser visíveis para alunos em nenhuma tela ou rota. | Coberto | [aluno-disciplina.js](../prototipo/js/screens/aluno-disciplina.js), [aluno-pratica.js](../prototipo/js/screens/aluno-pratica.js) |  | QUE-T03 | QUE-T30 |
 | `QUE-RF-05` | O professor DEVE poder aprovar, editar ou descartar cada rascunho, e devolver uma questão publicada para pendentes. | Coberto | [prof-questoes.js](../prototipo/js/screens/prof-questoes.js) |  | QUE-T02 | QUE-T31, QUE-T32 |
 | `QUE-RF-06` | A tela de questões DEVE separar Pendentes, Publicadas e Descartadas, com a contagem de cada uma. | Coberto | [prof-questoes.js](../prototipo/js/screens/prof-questoes.js) |  | QUE-T02 | QUE-T31, QUE-T32 |

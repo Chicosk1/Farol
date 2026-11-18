@@ -362,6 +362,30 @@ def buscar_trechos(
     ]
 
 
+@dataclass(frozen=True)
+class TrechoDaAula:
+    id: int
+    pagina: int
+    texto: str
+
+
+def trechos_da_aula(material_id: int, limite: int) -> list[TrechoDaAula]:
+    """Até `limite` trechos de um material pronto, espalhados pela aula toda, na ordem das páginas.
+
+    Material que não está pronto não tem trechos: nada sai de um material que o professor não
+    publicou ou retirou (princípio I).
+    """
+    trechos = list(
+        Trecho.objects.filter(material_id=material_id, material__status=Material.Status.PRONTO)
+        .order_by("pagina", "ordem", "id")
+        .values_list("id", "pagina", "texto")
+    )
+    if len(trechos) > limite:
+        passo = len(trechos) / limite
+        trechos = [trechos[int(i * passo)] for i in range(limite)]
+    return [TrechoDaAula(*trecho) for trecho in trechos]
+
+
 def versao_atual(material: Material) -> Material:
     """A versão em uso de um material substituído; a citação antiga abre a nova (spec 002)."""
     vistos = {material.pk}
