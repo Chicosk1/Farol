@@ -4,7 +4,7 @@
 | --- | --- |
 | Spec | [spec.md](./spec.md) |
 | Branch | `007-radar-da-turma` |
-| Status | Em revisão |
+| Status | Aprovada |
 | Atualizado em | 2026-11-13 |
 
 ## Resumo

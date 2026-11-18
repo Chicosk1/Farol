@@ -4,7 +4,7 @@
 | --- | --- |
 | Código | `REV` |
 | Branch | `006-revisao-do-dia` |
-| Status | Em revisão |
+| Status | Aprovada |
 | Criada em | 2026-11-13 |
 | Origem | Documento de idealização, funcionalidade F2 |
 
@@ -65,7 +65,7 @@ Como aluno, quero receber um lembrete no horário que eu escolher, se eu quiser.
 - Aluno sem nenhuma questão publicada nas suas disciplinas: o cartão da tela inicial explica que a revisão começa quando os professores publicarem questões.
 - Questão despublicada pelo professor (QUE-RF-05): sai da agenda do aluno.
 - Aluno faz a sessão duas vezes no mesmo dia: a segunda é opcional, com "Refazer revisão", e não altera a agenda.
-- Revisão durante o modo prova: [PRECISA ESCLARECER: a revisão do dia e os quizzes ficam disponíveis quando o tutor da disciplina está pausado?]
+- Revisão durante o modo prova: enquanto o tutor da disciplina está pausado (TUT-RF-08), os cartões e o quiz dela ficam de fora; os das outras disciplinas seguem normalmente.
 
 ## Requisitos
 
@@ -106,11 +106,12 @@ Como aluno, quero receber um lembrete no horário que eu escolher, se eu quiser.
 
 | Questão | Dono | Prazo |
 | --- | --- | --- |
-| Revisão e quizzes durante o modo prova | Professores do piloto | Fase 0 |
-| Canal do lembrete no iPhone (notificação de PWA exige instalar na tela inicial) | Equipe técnica | Antes do plano final |
+| Notificação do navegador para o lembrete (nesta versão, o lembrete vai por e-mail) | Equipe técnica | Antes do piloto |
 
 ## Histórico
 
 | Data | Mudança |
 | --- | --- |
 | 2026-11-13 | Criação da spec a partir da idealização e do protótipo |
+| 2026-11-18 | Aprovada pelo dono do produto |
+| 2026-11-18 | Modo prova pausa também a revisão e o quiz da disciplina; o lembrete desta versão vai por e-mail (decisão do dono do produto) |

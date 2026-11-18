@@ -14,8 +14,8 @@ A coluna Testes mostra os testes do produto que citam o requisito com `@pytest.m
 | [002 Materiais da disciplina](../specs/002-materiais-da-disciplina/spec.md) | 11 | 11 de 11 | 2 | 5 | 1 | 3 | 28 de 28 | 0 |
 | [003 Tutor da disciplina](../specs/003-tutor-da-disciplina/spec.md) | 14 | 14 de 14 | 6 | 5 | 2 | 1 | 49 de 50 | 0 |
 | [004 Dúvidas ao professor](../specs/004-duvidas-ao-professor/spec.md) | 9 | 8 de 9 | 5 | 0 | 1 | 3 | 15 de 16 | 0 |
-| [005 Questões e quizzes](../specs/005-questoes-e-quizzes/spec.md) | 11 | 0 de 11 | 5 | 1 | 3 | 2 | 6 de 20 | 1 |
-| [006 Revisão do dia](../specs/006-revisao-do-dia/spec.md) | 10 | 0 de 10 | 5 | 3 | 1 | 1 | 5 de 17 | 1 |
+| [005 Questões e quizzes](../specs/005-questoes-e-quizzes/spec.md) | 11 | 0 de 11 | 5 | 1 | 3 | 2 | 6 de 20 | 0 |
+| [006 Revisão do dia](../specs/006-revisao-do-dia/spec.md) | 10 | 0 de 10 | 5 | 3 | 1 | 1 | 5 de 17 | 0 |
 | [007 Radar da turma](../specs/007-radar-da-turma/spec.md) | 11 | 0 de 11 | 6 | 3 | 1 | 1 | 5 de 18 | 0 |
 
 ## Pendências do protótipo

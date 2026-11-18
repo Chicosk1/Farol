@@ -4,7 +4,7 @@
 | --- | --- |
 | Código | `RAD` |
 | Branch | `007-radar-da-turma` |
-| Status | Em revisão |
+| Status | Aprovada |
 | Criada em | 2026-11-13 |
 | Origem | Documento de idealização, funcionalidade F3 |
 
@@ -116,10 +116,12 @@ Como professor, quero receber o resumo do radar por e-mail toda segunda de manh�
 
 | Questão | Dono | Prazo |
 | --- | --- | --- |
-| A semana do radar vai de segunda a domingo ou acompanha o calendário de aulas | Professores do piloto | Fase 0 |
+| A semana do radar deve acompanhar o calendário de aulas (nesta versão, vai de segunda a domingo) | Professores do piloto | Fase 0 |
 
 ## Histórico
 
 | Data | Mudança |
 | --- | --- |
 | 2026-11-13 | Criação da spec a partir da idealização e do protótipo |
+| 2026-11-18 | Aprovada pelo dono do produto |
+| 2026-11-18 | Nesta versão, a semana do radar vai de segunda a domingo (decisão do dono do produto) |
