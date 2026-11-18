@@ -159,7 +159,8 @@ class RegistroUso(models.Model):
     """Uma pergunta ao tutor, sem identificação do aluno (TUT-RF-12).
 
     Só guarda um identificador pseudônimo por disciplina, que permite contar alunos distintos
-    (regra dos 5 alunos do radar) sem revelar quem são. Não há ligação com Conversa nem Mensagem.
+    (regra dos 5 alunos do radar) sem revelar quem são. Não há ligação com Conversa nem Mensagem,
+    por isso a avaliação do aluno fica só na mensagem: ligar os dois revelaria o pseudônimo.
     """
 
     aluno_pseudonimo = models.CharField("aluno (pseudônimo)", max_length=64)
@@ -172,7 +173,6 @@ class RegistroUso(models.Model):
     pergunta_filtrada = models.TextField("pergunta sem dados pessoais")
     trechos = ArrayField(models.PositiveIntegerField(), verbose_name="trechos usados", default=list)
     tipo = models.CharField("tipo da resposta", max_length=14)
-    avaliacao = models.CharField("avaliação", max_length=10, blank=True)
     tokens_entrada = models.PositiveIntegerField("tokens de entrada", default=0)
     tokens_saida = models.PositiveIntegerField("tokens de saída", default=0)
     custo = models.DecimalField("custo (R$)", max_digits=10, decimal_places=6, default=0)

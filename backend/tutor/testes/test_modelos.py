@@ -114,6 +114,14 @@ def test_o_registro_de_uso_nao_guarda_o_aluno_so_o_pseudonimo():
     assert "aluno" not in campos and "conversa" not in campos and "mensagem" not in campos
 
 
+@pytest.mark.requisito("TUT-RF-12")
+def test_o_registro_de_uso_nao_guarda_a_avaliacao_que_so_existe_na_mensagem():
+    """Sem ligação com a mensagem, o registro não teria como receber a avaliação (TUT-T94)."""
+    campos = {f.name for f in RegistroUso._meta.get_fields()}
+
+    assert "avaliacao" not in campos
+
+
 def test_o_registro_de_uso_guarda_pergunta_filtrada_trechos_e_custo(disciplina):
     registro = RegistroUso.objects.create(
         aluno_pseudonimo="abc123",
