@@ -186,3 +186,14 @@ def test_a_aluna_ve_o_tutor_de_estruturas_de_dados_depois_da_demonstracao(client
     com_tutor = cliente.get("/api/disciplinas", {"filtro": "com-tutor"}).json()
 
     assert [d["nome"] for d in com_tutor] == ["Estruturas de Dados"]
+
+
+@pytest.mark.django_db
+def test_material_retirado_nao_impede_as_aulas_de_demonstracao():
+    popular()
+    Material.objects.update(status=Material.Status.RETIRADO)
+
+    popular()
+
+    prontos = Material.objects.filter(status=Material.Status.PRONTO)
+    assert prontos.count() == 13

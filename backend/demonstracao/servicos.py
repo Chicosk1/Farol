@@ -78,10 +78,11 @@ def popular() -> Relatorio:
 def _publicar_aulas_de_demonstracao(disciplina, professor, relatorio: Relatorio) -> None:
     """As aulas fictícias do conjunto de avaliação, processadas com o provedor de IA configurado.
 
-    Só publica numa disciplina ainda sem nenhum material: rodar de novo não duplica nada, e o que o
-    professor publicou não é tocado.
+    Só publica numa disciplina sem nenhum material em uso: rodar de novo não duplica nada, e o que
+    o professor publicou não é tocado. Material retirado não conta: a disciplina está sem material.
     """
-    if materiais.listar_materiais(Perfil.PROFESSOR, disciplina.id).exists():
+    em_uso = materiais.listar_materiais(Perfil.PROFESSOR, disciplina.id).exclude(status="retirado")
+    if em_uso.exists():
         relatorio.contar(False)
         return
     for aula in tutor.conjunto_de_avaliacao().aulas:
