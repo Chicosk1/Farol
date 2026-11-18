@@ -421,3 +421,69 @@ export type TrechoParaAbrir = components['schemas']['TrechoParaAbrir'];
 export function obterTrecho(trechoId: number): Promise<TrechoParaAbrir> {
   return requisitar<TrechoParaAbrir>(`/api/trechos/${trechoId}`);
 }
+
+export type QuestaoDoProfessor = components['schemas']['QuestaoDoProfessor'];
+export type QuestoesDaDisciplina = components['schemas']['QuestoesDaDisciplina'];
+export type StatusDaQuestao = QuestaoDoProfessor['status'];
+export type Geracao = components['schemas']['Geracao'];
+export type Quiz = components['schemas']['Quiz'];
+export type RetornoDaQuestao = components['schemas']['RetornoDaQuestao'];
+export type QuizDaAula = components['schemas']['QuizDaAula'];
+/** O que o professor muda numa questão: o conteúdo (só em pendentes) e, ou, o status. */
+export type MudancaDeQuestao = Partial<
+  Pick<
+    QuestaoDoProfessor,
+    'enunciado' | 'alternativas' | 'correta' | 'justificativa' | 'topico' | 'status'
+  >
+>;
+
+/** GET /api/disciplinas/{id}/questoes: as questões de um status e as contagens (QUE-RF-06). */
+export function listarQuestoes(
+  disciplinaId: number,
+  status: StatusDaQuestao,
+): Promise<QuestoesDaDisciplina> {
+  return requisitar<QuestoesDaDisciplina>(
+    `/api/disciplinas/${disciplinaId}/questoes?status=${status}`,
+  );
+}
+
+/** PATCH /api/questoes/{id}: aprova, edita, descarta ou devolve para pendentes (QUE-RF-05). */
+export function mudarQuestao(
+  questaoId: number,
+  dados: MudancaDeQuestao,
+): Promise<QuestaoDoProfessor> {
+  return enviar<QuestaoDoProfessor>(`/api/questoes/${questaoId}`, dados, 'PATCH');
+}
+
+/** POST /api/materiais/{id}/geracoes: pede de 5 a 20 rascunhos de uma aula (QUE-RF-01). */
+export function pedirGeracao(materialId: number, quantidade: number): Promise<Geracao> {
+  return enviar<Geracao>(`/api/materiais/${materialId}/geracoes`, { quantidade });
+}
+
+/** GET /api/geracoes/{id}: o andamento do pedido de rascunhos. */
+export function obterGeracao(pedidoId: number): Promise<Geracao> {
+  return requisitar<Geracao>(`/api/geracoes/${pedidoId}`);
+}
+
+/** GET /api/materiais/{id}/quiz: as questões publicadas da aula, sem o gabarito (QUE-RF-04). */
+export function obterQuiz(materialId: number): Promise<Quiz> {
+  return requisitar<Quiz>(`/api/materiais/${materialId}/quiz`);
+}
+
+/** POST /api/questoes/{id}/respostas: corrige e devolve o retorno da questão (QUE-RF-08). */
+export function responderQuestao(
+  questaoId: number,
+  alternativa: number,
+): Promise<RetornoDaQuestao> {
+  return enviar<RetornoDaQuestao>(`/api/questoes/${questaoId}/respostas`, { alternativa });
+}
+
+/** POST /api/materiais/{id}/quiz/reiniciar: começa o quiz da aula de novo. */
+export async function reiniciarQuiz(materialId: number): Promise<void> {
+  await enviar<undefined>(`/api/materiais/${materialId}/quiz/reiniciar`);
+}
+
+/** GET /api/disciplinas/{id}/quizzes: as aulas com quiz e o andamento do aluno. */
+export function listarQuizzes(disciplinaId: number): Promise<QuizDaAula[]> {
+  return requisitar<QuizDaAula[]>(`/api/disciplinas/${disciplinaId}/quizzes`);
+}

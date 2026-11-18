@@ -29,6 +29,10 @@ const PADROES: Record<string, RespostaSimulada> = {
   'GET /api/disciplinas': { corpo: [] },
   // O cartão do tutor, na tela inicial, procura uma disciplina com material pronto.
   'GET /api/disciplinas?filtro=com-tutor': { corpo: [] },
+  // A página da disciplina lista os quizzes publicados (QUE-RF-07).
+  ...Object.fromEntries(
+    Array.from({ length: 10 }, (_, i) => [`GET /api/disciplinas/${i + 1}/quizzes`, { corpo: [] }]),
+  ),
 };
 
 export function simularApi(rotas: Record<string, Rota>) {

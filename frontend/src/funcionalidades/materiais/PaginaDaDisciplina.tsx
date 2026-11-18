@@ -5,6 +5,7 @@ import { EstadoVazio } from '../../componentes/EstadoVazio';
 import { Icone } from '../../componentes/Icone';
 import { useDisciplina } from '../disciplinas/consultas';
 import { iconeDaDisciplina } from '../disciplinas/icones';
+import { QuizzesDaDisciplina } from '../questoes/QuizzesDaDisciplina';
 import { MateriaisDoAluno } from './MateriaisDoAluno';
 
 /**
@@ -84,9 +85,7 @@ export function PaginaDaDisciplina() {
           <h2 id="titulo-quizzes" className="section-title">
             Quizzes
           </h2>
-          <ul className="panel list">
-            <li className="list-row muted">Nenhum quiz publicado ainda.</li>
-          </ul>
+          <QuizzesDaDisciplina disciplinaId={id} />
         </section>
       </div>
     </div>

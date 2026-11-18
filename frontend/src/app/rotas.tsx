@@ -8,6 +8,8 @@ import { PaginaDuvidas } from '../funcionalidades/duvidas/PaginaDuvidas';
 import { PaginaDaDisciplina } from '../funcionalidades/materiais/PaginaDaDisciplina';
 import { PaginaMateriais } from '../funcionalidades/materiais/PaginaMateriais';
 import { PaginaTrecho } from '../funcionalidades/materiais/PaginaTrecho';
+import { PaginaQuestoes } from '../funcionalidades/questoes/PaginaQuestoes';
+import { PaginaQuiz } from '../funcionalidades/questoes/PaginaQuiz';
 import { PaginaConfiguracaoDoTutor } from '../funcionalidades/tutor/PaginaConfiguracaoDoTutor';
 import { PaginaTutor } from '../funcionalidades/tutor/PaginaTutor';
 import { PaginaTutorInicial } from '../funcionalidades/tutor/PaginaTutorInicial';
@@ -30,6 +32,8 @@ export const rotas: RouteObject[] = [
           { path: '/disciplinas/:id', element: <PaginaDaDisciplina /> },
           { path: '/disciplinas/:id/materiais', element: <PaginaMateriais /> },
           { path: '/disciplinas/:id/duvidas', element: <PaginaDuvidas /> },
+          { path: '/disciplinas/:id/questoes', element: <PaginaQuestoes /> },
+          { path: '/disciplinas/:id/quiz/:materialId', element: <PaginaQuiz /> },
           { path: '/trechos/:id', element: <PaginaTrecho /> },
           { path: '/tutor', element: <PaginaTutorInicial /> },
           { path: '/disciplinas/:id/tutor', element: <PaginaTutor /> },

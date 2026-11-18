@@ -69,6 +69,13 @@ function itensDoProfessor(disciplinaId: string | undefined): Item[] {
       atual: (c) => c === `${base}/materiais`,
     },
     {
+      rotulo: 'Questões',
+      curto: 'Questões',
+      icone: 'list-check',
+      para: `${base}/questoes`,
+      atual: (c) => c === `${base}/questoes`,
+    },
+    {
       rotulo: 'Dúvidas',
       curto: 'Dúvidas',
       icone: 'message-question',
