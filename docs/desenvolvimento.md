@@ -149,6 +149,21 @@ docker compose run --rm backend python manage.py popular_demo
 
 Os dados de teste e de demonstração são sempre fictícios. Nenhum dado real de aluno entra no repositório.
 
+### Configurar o login com o Google
+
+O login institucional é o Google Workspace (ACE-RF-01), pelo django-allauth. No desenvolvimento ele é opcional: sem a credencial, a tela de entrada mostra só os atalhos de desenvolvimento. Para testar com uma conta de verdade, sem custo:
+
+1. No [Google Cloud Console](https://console.cloud.google.com/), crie um projeto e configure a tela de consentimento OAuth. Para uso só dentro da instituição, escolha o tipo "Interno".
+2. Em "Credenciais", crie um "ID do cliente OAuth" do tipo "Aplicativo da Web", com:
+   - origem JavaScript autorizada `http://localhost:5173`;
+   - URI de redirecionamento autorizado `http://localhost:5173/contas/google/login/callback/`.
+3. No `.env`, preencha:
+   - `FAROL_GOOGLE_CLIENT_ID` e `FAROL_GOOGLE_SECRET` com a credencial criada;
+   - `FAROL_DOMINIO_INSTITUCIONAL` com o domínio do Workspace, por exemplo `unimater.edu.br`.
+4. Rode `docker compose up -d` para recriar os containers. A tela de entrada passa a mostrar "Entrar com o Google".
+
+Só entra um e-mail verificado do domínio, de conta do Workspace. Contas pessoais, inclusive as criadas com o e-mail da instituição, voltam para a entrada com "Use a sua conta institucional". Quem entra pela primeira vez sem ter sido importado vira aluno, sem disciplinas. Em produção, as três variáveis são obrigatórias, e o endereço de redirecionamento é o do servidor (`https://<endereço>/contas/google/login/callback/`).
+
 ## Problemas comuns
 
 | Sintoma | Solução |

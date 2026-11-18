@@ -42,7 +42,7 @@ A primeira entrega do produto prova a arquitetura em todas as camadas com uma fu
 - [x] ACE-T20 [P] [H1] Testes de aceite dos cenários 1 a 3 em `backend/contas/testes/test_login.py`, entregues junto da ACE-T21 (ACE-RF-01, ACE-RF-02)
 - [x] ACE-T21 [H1] Login OpenID Connect com django-allauth, restrito ao domínio institucional (ACE-RF-01, ACE-RF-02)
 - [x] ACE-T22 [H1] Perfis da `Pessoa` e rotas `GET /api/eu`, `POST /api/eu/perfil-ativo` e `POST /api/sair`, com testes (ACE-RF-03)
-- [ ] ACE-T23 [H1] Tela de entrada com o login institucional e troca de perfil no front-end (ACE-RF-01, ACE-RF-03)
+- [x] ACE-T23 [H1] Tela de entrada com o login institucional e troca de perfil no front-end (ACE-RF-01, ACE-RF-03)
 - [x] ACE-T24 [H1] Login de desenvolvimento no back-end: rota `POST /api/dev/entrar` e teste de que a rota não existe com as configurações de produção (ACE-RNF-03)
 - [x] ACE-T25 [H2] Comando `popular_demo` com as pessoas fictícias do protótipo (Ana Souza e Carlos Mendes), com teste (ACE-RF-04)
 - [x] ACE-T26 [H1] Cliente de sessão no front-end (`/api/eu`, entrar, sair, token CSRF) e tela de entrada com os botões "Entrar como aluna" e "Entrar como professor", só em desenvolvimento (ACE-RNF-03)

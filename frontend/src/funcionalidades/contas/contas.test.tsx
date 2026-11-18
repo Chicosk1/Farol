@@ -114,10 +114,94 @@ describe('entrada e sessão (ACE-T26)', () => {
     expect(chamadas.some((c) => c.metodo === 'POST' && c.caminho === '/api/sair')).toBe(true);
   });
 
-  it.each(['/entrar', '/'])('não tem violações de acessibilidade em %s', async (caminho) => {
-    simularApi({ 'GET /api/eu': caminho === '/' ? { corpo: ANA } : SEM_SESSAO });
-    const { container } = renderizarApp(caminho);
-    await screen.findByRole('heading', { level: 1 });
+  it.each(['/entrar', '/', '/entrar?erro=conta_externa'])(
+    'não tem violações de acessibilidade em %s',
+    async (caminho) => {
+      simularApi({ 'GET /api/eu': caminho === '/' ? { corpo: ANA } : SEM_SESSAO });
+      const { container } = renderizarApp(caminho);
+      await screen.findByRole('heading', { level: 1 });
+
+      expect(await violacoesDeAcessibilidade(container)).toEqual([]);
+    },
+  );
+});
+
+describe('login com o Google e troca de perfil (ACE-T23)', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    document.cookie = 'csrftoken=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  });
+
+  it('o botão do Google envia o formulário ao allauth com o token CSRF (ACE-RF-01)', async () => {
+    document.cookie = 'csrftoken=token-do-teste';
+    simularApi({ 'GET /api/eu': SEM_SESSAO });
+    renderizarApp('/entrar');
+
+    const botao = await screen.findByRole('button', { name: 'Entrar com o Google' });
+    const formulario = botao.closest('form');
+    expect(formulario).toHaveAttribute('method', 'post');
+    expect(formulario).toHaveAttribute('action', '/contas/google/login/');
+    expect(formulario?.querySelector('input[name="csrfmiddlewaretoken"]')).toHaveValue(
+      'token-do-teste',
+    );
+  });
+
+  it('sem o Google configurado, explica e não mostra o botão', async () => {
+    simularApi({
+      'GET /api/eu': SEM_SESSAO,
+      'GET /api/entrada': { corpo: { google: false, desenvolvimento: true } },
+    });
+    renderizarApp('/entrar');
+
+    expect(
+      await screen.findByText('O login com o Google ainda não foi configurado neste ambiente.'),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Entrar com o Google' })).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ['conta_externa', 'Use a sua conta institucional.'],
+    ['conta_desativada', 'A sua conta está desativada no Farol.'],
+    ['falha', 'Não foi possível entrar com o Google.'],
+  ])('a volta do Google com erro %s mostra o aviso', async (erro, mensagem) => {
+    simularApi({ 'GET /api/eu': SEM_SESSAO });
+    renderizarApp(`/entrar?erro=${erro}`);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(mensagem);
+  });
+
+  it('quem tem dois perfis troca o perfil em uso sem sair (ACE-RF-03)', async () => {
+    const duplo = { ...CARLOS, perfis: ['professor', 'aluno'], perfil_ativo: 'professor' };
+    const { chamadas } = simularApi({
+      'GET /api/eu': { corpo: duplo },
+      ...FAVORITAS_VAZIAS,
+      'POST /api/eu/perfil-ativo': { corpo: { ...duplo, perfil_ativo: 'aluno' } },
+    });
+    renderizarApp('/');
+
+    const seletor = await screen.findByRole('combobox', { name: 'Perfil em uso' });
+    expect(seletor).toHaveValue('professor');
+    fireEvent.change(seletor, { target: { value: 'aluno' } });
+
+    expect(await screen.findByText('Perfil: aluno')).toBeInTheDocument();
+    expect(chamadas.find((c) => c.caminho === '/api/eu/perfil-ativo')?.corpo).toEqual({
+      perfil: 'aluno',
+    });
+  });
+
+  it('quem tem um perfil só não vê a troca de perfil', async () => {
+    simularApi({ 'GET /api/eu': { corpo: ANA }, ...FAVORITAS_VAZIAS });
+    renderizarApp('/');
+
+    await screen.findByText('Olá, Ana Souza');
+    expect(screen.queryByRole('combobox', { name: 'Perfil em uso' })).not.toBeInTheDocument();
+  });
+
+  it('não tem violações de acessibilidade com a troca de perfil', async () => {
+    const duplo = { ...CARLOS, perfis: ['professor', 'aluno'], perfil_ativo: 'professor' };
+    simularApi({ 'GET /api/eu': { corpo: duplo }, ...FAVORITAS_VAZIAS });
+    const { container } = renderizarApp('/');
+    await screen.findByRole('combobox', { name: 'Perfil em uso' });
 
     expect(await violacoesDeAcessibilidade(container)).toEqual([]);
   });

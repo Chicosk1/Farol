@@ -4,7 +4,9 @@ import {
   confirmarCienciaDoAviso,
   entrarEmDesenvolvimento,
   obterEu,
+  obterFormasDeEntrar,
   sair,
+  trocarPerfilAtivo,
   type Eu,
 } from '../../api/cliente';
 
@@ -32,6 +34,25 @@ export function useConfirmarCienciaDoAviso() {
       clienteDeDados.setQueryData<Eu | null>(CHAVE_EU, (eu) =>
         eu ? { ...eu, precisa_ver_aviso: false } : eu,
       ),
+  });
+}
+
+/** As formas de entrar deste ambiente (login com o Google, atalho de desenvolvimento). */
+export function useFormasDeEntrar() {
+  return useQuery({ queryKey: ['entrada'], queryFn: obterFormasDeEntrar, staleTime: Infinity });
+}
+
+/** Troca o perfil em uso sem sair (ACE-RF-03). Os dados em cache eram do perfil anterior. */
+export function useTrocarPerfil() {
+  const clienteDeDados = useQueryClient();
+  return useMutation({
+    mutationFn: trocarPerfilAtivo,
+    onSuccess: (eu: Eu) => {
+      clienteDeDados.setQueryData(CHAVE_EU, eu);
+      void clienteDeDados.invalidateQueries({
+        predicate: (consulta) => consulta.queryKey[0] !== CHAVE_EU[0],
+      });
+    },
   });
 }
 
