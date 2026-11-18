@@ -1,5 +1,5 @@
 import { useRef, useState, type FormEvent } from 'react';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 
 import {
   avaliarResposta,
@@ -57,15 +57,13 @@ function Citacoes({ citacoes }: { citacoes: CitacaoDoTutor[] }) {
     <ul aria-label="Fontes da resposta" className="mt-2 flex flex-wrap gap-2">
       {citacoes.map((citacao) => (
         <li key={citacao.ordem}>
-          <a
-            href={`/api/materiais/${citacao.material_id}/arquivo?pagina=${citacao.pagina}#page=${citacao.pagina}`}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to={`/trechos/${citacao.trecho_id}`}
             className="inline-flex min-h-12 items-center rounded-lg border border-line-control bg-surface px-3 text-sm font-bold text-ink underline"
           >
             [{citacao.ordem}] {citacao.rotulo}
-            <span className="sr-only"> (abre o material em nova aba)</span>
-          </a>
+            <span className="sr-only"> (abre a página com o trecho destacado)</span>
+          </Link>
         </li>
       ))}
     </ul>
@@ -157,6 +155,47 @@ function Mensagem({ mensagem }: { mensagem: MensagemNaTela }) {
           <AvaliarResposta mensagemId={mensagem.id} inicial={mensagem.avaliacao ?? ''} />
         )}
     </li>
+  );
+}
+
+/** O texto do professor e o resumo das regras do tutor, abertos por um botão (TUT-RF-10). */
+function PoliticaDeUso({ politica, modoPistas }: { politica: string; modoPistas: boolean }) {
+  const [aberta, setAberta] = useState(false);
+  return (
+    <div>
+      <Botao
+        variante="secundario"
+        aria-expanded={aberta}
+        aria-controls="politica-de-uso"
+        onClick={() => setAberta((valor) => !valor)}
+      >
+        Política de uso de IA
+      </Botao>
+      {aberta && (
+        <section
+          id="politica-de-uso"
+          aria-labelledby="titulo-politica"
+          className="mt-2 rounded-lg border border-line bg-surface p-4 text-ink"
+        >
+          <h2 id="titulo-politica" className="text-lg font-bold">
+            Política de uso de IA
+          </h2>
+          <p className="mt-1 whitespace-pre-wrap">
+            {politica.trim() || 'O professor ainda não escreveu uma política para esta disciplina.'}
+          </p>
+          <h3 className="mt-3 font-bold">Regras do tutor</h3>
+          <ul className="list-disc pl-5">
+            <li>Responde só com o material desta disciplina, sempre com a página citada.</li>
+            <li>
+              {modoPistas
+                ? 'Em exercícios, dá pistas em vez da resposta pronta.'
+                : 'O modo pistas está desligado nesta disciplina.'}
+            </li>
+            <li>Fica pausado durante as provas.</li>
+          </ul>
+        </section>
+      )}
+    </div>
   );
 }
 
@@ -278,6 +317,7 @@ export function PaginaTutor() {
 
       {tutor.data && (
         <>
+          <PoliticaDeUso politica={tutor.data.politica} modoPistas={tutor.data.modo_pistas} />
           {tutor.data.modo_pistas && (
             <p className="w-fit rounded-full bg-accent-soft px-3 py-1 text-sm font-bold text-ink">
               Modo pistas ligado

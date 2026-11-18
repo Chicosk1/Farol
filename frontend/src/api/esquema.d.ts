@@ -439,6 +439,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/trechos/{trecho_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A página citada com a posição do trecho, para destacar */
+        get: operations["trechos_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -716,6 +733,17 @@ export interface components {
          * @enum {string}
          */
         StatusDoMaterialEnum: "processando" | "pronto" | "atencao" | "erro" | "retirado" | "substituido";
+        TrechoParaAbrir: {
+            material_id: number;
+            aula_numero: number;
+            aula_titulo: string;
+            pagina: number;
+            texto_da_pagina: string;
+            inicio: number;
+            fim: number;
+            /** @description O material foi substituído por uma versão nova depois da citação. */
+            atualizado: boolean;
+        };
         TrocaDePerfilRequest: {
             perfil: components["schemas"]["PerfilEnum"];
         };
@@ -1354,6 +1382,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Saude"];
+                };
+            };
+        };
+    };
+    trechos_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trecho_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrechoParaAbrir"];
                 };
             };
         };

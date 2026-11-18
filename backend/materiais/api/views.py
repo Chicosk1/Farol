@@ -22,6 +22,7 @@ from .serializers import (
     MaterialEnviadoSerializer,
     NovaVersaoSerializer,
     PaginaDoPdfSerializer,
+    TrechoParaAbrirSerializer,
 )
 
 
@@ -166,3 +167,21 @@ def nova_versao(request: Request, material_id: int) -> Response:
     nova.refresh_from_db()
     dados = {"material_id": nova.id, "status": nova.status}
     return Response(MaterialEnviadoSerializer(dados).data, status=status.HTTP_202_ACCEPTED)
+
+
+@extend_schema(
+    summary="A página citada com a posição do trecho, para destacar",
+    responses=TrechoParaAbrirSerializer,
+    tags=["materiais"],
+)
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def trecho(request: Request, trecho_id: int) -> Response:
+    perfil = contas.perfil_ativo(request.user, request.session)
+    try:
+        dados = servicos.trecho_para_abrir(request.user, perfil, trecho_id)
+    except servicos.MaterialNaoEncontrado:
+        raise Http404 from None
+    except servicos.SemAcessoAoMaterial:
+        raise PermissionDenied from None
+    return Response(TrechoParaAbrirSerializer(dados).data)

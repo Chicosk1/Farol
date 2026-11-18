@@ -18,6 +18,8 @@ export type EstadoDoTutor = components['schemas']['EstadoDoTutor'];
 export type MensagemDoTutor = components['schemas']['Mensagem'];
 export type CitacaoDoTutor = components['schemas']['Citacao'];
 export type TipoDeMensagem = components['schemas']['MensagemTipoEnum'];
+export type ConfiguracaoDoTutor = components['schemas']['Configuracao'];
+export type JanelaDeProva = components['schemas']['Janela'];
 /** A avaliação de uma resposta do tutor; vazio é sem avaliação. */
 export type AvaliacaoDaResposta = components['schemas']['AvaliacaoEnum'] | '';
 
@@ -222,6 +224,45 @@ export async function avaliarResposta(
   await enviar<undefined>(`/api/mensagens/${mensagemId}/avaliacao`, { avaliacao }, 'PUT');
 }
 
+/** GET /api/disciplinas/{id}/tutor/configuracao: modo pistas, limite e política (professor). */
+export function obterConfiguracaoDoTutor(disciplinaId: number): Promise<ConfiguracaoDoTutor> {
+  return requisitar<ConfiguracaoDoTutor>(`/api/disciplinas/${disciplinaId}/tutor/configuracao`);
+}
+
+/** PATCH /api/disciplinas/{id}/tutor/configuracao: só os campos enviados mudam. */
+export function salvarConfiguracaoDoTutor(
+  disciplinaId: number,
+  mudancas: ConfiguracaoDoTutor,
+): Promise<ConfiguracaoDoTutor> {
+  return enviar<ConfiguracaoDoTutor>(
+    `/api/disciplinas/${disciplinaId}/tutor/configuracao`,
+    mudancas,
+    'PATCH',
+  );
+}
+
+/** GET /api/disciplinas/{id}/janelas-prova: a janela em andamento e as agendadas (professor). */
+export function listarJanelasDeProva(disciplinaId: number): Promise<JanelaDeProva[]> {
+  return requisitar<JanelaDeProva[]>(`/api/disciplinas/${disciplinaId}/janelas-prova`);
+}
+
+/** POST /api/disciplinas/{id}/janelas-prova: sem início, pausa o tutor agora (modo prova). */
+export function criarJanelaDeProva(
+  disciplinaId: number,
+  dados: { inicio?: string; fim?: string },
+): Promise<JanelaDeProva> {
+  return enviar<JanelaDeProva>(`/api/disciplinas/${disciplinaId}/janelas-prova`, dados);
+}
+
+/** DELETE /api/disciplinas/{id}/janelas-prova/{janela}: apaga a janela (desliga o modo prova). */
+export async function apagarJanelaDeProva(disciplinaId: number, janelaId: number): Promise<void> {
+  await enviar<undefined>(
+    `/api/disciplinas/${disciplinaId}/janelas-prova/${janelaId}`,
+    undefined,
+    'DELETE',
+  );
+}
+
 /** GET /api/disciplinas/{id}/materiais: para o professor, todos, com status e etapa. */
 export function listarMateriaisDoProfessor(disciplinaId: number): Promise<MaterialDoProfessor[]> {
   return requisitar<MaterialDoProfessor[]>(`/api/disciplinas/${disciplinaId}/materiais`);
@@ -297,4 +338,11 @@ export type MaterialDoAluno = Pick<
 /** GET /api/disciplinas/{id}/materiais: para a aluna, só os materiais prontos (MAT-RF-08). */
 export function listarMateriaisDoAluno(disciplinaId: number): Promise<MaterialDoAluno[]> {
   return requisitar<MaterialDoAluno[]>(`/api/disciplinas/${disciplinaId}/materiais`);
+}
+
+export type TrechoParaAbrir = components['schemas']['TrechoParaAbrir'];
+
+/** GET /api/trechos/{id}: a página citada com a posição do trecho, para destacar (MAT-RF-09). */
+export function obterTrecho(trechoId: number): Promise<TrechoParaAbrir> {
+  return requisitar<TrechoParaAbrir>(`/api/trechos/${trechoId}`);
 }

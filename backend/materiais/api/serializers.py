@@ -56,3 +56,16 @@ class PaginaDoPdfSerializer(serializers.Serializer):
 
 class NovaVersaoSerializer(serializers.Serializer):
     arquivo = serializers.FileField(help_text="O PDF corrigido da aula.")
+
+
+class TrechoParaAbrirSerializer(serializers.Serializer):
+    material_id = serializers.IntegerField()
+    aula_numero = serializers.IntegerField()
+    aula_titulo = serializers.CharField()
+    pagina = serializers.IntegerField()
+    texto_da_pagina = serializers.CharField()
+    inicio = serializers.IntegerField()
+    fim = serializers.IntegerField()
+    atualizado = serializers.BooleanField(
+        help_text="O material foi substituído por uma versão nova depois da citação."
+    )

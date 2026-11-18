@@ -138,6 +138,15 @@ export function PaginaDisciplinas() {
                             Tutor
                           </Link>
                         )}
+                        {perfil === 'professor' && (
+                          <Link
+                            to={`/disciplinas/${disciplina.id}/tutor/configuracao`}
+                            aria-label={`Configurar o tutor de ${disciplina.nome}`}
+                            className="mt-2 inline-flex min-h-12 items-center font-bold text-accent underline"
+                          >
+                            Configurar tutor
+                          </Link>
+                        )}
                         {(perfil === 'professor' || perfil === 'aluno') && (
                           <Link
                             to={`/disciplinas/${disciplina.id}/materiais`}

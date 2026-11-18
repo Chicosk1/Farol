@@ -50,13 +50,13 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 - [x] TUT-T40 [H3] Perguntas de exercício no conjunto de avaliação, com verificação de que o resultado final não aparece, entregues junto da TUT-T41 (TUT-RF-05)
 - [x] TUT-T41 [H3] Instruções de modo pistas nas regras fixas e marcação "Modo pistas" na resposta, entregues junto da TUT-T22; a tela mostra a marcação com a TUT-T24 (TUT-RF-05)
 - [x] TUT-T42 [H3] Configuração do modo pistas por disciplina (TUT-RF-06)
-- [ ] TUT-T43 [H3] Configuração do tutor no painel do professor, no front-end: modo pistas, limite diário e política de uso de IA, com testes de tela e de acessibilidade (TUT-RF-06, TUT-RF-08, TUT-RF-10)
+- [x] TUT-T43 [H3] Configuração do tutor no painel do professor, no front-end: modo pistas, limite diário e política de uso de IA, com testes de tela e de acessibilidade (TUT-RF-06, TUT-RF-08, TUT-RF-10)
 
 ## Produto: História 4, pausar o tutor durante as provas (P2)
 
 - [x] TUT-T50 [H4] Testes de janela imediata, agendada e iniciada no meio da conversa, entregues junto da TUT-T51 (TUT-RF-07)
 - [x] TUT-T51 [H4] Janelas de prova e verificação antes de cada pergunta (TUT-RF-07)
-- [ ] TUT-T52 [H4] Tela de agendamento no painel do professor (TUT-RF-07)
+- [x] TUT-T52 [H4] Tela de agendamento no painel do professor (TUT-RF-07)
 
 ## Produto: História 5, respeitar o limite diário (P2)
 
@@ -70,7 +70,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Produto: História 7, regras de uso de IA (P3)
 
-- [ ] TUT-T80 [H7] Exibição da política de uso de IA na tela do tutor, com o resumo das regras; a edição vem com a TUT-T43 (TUT-RF-10)
+- [x] TUT-T80 [H7] Exibição da política de uso de IA na tela do tutor, com o resumo das regras; a edição vem com a TUT-T43 (TUT-RF-10)
 
 ## Produto: privacidade e acabamento
 
