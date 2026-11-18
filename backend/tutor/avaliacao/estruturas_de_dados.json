@@ -1,0 +1,213 @@
+{
+  "disciplina": "Estruturas de Dados (material fictício de avaliação)",
+  "observacao": "Material e perguntas escritos para a avaliação automática do tutor (TUT-T12). São fictícios: no piloto, o conjunto real da disciplina substitui este.",
+  "aulas": [
+    {
+      "numero": 1,
+      "titulo": "Introdução e análise de algoritmos",
+      "paginas": [
+        "Uma estrutura de dados é uma forma de organizar informações na memória para que certas operações fiquem eficientes.\nUm tipo abstrato de dados, ou TAD, descreve o que uma estrutura faz, ou seja, as suas operações, sem dizer como ela é implementada.\nPor exemplo, o TAD pilha define empilhar e desempilhar, e pode ser implementado com um vetor ou com uma lista encadeada.\nEscolher a estrutura certa depende das operações mais frequentes do problema.",
+        "A análise de algoritmos estima quanto tempo e quanta memória um algoritmo usa em função do tamanho da entrada, chamado de n.\nA notação O grande descreve o crescimento do custo no pior caso, ignorando constantes.\nUm algoritmo O(1) leva tempo constante; O(log n) cresce muito devagar; O(n) é linear; O(n log n) é típico das boas ordenações; O(n²) é quadrático.\nPor exemplo, percorrer um vetor uma vez é O(n), e comparar cada par de elementos é O(n²)."
+      ]
+    },
+    {
+      "numero": 2,
+      "titulo": "Vetores",
+      "paginas": [
+        "Um vetor guarda elementos do mesmo tipo em posições contíguas da memória.\nComo o endereço de cada posição é calculado a partir do índice, o acesso a qualquer elemento custa O(1).\nEm muitas linguagens, o primeiro índice é zero.\nA desvantagem do vetor estático é que o tamanho é fixo, definido na criação.",
+        "Inserir ou remover um elemento no meio de um vetor custa O(n), porque os elementos seguintes precisam ser deslocados.\nUm vetor dinâmico resolve o tamanho fixo: quando fica cheio, ele aloca um espaço com o dobro da capacidade e copia os elementos.\nA cópia é cara, mas acontece raramente, então o custo amortizado de inserir no final continua sendo O(1)."
+      ]
+    },
+    {
+      "numero": 3,
+      "titulo": "Listas encadeadas",
+      "paginas": [
+        "Uma lista encadeada é formada por nós, e cada nó guarda um valor e um ponteiro para o próximo nó.\nO último nó aponta para nulo, e a lista é acessada a partir do ponteiro para o primeiro nó, chamado de cabeça.\nInserir no início da lista custa O(1), porque basta criar o nó e ajustar a cabeça.\nPara chegar ao k-ésimo elemento, porém, é preciso percorrer a lista desde a cabeça, o que custa O(n).",
+        "Na lista duplamente encadeada, cada nó também aponta para o nó anterior, o que permite percorrer a lista nos dois sentidos e remover um nó conhecido em O(1).\nNa lista circular, o último nó aponta de volta para o primeiro.\nComparada ao vetor, a lista encadeada não precisa de memória contígua nem de realocação, mas gasta memória extra com os ponteiros e não tem acesso direto por índice."
+      ]
+    },
+    {
+      "numero": 4,
+      "titulo": "Pilhas",
+      "paginas": [
+        "Uma pilha segue a política LIFO: o último elemento a entrar é o primeiro a sair.\nAs operações principais são empilhar (push), que coloca um elemento no topo, desempilhar (pop), que retira o elemento do topo, e consultar o topo sem retirar.\nTodas essas operações custam O(1).\nUma pilha pode ser implementada com um vetor, guardando o índice do topo, ou com uma lista encadeada, inserindo e removendo sempre no início.",
+        "As pilhas aparecem em muitos lugares.\nA função desfazer de um editor de texto guarda as ações numa pilha.\nA pilha de execução guarda as chamadas de função ativas de um programa.\nPara verificar se os parênteses de uma expressão estão balanceados, empilha-se cada abertura e desempilha-se a cada fechamento; a expressão está balanceada se a pilha terminar vazia e nunca faltar abertura.\nAs pilhas também avaliam expressões em notação pós-fixa, em que o operador vem depois dos operandos."
+      ]
+    },
+    {
+      "numero": 5,
+      "titulo": "Filas",
+      "paginas": [
+        "Uma fila segue a política FIFO: o primeiro elemento a entrar é o primeiro a sair.\nAs operações são enfileirar, que insere no fim, e desenfileirar, que retira do início, ambas em O(1).\nCom um vetor, a fila circular usa dois índices, início e fim, que voltam para a posição zero quando chegam ao final do vetor, aproveitando o espaço liberado.",
+        "Um deque, ou fila de duas pontas, permite inserir e remover nas duas extremidades.\nNuma fila de prioridade, sai primeiro o elemento de maior prioridade, e não o mais antigo; ela costuma ser implementada com um heap.\nFilas aparecem na fila de impressão, no atendimento de requisições de um servidor e na busca em largura em grafos."
+      ]
+    },
+    {
+      "numero": 6,
+      "titulo": "Recursão",
+      "paginas": [
+        "Uma função recursiva resolve um problema chamando a si mesma para uma versão menor do mesmo problema.\nToda recursão precisa de um caso base, que é resolvido sem nova chamada; sem ele, as chamadas não terminam e a pilha de execução estoura.\nCada chamada ocupa um espaço na pilha de execução até terminar.",
+        "O fatorial é o exemplo clássico: fatorial de 0 é 1, que é o caso base, e fatorial de n é n vezes o fatorial de n menos 1.\nO cálculo ingênuo da sequência de Fibonacci com recursão repete os mesmos subproblemas muitas vezes e tem custo exponencial.\nA memorização guarda os resultados já calculados numa tabela e reduz esse custo para O(n)."
+      ]
+    },
+    {
+      "numero": 7,
+      "titulo": "Ordenação simples",
+      "paginas": [
+        "O método da bolha compara elementos vizinhos e troca os que estão fora de ordem, repetindo as passadas até não haver trocas.\nA ordenação por seleção procura o menor elemento da parte não ordenada e o coloca na próxima posição.\nA ordenação por inserção pega cada elemento e o insere na posição correta entre os anteriores, que já estão ordenados.\nOs três métodos custam O(n²) no pior caso.",
+        "Um algoritmo de ordenação é estável quando mantém a ordem original de elementos com chaves iguais.\nA inserção e a bolha são estáveis; a seleção, na forma comum, não é.\nA ordenação por inserção é muito rápida para vetores quase ordenados, chegando a O(n) no melhor caso, por isso é usada para vetores pequenos dentro de algoritmos mais sofisticados."
+      ]
+    },
+    {
+      "numero": 8,
+      "titulo": "Ordenação eficiente",
+      "paginas": [
+        "O merge sort usa a estratégia dividir para conquistar: divide o vetor ao meio, ordena cada metade recursivamente e intercala as duas metades ordenadas.\nO custo é O(n log n) em todos os casos.\nA desvantagem é precisar de memória extra proporcional a n para a intercalação.\nO merge sort é estável.",
+        "O quicksort escolhe um elemento chamado pivô e particiona o vetor: os menores que o pivô ficam à esquerda e os maiores à direita; depois ordena cada parte recursivamente.\nNo caso médio, o custo é O(n log n), e ele ordena no próprio vetor, sem memória extra para a intercalação.\nNo pior caso, quando o pivô é sempre o menor ou o maior elemento, o custo vira O(n²); escolher o pivô ao acaso ou pela mediana de três reduz esse risco."
+      ]
+    },
+    {
+      "numero": 9,
+      "titulo": "Busca",
+      "paginas": [
+        "A busca sequencial percorre os elementos um a um até encontrar o valor procurado ou chegar ao fim.\nEla funciona em qualquer vetor, ordenado ou não, e custa O(n) no pior caso.",
+        "A busca binária só funciona em vetores ordenados.\nEla compara o valor procurado com o elemento do meio: se for menor, continua na metade esquerda; se for maior, na metade direita.\nComo o intervalo cai pela metade a cada passo, o custo é O(log n).\nPara evitar estouro de inteiros, o meio pode ser calculado como início mais a metade da diferença entre fim e início."
+      ]
+    },
+    {
+      "numero": 10,
+      "titulo": "Tabelas hash",
+      "paginas": [
+        "Uma tabela hash guarda pares de chave e valor num vetor, e a posição de cada par é calculada por uma função hash aplicada à chave.\nUma boa função hash espalha as chaves de forma uniforme pelas posições.\nQuando duas chaves diferentes caem na mesma posição, acontece uma colisão.\nNo caso médio, buscar, inserir e remover custam O(1).",
+        "No encadeamento separado, cada posição da tabela guarda uma lista com todos os pares que caíram nela.\nNo endereçamento aberto, a colisão é resolvida procurando outra posição livre no próprio vetor; na sondagem linear, tenta-se a posição seguinte.\nO fator de carga é o número de elementos dividido pelo tamanho da tabela; quando ele passa de um limite, por exemplo 0,75, a tabela é redimensionada e todas as chaves são redistribuídas."
+      ]
+    },
+    {
+      "numero": 11,
+      "titulo": "Árvores e árvores binárias de busca",
+      "paginas": [
+        "Uma árvore é uma estrutura hierárquica de nós, em que o nó do topo é a raiz e os nós sem filhos são as folhas.\nA altura de uma árvore é o número de arestas no caminho mais longo da raiz até uma folha, e o nível de um nó é a sua distância até a raiz.\nNuma árvore binária, cada nó tem no máximo dois filhos, chamados de filho esquerdo e filho direito.",
+        "Numa árvore binária de busca, para todo nó, as chaves da subárvore esquerda são menores que a chave do nó, e as da subárvore direita são maiores.\nBuscar e inserir custam O(h), em que h é a altura da árvore.\nSe as chaves forem inseridas já em ordem crescente, a árvore degenera numa lista, e a altura vira n.",
+        "Percorrer uma árvore é visitar todos os nós numa ordem definida.\nNo percurso em pré-ordem, visita-se a raiz antes das subárvores; no percurso em ordem, visita-se a subárvore esquerda, depois a raiz e depois a subárvore direita; no percurso em pós-ordem, a raiz é visitada por último.\nNuma árvore binária de busca, o percurso em ordem devolve as chaves em ordem crescente."
+      ]
+    },
+    {
+      "numero": 12,
+      "titulo": "Árvores AVL e heaps",
+      "paginas": [
+        "Uma árvore AVL é uma árvore binária de busca que se mantém balanceada.\nO fator de balanceamento de um nó é a altura da subárvore esquerda menos a altura da subárvore direita, e na AVL ele só pode valer -1, 0 ou 1.\nQuando uma inserção ou remoção quebra essa regra, a árvore faz rotações simples ou duplas para se rebalancear.\nCom isso, a altura fica proporcional a log n, e busca, inserção e remoção custam O(log n).",
+        "Um heap binário é uma árvore binária completa em que cada pai é maior ou igual aos filhos, no heap de máximo.\nEle costuma ser guardado num vetor: os filhos do nó na posição i ficam nas posições 2i+1 e 2i+2.\nInserir e retirar o maior elemento custam O(log n), e consultar o maior custa O(1), por isso o heap é a base da fila de prioridade.\nO heapsort monta um heap com o vetor e retira o maior elemento repetidamente, ordenando em O(n log n) sem memória extra."
+      ]
+    },
+    {
+      "numero": 13,
+      "titulo": "Grafos",
+      "paginas": [
+        "Um grafo é formado por vértices ligados por arestas.\nNum grafo dirigido, cada aresta tem um sentido; num grafo ponderado, cada aresta tem um peso, como uma distância.\nA matriz de adjacência guarda numa tabela de n por n se existe aresta entre cada par de vértices, ocupando O(n²) de memória.\nA lista de adjacência guarda, para cada vértice, a lista dos seus vizinhos, e é mais econômica para grafos com poucas arestas.",
+        "A busca em largura visita os vértices por camadas, a partir de uma origem, usando uma fila.\nNum grafo sem pesos, ela encontra o caminho com o menor número de arestas da origem até cada vértice.\nA busca em profundidade segue por um caminho até não poder mais avançar e depois volta, usando uma pilha ou recursão.\nAs duas buscas custam O(V + E), em que V é o número de vértices e E o de arestas."
+      ]
+    }
+  ],
+  "perguntas": [
+    {"pergunta": "O que é uma estrutura de dados?", "aula": 1, "pagina": 1, "resposta": "Uma forma de organizar informações na memória para tornar operações eficientes."},
+    {"pergunta": "O que é um tipo abstrato de dados?", "aula": 1, "pagina": 1, "resposta": "A descrição das operações de uma estrutura, sem dizer como ela é implementada."},
+    {"pergunta": "Como escolher a estrutura de dados certa para um problema?", "aula": 1, "pagina": 1, "resposta": "Pelas operações mais frequentes do problema."},
+    {"pergunta": "O que a notação O grande descreve?", "aula": 1, "pagina": 2, "resposta": "O crescimento do custo no pior caso, ignorando constantes."},
+    {"pergunta": "Qual a complexidade de comparar cada par de elementos de um vetor?", "aula": 1, "pagina": 2, "resposta": "O(n²)."},
+    {"pergunta": "O que significa um algoritmo ser O(log n)?", "aula": 1, "pagina": 2, "resposta": "O custo cresce muito devagar com o tamanho da entrada."},
+    {"pergunta": "Por que o acesso a um elemento do vetor é O(1)?", "aula": 2, "pagina": 1, "resposta": "Porque o endereço é calculado a partir do índice, em memória contígua."},
+    {"pergunta": "Qual a principal desvantagem do vetor estático?", "aula": 2, "pagina": 1, "resposta": "O tamanho é fixo, definido na criação."},
+    {"pergunta": "Os elementos de um vetor ficam onde na memória?", "aula": 2, "pagina": 1, "resposta": "Em posições contíguas."},
+    {"pergunta": "Por que inserir no meio de um vetor custa O(n)?", "aula": 2, "pagina": 2, "resposta": "Porque os elementos seguintes precisam ser deslocados."},
+    {"pergunta": "O que o vetor dinâmico faz quando fica cheio?", "aula": 2, "pagina": 2, "resposta": "Aloca o dobro da capacidade e copia os elementos."},
+    {"pergunta": "Qual o custo amortizado de inserir no final de um vetor dinâmico?", "aula": 2, "pagina": 2, "resposta": "O(1)."},
+    {"pergunta": "O que guarda cada nó de uma lista encadeada?", "aula": 3, "pagina": 1, "resposta": "Um valor e um ponteiro para o próximo nó."},
+    {"pergunta": "Quanto custa inserir no início de uma lista encadeada?", "aula": 3, "pagina": 1, "resposta": "O(1)."},
+    {"pergunta": "Por que acessar o k-ésimo elemento de uma lista encadeada é O(n)?", "aula": 3, "pagina": 1, "resposta": "Porque é preciso percorrer a lista desde a cabeça."},
+    {"pergunta": "O que é a cabeça de uma lista encadeada?", "aula": 3, "pagina": 1, "resposta": "O ponteiro para o primeiro nó."},
+    {"pergunta": "Qual a vantagem da lista duplamente encadeada?", "aula": 3, "pagina": 2, "resposta": "Percorrer nos dois sentidos e remover um nó conhecido em O(1)."},
+    {"pergunta": "O que é uma lista circular?", "aula": 3, "pagina": 2, "resposta": "Uma lista em que o último nó aponta de volta para o primeiro."},
+    {"pergunta": "Quais as desvantagens da lista encadeada em relação ao vetor?", "aula": 3, "pagina": 2, "resposta": "Memória extra com ponteiros e nenhum acesso direto por índice."},
+    {"pergunta": "O que significa LIFO numa pilha?", "aula": 4, "pagina": 1, "resposta": "O último a entrar é o primeiro a sair."},
+    {"pergunta": "Quais são as operações de uma pilha?", "aula": 4, "pagina": 1, "resposta": "Empilhar, desempilhar e consultar o topo."},
+    {"pergunta": "Como implementar uma pilha com um vetor?", "aula": 4, "pagina": 1, "resposta": "Guardando o índice do topo."},
+    {"pergunta": "Como usar uma pilha para verificar se os parênteses estão balanceados?", "aula": 4, "pagina": 2, "resposta": "Empilhar cada abertura e desempilhar a cada fechamento; balanceada se a pilha terminar vazia."},
+    {"pergunta": "Para que serve a pilha de execução?", "aula": 4, "pagina": 2, "resposta": "Guardar as chamadas de função ativas."},
+    {"pergunta": "Como a função desfazer de um editor usa uma pilha?", "aula": 4, "pagina": 2, "resposta": "Guarda as ações numa pilha."},
+    {"pergunta": "O que é a notação pós-fixa?", "aula": 4, "pagina": 2, "resposta": "Uma notação em que o operador vem depois dos operandos."},
+    {"pergunta": "O que significa FIFO?", "aula": 5, "pagina": 1, "resposta": "O primeiro a entrar é o primeiro a sair."},
+    {"pergunta": "Como funciona uma fila circular com vetor?", "aula": 5, "pagina": 1, "resposta": "Índices de início e fim que voltam à posição zero no final do vetor."},
+    {"pergunta": "Onde a fila insere e onde ela retira os elementos?", "aula": 5, "pagina": 1, "resposta": "Insere no fim e retira do início."},
+    {"pergunta": "O que é um deque?", "aula": 5, "pagina": 2, "resposta": "Uma fila de duas pontas, que insere e remove nas duas extremidades."},
+    {"pergunta": "Qual a diferença entre fila comum e fila de prioridade?", "aula": 5, "pagina": 2, "resposta": "Na de prioridade, sai primeiro o de maior prioridade, e não o mais antigo."},
+    {"pergunta": "Dê exemplos de aplicações de filas.", "aula": 5, "pagina": 2, "resposta": "Fila de impressão, requisições de servidor e busca em largura."},
+    {"pergunta": "O que é uma função recursiva?", "aula": 6, "pagina": 1, "resposta": "Uma função que chama a si mesma para uma versão menor do problema."},
+    {"pergunta": "Por que toda recursão precisa de um caso base?", "aula": 6, "pagina": 1, "resposta": "Sem ele, as chamadas não terminam e a pilha de execução estoura."},
+    {"pergunta": "Onde cada chamada recursiva fica guardada?", "aula": 6, "pagina": 1, "resposta": "Na pilha de execução."},
+    {"pergunta": "Qual é o caso base do fatorial?", "aula": 6, "pagina": 2, "resposta": "Fatorial de 0 é 1."},
+    {"pergunta": "Por que o Fibonacci recursivo ingênuo é lento?", "aula": 6, "pagina": 2, "resposta": "Repete os mesmos subproblemas e tem custo exponencial."},
+    {"pergunta": "O que é memorização em recursão?", "aula": 6, "pagina": 2, "resposta": "Guardar resultados já calculados numa tabela, reduzindo o custo para O(n)."},
+    {"pergunta": "Como funciona o método da bolha?", "aula": 7, "pagina": 1, "resposta": "Compara vizinhos e troca os fora de ordem, repetindo até não haver trocas."},
+    {"pergunta": "Como funciona a ordenação por seleção?", "aula": 7, "pagina": 1, "resposta": "Procura o menor da parte não ordenada e o coloca na próxima posição."},
+    {"pergunta": "Como funciona a ordenação por inserção?", "aula": 7, "pagina": 1, "resposta": "Insere cada elemento na posição correta entre os anteriores."},
+    {"pergunta": "Qual a complexidade no pior caso da bolha, seleção e inserção?", "aula": 7, "pagina": 1, "resposta": "O(n²)."},
+    {"pergunta": "O que é uma ordenação estável?", "aula": 7, "pagina": 2, "resposta": "Mantém a ordem original de elementos com chaves iguais."},
+    {"pergunta": "A ordenação por seleção é estável?", "aula": 7, "pagina": 2, "resposta": "Na forma comum, não."},
+    {"pergunta": "Quando a ordenação por inserção é uma boa escolha?", "aula": 7, "pagina": 2, "resposta": "Para vetores pequenos ou quase ordenados."},
+    {"pergunta": "Qual a estratégia do merge sort?", "aula": 8, "pagina": 1, "resposta": "Dividir para conquistar: divide ao meio, ordena e intercala."},
+    {"pergunta": "Qual a complexidade do merge sort?", "aula": 8, "pagina": 1, "resposta": "O(n log n) em todos os casos."},
+    {"pergunta": "Qual a desvantagem do merge sort?", "aula": 8, "pagina": 1, "resposta": "Precisa de memória extra proporcional a n."},
+    {"pergunta": "O merge sort é estável?", "aula": 8, "pagina": 1, "resposta": "Sim."},
+    {"pergunta": "O que é o pivô no quicksort?", "aula": 8, "pagina": 2, "resposta": "O elemento que divide o vetor em menores e maiores."},
+    {"pergunta": "Qual o pior caso do quicksort?", "aula": 8, "pagina": 2, "resposta": "O(n²), quando o pivô é sempre o menor ou o maior."},
+    {"pergunta": "Como evitar o pior caso do quicksort?", "aula": 8, "pagina": 2, "resposta": "Escolher o pivô ao acaso ou pela mediana de três."},
+    {"pergunta": "O quicksort precisa de memória extra para intercalar?", "aula": 8, "pagina": 2, "resposta": "Não, ele ordena no próprio vetor."},
+    {"pergunta": "Como funciona a busca sequencial?", "aula": 9, "pagina": 1, "resposta": "Percorre os elementos um a um até achar ou chegar ao fim."},
+    {"pergunta": "A busca sequencial exige vetor ordenado?", "aula": 9, "pagina": 1, "resposta": "Não, funciona em qualquer vetor."},
+    {"pergunta": "Qual o custo da busca sequencial?", "aula": 9, "pagina": 1, "resposta": "O(n) no pior caso."},
+    {"pergunta": "Qual a condição para usar busca binária?", "aula": 9, "pagina": 2, "resposta": "O vetor precisa estar ordenado."},
+    {"pergunta": "Por que a busca binária é O(log n)?", "aula": 9, "pagina": 2, "resposta": "Porque o intervalo cai pela metade a cada passo."},
+    {"pergunta": "Como calcular o meio na busca binária sem estouro de inteiros?", "aula": 9, "pagina": 2, "resposta": "Início mais a metade da diferença entre fim e início."},
+    {"pergunta": "Como a tabela hash decide a posição de uma chave?", "aula": 10, "pagina": 1, "resposta": "Por uma função hash aplicada à chave."},
+    {"pergunta": "O que é uma colisão numa tabela hash?", "aula": 10, "pagina": 1, "resposta": "Duas chaves diferentes caem na mesma posição."},
+    {"pergunta": "O que faz uma boa função hash?", "aula": 10, "pagina": 1, "resposta": "Espalha as chaves de forma uniforme."},
+    {"pergunta": "Qual o custo médio de busca numa tabela hash?", "aula": 10, "pagina": 1, "resposta": "O(1)."},
+    {"pergunta": "Como funciona o encadeamento separado?", "aula": 10, "pagina": 2, "resposta": "Cada posição guarda uma lista com os pares que caíram nela."},
+    {"pergunta": "O que é sondagem linear?", "aula": 10, "pagina": 2, "resposta": "Na colisão, tenta-se a posição seguinte do vetor."},
+    {"pergunta": "O que é o fator de carga de uma tabela hash?", "aula": 10, "pagina": 2, "resposta": "O número de elementos dividido pelo tamanho da tabela."},
+    {"pergunta": "Quando uma tabela hash é redimensionada?", "aula": 10, "pagina": 2, "resposta": "Quando o fator de carga passa de um limite, como 0,75."},
+    {"pergunta": "O que é a raiz e o que são as folhas de uma árvore?", "aula": 11, "pagina": 1, "resposta": "A raiz é o nó do topo; folhas são nós sem filhos."},
+    {"pergunta": "Como se define a altura de uma árvore?", "aula": 11, "pagina": 1, "resposta": "O número de arestas do caminho mais longo da raiz até uma folha."},
+    {"pergunta": "Quantos filhos pode ter um nó de árvore binária?", "aula": 11, "pagina": 1, "resposta": "No máximo dois."},
+    {"pergunta": "Qual a propriedade de uma árvore binária de busca?", "aula": 11, "pagina": 2, "resposta": "Chaves menores à esquerda e maiores à direita de cada nó."},
+    {"pergunta": "Qual o custo de busca numa árvore binária de busca?", "aula": 11, "pagina": 2, "resposta": "O(h), em que h é a altura."},
+    {"pergunta": "O que acontece se inserir chaves em ordem crescente numa árvore binária de busca?", "aula": 11, "pagina": 2, "resposta": "Ela degenera numa lista, com altura n."},
+    {"pergunta": "Qual a diferença entre pré-ordem e pós-ordem?", "aula": 11, "pagina": 3, "resposta": "Na pré-ordem a raiz vem antes das subárvores; na pós-ordem, por último."},
+    {"pergunta": "O que o percurso em ordem devolve numa árvore binária de busca?", "aula": 11, "pagina": 3, "resposta": "As chaves em ordem crescente."},
+    {"pergunta": "O que é o fator de balanceamento numa árvore AVL?", "aula": 12, "pagina": 1, "resposta": "A altura da subárvore esquerda menos a da direita."},
+    {"pergunta": "Quais valores o fator de balanceamento pode ter numa AVL?", "aula": 12, "pagina": 1, "resposta": "-1, 0 ou 1."},
+    {"pergunta": "Como a AVL se rebalanceia?", "aula": 12, "pagina": 1, "resposta": "Com rotações simples ou duplas."},
+    {"pergunta": "Qual a propriedade de um heap de máximo?", "aula": 12, "pagina": 2, "resposta": "Cada pai é maior ou igual aos filhos."},
+    {"pergunta": "Em que posições do vetor ficam os filhos do nó i num heap?", "aula": 12, "pagina": 2, "resposta": "2i+1 e 2i+2."},
+    {"pergunta": "Como funciona o heapsort?", "aula": 12, "pagina": 2, "resposta": "Monta um heap e retira o maior repetidamente."},
+    {"pergunta": "Qual a diferença entre matriz e lista de adjacência?", "aula": 13, "pagina": 1, "resposta": "A matriz ocupa O(n²); a lista guarda os vizinhos de cada vértice e economiza em grafos com poucas arestas."},
+    {"pergunta": "O que é um grafo ponderado?", "aula": 13, "pagina": 1, "resposta": "Um grafo em que cada aresta tem um peso."},
+    {"pergunta": "Que estrutura a busca em largura usa?", "aula": 13, "pagina": 2, "resposta": "Uma fila."},
+    {"pergunta": "Qual o custo das buscas em largura e em profundidade?", "aula": 13, "pagina": 2, "resposta": "O(V + E)."},
+    {"pergunta": "Como funciona o algoritmo de Dijkstra?", "sem_base": true},
+    {"pergunta": "O que é uma árvore rubro-negra?", "sem_base": true},
+    {"pergunta": "Como funciona uma árvore B em bancos de dados?", "sem_base": true},
+    {"pergunta": "O que é uma trie?", "sem_base": true},
+    {"pergunta": "Como funciona a estrutura union-find?", "sem_base": true},
+    {"pergunta": "Qual a data da prova final?", "sem_base": true},
+    {"pergunta": "Como faço um commit no Git?", "sem_base": true},
+    {"pergunta": "Qual é a capital do Japão?", "sem_base": true},
+    {"pergunta": "Como funciona o protocolo TCP?", "sem_base": true},
+    {"pergunta": "O que é o padrão de arquitetura MVC?", "sem_base": true},
+    {"pergunta": "Como instalo o Python no Windows?", "sem_base": true},
+    {"pergunta": "O que é uma rede neural?", "sem_base": true},
+    {"pergunta": "Como prevenir SQL injection?", "sem_base": true},
+    {"pergunta": "O que é uma máquina de Turing?", "sem_base": true},
+    {"pergunta": "Qual time ganhou a Copa do Mundo de 2002?", "sem_base": true}
+  ]
+}
