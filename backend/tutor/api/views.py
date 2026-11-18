@@ -5,7 +5,8 @@ import json
 from django.http import Http404, StreamingHttpResponse
 from drf_spectacular.utils import OpenApiResponse, OpenApiTypes, extend_schema
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, renderer_classes
+from rest_framework.renderers import JSONRenderer
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,6 +14,7 @@ from rest_framework.views import APIView
 from nucleo.permissoes import acesso_a_disciplina, exige_perfil_ativo
 from tutor import servicos
 
+from .renderizadores import EventosDoTutor
 from .serializers import (
     AvaliacaoSerializer,
     ConfiguracaoSerializer,
@@ -47,6 +49,7 @@ def _evento_sse(tipo: str, dados: dict) -> str:
     tags=["tutor"],
 )
 @api_view(["POST"])
+@renderer_classes([JSONRenderer, EventosDoTutor])
 @permission_classes([acesso_a_disciplina("aluno")])
 def perguntar(request: Request, disciplina_id: int):
     entrada = PerguntaSerializer(data=request.data)

@@ -1351,7 +1351,9 @@ export interface operations {
     };
     disciplinas_tutor_perguntas_create: {
         parameters: {
-            query?: never;
+            query?: {
+                format?: "eventos" | "json";
+            };
             header?: never;
             path: {
                 disciplina_id: number;

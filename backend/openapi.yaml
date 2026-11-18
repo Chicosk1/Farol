@@ -455,6 +455,13 @@ paths:
         schema:
           type: integer
         required: true
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - eventos
+          - json
       tags:
       - tutor
       requestBody:
