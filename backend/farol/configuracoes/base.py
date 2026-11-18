@@ -57,9 +57,10 @@ FAROL_PDF_MAX_BYTES = 50 * 1024 * 1024
 FAROL_PDF_MAX_PAGINAS = 300
 
 # Similaridade mínima (0 a 1) para um trecho valer como base da resposta do tutor. Abaixo dela, o
-# tutor responde "não encontrei" sem chamar o modelo (TUT-RF-04). O valor foi calibrado com o
-# adaptador falso e precisa ser recalibrado com o provedor real, pelo conjunto de avaliação.
-FAROL_TUTOR_SIMILARIDADE_MINIMA = 0.3
+# tutor responde "não encontrei" sem chamar o modelo (TUT-RF-04). Cada modelo de vetores tem a sua
+# escala: o padrão 0,3 é o do adaptador falso, e o comando avaliar_tutor sugere o valor de outro
+# modelo (o do embeddinggemma está no .env.exemplo e em docs/desenvolvimento.md).
+FAROL_TUTOR_SIMILARIDADE_MINIMA = ambiente.fracao("FAROL_TUTOR_SIMILARIDADE_MINIMA", "0.3")
 
 # Preço do provedor de IA por mil tokens, em reais, para o custo de cada pergunta (TUT-RNF-05).
 # Fica em zero até a escolha do provedor (ADR 0005).

@@ -154,7 +154,7 @@ Os dados de teste e de demonstração são sempre fictícios. Nenhum dado real d
 
 Por padrão, o tutor e o processamento dos PDFs usam o adaptador falso, que não chama modelo nenhum. Para usar modelos de verdade, de graça e sem dados saindo do computador ([ADR 0009](adr/0009-ia-com-modelos-abertos-no-ollama.md)):
 
-1. No `.env`, descomente `FAROL_IA_ADAPTADOR=ia.adaptadores.compativel_openai.ProvedorCompativelOpenAI`.
+1. No `.env`, descomente `FAROL_IA_ADAPTADOR=ia.adaptadores.compativel_openai.ProvedorCompativelOpenAI` e `FAROL_TUTOR_SIMILARIDADE_MINIMA=0.35`, o limite calibrado para o `embeddinggemma` com o comando `avaliar_tutor`.
 2. Suba o ambiente com o perfil `ia`:
 
    ```bash

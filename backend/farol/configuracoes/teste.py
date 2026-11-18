@@ -17,8 +17,10 @@ ALLOWED_HOSTS = ["testserver", "localhost"]
 CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
 
-# A IA é sempre o adaptador falso nos testes, mesmo com FAROL_IA_ADAPTADOR no ambiente.
+# A IA é sempre o adaptador falso nos testes, mesmo com FAROL_IA_ADAPTADOR no ambiente, e com o
+# limite de similaridade calibrado para ele.
 FAROL_IA = {"ADAPTADOR": "ia.adaptadores.falso.ProvedorFalso"}
+FAROL_TUTOR_SIMILARIDADE_MINIMA = 0.3
 
 # Credencial fictícia do Google: os testes simulam a resposta dele (contas/testes/test_login.py).
 FAROL_DOMINIO_INSTITUCIONAL = "exemplo.edu.br"

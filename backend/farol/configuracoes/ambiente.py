@@ -21,6 +21,20 @@ def opcional(nome: str, padrao: str) -> str:
     return os.environ.get(nome, "").strip() or padrao
 
 
+def fracao(nome: str, padrao: str) -> float:
+    """Um número de 0 a 1 vindo da variável (ou o padrão). Fora disso, o Django não sobe."""
+    texto = opcional(nome, padrao)
+    try:
+        valor = float(texto.replace(",", "."))
+    except ValueError:
+        raise ImproperlyConfigured(
+            f"{nome} precisa ser um número de 0 a 1, e não {texto!r}."
+        ) from None
+    if not 0 <= valor <= 1:
+        raise ImproperlyConfigured(f"{nome} precisa ser um número de 0 a 1, e não {texto!r}.")
+    return valor
+
+
 def definida_ou(nome: str, padrao: str) -> str:
     """Devolve o valor da variável como está, mesmo vazio, ou o padrão quando ela não existe."""
     return os.environ.get(nome, padrao)
