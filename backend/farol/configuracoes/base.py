@@ -78,9 +78,24 @@ FAROL_SEGREDO_DO_PSEUDONIMO = ambiente.opcional(
 # um de outro tamanho exige uma migração (docs/arquitetura.md).
 FAROL_DIMENSAO_DO_VETOR = 256
 
-# Provedor de IA, atrás do módulo ia. Por padrão (desenvolvimento e testes) é o adaptador falso;
-# a produção precisa indicar o adaptador do provedor escolhido (ADR 0005).
-FAROL_IA = {"ADAPTADOR": "ia.adaptadores.falso.ProvedorFalso"}
+# Provedor de IA, atrás do módulo ia. Por padrão é o adaptador falso, sem internet e sem custo. Com
+# o Ollama no ar (perfil ia do Docker Compose), FAROL_IA_ADAPTADOR liga o adaptador real (ADR 0009):
+#   ia.adaptadores.compativel_openai.ProvedorCompativelOpenAI
+# Os testes usam sempre o falso (teste.py), e a produção exige a variável (producao.py).
+FAROL_IA = {
+    "ADAPTADOR": ambiente.opcional("FAROL_IA_ADAPTADOR", "ia.adaptadores.falso.ProvedorFalso")
+}
+
+# Adaptador da API compatível com a da OpenAI: o Ollama do Docker Compose por padrão. Para um
+# provedor de mercado compatível, basta trocar o endereço, os modelos e pôr a chave.
+FAROL_IA_COMPATIVEL_OPENAI = {
+    "ENDERECO": ambiente.opcional("FAROL_IA_ENDERECO", "http://ollama:11434/v1"),
+    "CHAVE": ambiente.opcional("FAROL_IA_CHAVE", ""),
+    "MODELO_DE_RESPOSTAS": ambiente.opcional("FAROL_IA_MODELO_DE_RESPOSTAS", "gemma3:4b"),
+    "MODELO_DE_VETORES": ambiente.opcional("FAROL_IA_MODELO_DE_VETORES", "embeddinggemma"),
+    # Segundos de espera por uma resposta. Em CPU, o modelo leva um tempo para carregar.
+    "TEMPO_LIMITE": int(ambiente.opcional("FAROL_IA_TEMPO_LIMITE", "120")),
+}
 
 # Login institucional com o Google Workspace, pelo django-allauth (ACE-RF-01, specs/001 plan.md).
 # Só entra um e-mail verificado do domínio da instituição. Sem a credencial OAuth, o botão do
