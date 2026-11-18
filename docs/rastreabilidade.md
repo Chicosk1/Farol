@@ -14,7 +14,7 @@ A coluna Testes mostra os testes do produto que citam o requisito com `@pytest.m
 | [002 Materiais da disciplina](../specs/002-materiais-da-disciplina/spec.md) | 11 | 11 de 11 | 2 | 5 | 1 | 3 | 28 de 28 | 0 |
 | [003 Tutor da disciplina](../specs/003-tutor-da-disciplina/spec.md) | 14 | 14 de 14 | 6 | 5 | 2 | 1 | 49 de 50 | 0 |
 | [004 Dúvidas ao professor](../specs/004-duvidas-ao-professor/spec.md) | 9 | 8 de 9 | 5 | 0 | 1 | 3 | 15 de 16 | 0 |
-| [005 Questões e quizzes](../specs/005-questoes-e-quizzes/spec.md) | 11 | 0 de 11 | 5 | 1 | 3 | 2 | 6 de 20 | 0 |
+| [005 Questões e quizzes](../specs/005-questoes-e-quizzes/spec.md) | 11 | 1 de 11 | 5 | 1 | 3 | 2 | 7 de 20 | 0 |
 | [006 Revisão do dia](../specs/006-revisao-do-dia/spec.md) | 10 | 0 de 10 | 5 | 3 | 1 | 1 | 5 de 17 | 0 |
 | [007 Radar da turma](../specs/007-radar-da-turma/spec.md) | 11 | 0 de 11 | 6 | 3 | 1 | 1 | 5 de 18 | 0 |
 
@@ -104,7 +104,7 @@ Tarefas já especificadas que aproximam o protótipo do comportamento descrito n
 | `QUE-RF-08` | No quiz, o aluno DEVE receber retorno imediato com acerto ou erro, a alternativa correta, a justificativa e o link para o trecho de origem. | Coberto | [aluno-pratica.js](../prototipo/js/screens/aluno-pratica.js) |  | QUE-T04 | QUE-T40, QUE-T41 |
 | `QUE-RF-09` | Ao errar, o aluno DEVE ver o botão "Perguntar ao tutor sobre isso", que abre o tutor da disciplina com a questão como contexto. | Parcial | [aluno-pratica.js](../prototipo/js/screens/aluno-pratica.js) |  | QUE-T05 | QUE-T07, QUE-T42 |
 | `QUE-RF-10` | Ao final do quiz, o sistema DEVE mostrar o total de acertos e os tópicos a revisar. | Coberto | [aluno-pratica.js](../prototipo/js/screens/aluno-pratica.js) |  | QUE-T05 | QUE-T42 |
-| `QUE-RF-11` | O sistema DEVE registrar cada resposta com o identificador pseudônimo do aluno, para calcular a taxa de acerto por questão e por tópico no radar (spec 007). | Não coberto |  |  |  | QUE-T41 |
+| `QUE-RF-11` | O sistema DEVE registrar cada resposta com o identificador pseudônimo do aluno, para calcular a taxa de acerto por questão e por tópico no radar (spec 007). | Não coberto |  | [questoes/testes/test_modelos.py](../backend/questoes/testes/test_modelos.py) (1) |  | QUE-T41 |
 
 ## 006 Revisão do dia
 

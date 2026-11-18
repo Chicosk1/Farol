@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "duvidas",
     "notificacoes",
     "tutor",
+    "questoes",
     "ia",
     "demonstracao",
 ]

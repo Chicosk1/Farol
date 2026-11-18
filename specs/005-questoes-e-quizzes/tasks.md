@@ -23,7 +23,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Produto: fundação
 
-- [ ] QUE-T10 Modelos `PedidoGeracao`, `Questao`, `RespostaQuiz` e `ProgressoQuiz`
+- [x] QUE-T10 Modelos `PedidoGeracao`, `Questao`, `RespostaQuiz` e `ProgressoQuiz`
 - [ ] QUE-T11 [P] Esquema Pydantic da questão e provedor falso com respostas válidas e inválidas
 
 ## Produto: História 1, gerar rascunhos (P1)

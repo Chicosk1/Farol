@@ -38,9 +38,9 @@ O pedido de geração vira uma tarefa no Celery, que envia os trechos da aula ao
 
 | Entidade | Campos | Observações |
 | --- | --- | --- |
-| `PedidoGeracao` | `material`, `quantidade` (5 a 20), `status`, `pedido_por`, `criado_em` | |
-| `Questao` | `material`, `pedido` (opcional), `enunciado`, `alternativas` (4), `correta` (0 a 3), `justificativa`, `trecho` (FK Trecho), `status` (pendente, publicada, descartada), `nova`, `editada`, `origem_retirada` | Índice por `material` + `status` |
-| `RespostaQuiz` | `questao`, `aluno_pseudonimo`, `alternativa`, `acerto`, `respondida_em`, `contexto` (quiz ou revisão) | Base da taxa de acerto do radar |
+| `PedidoGeracao` | `material`, `quantidade` (5 a 20), `status`, `geradas`, `descartadas`, `pedido_por`, `criado_em`, `terminado_em` | |
+| `Questao` | `material`, `pedido` (opcional), `enunciado`, `alternativas` (4), `correta` (0 a 3), `justificativa`, `topico`, `trecho` (FK Trecho), `status` (pendente, publicada, descartada), `nova`, `editada`, `origem_retirada` | Índice por `material` + `status`; o `topico` alimenta o resumo do quiz e o radar |
+| `RespostaQuiz` | `questao`, `aluno_pseudonimo`, `alternativa`, `acerto`, `respondida_em` (só o dia), `contexto` (quiz ou revisão) | Base da taxa de acerto do radar; sem a hora, para não ligar a resposta ao progresso do aluno |
 | `ProgressoQuiz` | `aluno`, `material`, `indice_atual`, `respostas` | Permite continuar de onde parou |
 
 ## Contratos
