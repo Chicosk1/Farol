@@ -105,7 +105,7 @@ describe('aviso de privacidade (ACE-T53)', () => {
     simularApi({ 'GET /api/eu': { corpo: ANA }, ...FAVORITAS_VAZIAS });
     renderizarApp('/');
 
-    await screen.findByRole('heading', { level: 1, name: 'Farol' });
+    await screen.findByRole('heading', { level: 1, name: /^Olá, / });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 

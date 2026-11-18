@@ -1,5 +1,4 @@
 import { useEffect, useId, useState } from 'react';
-import { Link } from 'react-router';
 
 import type { Disciplina, FiltroDeDisciplinas } from '../../api/cliente';
 import { ListaDeAbas } from '../../componentes/Abas';
@@ -7,7 +6,7 @@ import { EstadoVazio } from '../../componentes/EstadoVazio';
 import { Icone } from '../../componentes/Icone';
 import type { NomeDoIcone } from '../../componentes/icones';
 import { useEu } from '../contas/sessao';
-import { CartaoDeDisciplina, LinhaDeDisciplina } from './CartaoDeDisciplina';
+import { AtalhosDaDisciplina, CartaoDeDisciplina, LinhaDeDisciplina } from './CartaoDeDisciplina';
 import { useDefinirFavorito, useDisciplinas } from './consultas';
 
 type Visao = 'grade' | 'lista';
@@ -62,45 +61,6 @@ function listaVazia(
 
 function rotuloDeQuantidade(quantidade: number): string {
   return `${quantidade} ${quantidade === 1 ? 'disciplina' : 'disciplinas'}`;
-}
-
-function Atalho({ para, icone, rotulo }: { para: string; icone: NomeDoIcone; rotulo: string }) {
-  return (
-    <Link className="fr-icon-btn fr-icon-btn--sm" to={para} aria-label={rotulo}>
-      <Icone nome={icone} />
-    </Link>
-  );
-}
-
-/** Atalhos do cartão: materiais e tutor para o aluno; materiais, dúvidas e configuração para o professor. */
-function Atalhos({ disciplina, professor }: { disciplina: Disciplina; professor: boolean }) {
-  const base = `/disciplinas/${disciplina.id}`;
-  return (
-    <>
-      <Atalho para={`${base}/materiais`} icone="files" rotulo={`Materiais de ${disciplina.nome}`} />
-      {professor && (
-        <>
-          <Atalho
-            para={`${base}/duvidas`}
-            icone="message-question"
-            rotulo={`Dúvidas de ${disciplina.nome}`}
-          />
-          <Atalho
-            para={`${base}/tutor/configuracao`}
-            icone="settings"
-            rotulo={`Configurar o tutor de ${disciplina.nome}`}
-          />
-        </>
-      )}
-      {!professor && disciplina.tem_tutor && (
-        <Atalho
-          para={`${base}/tutor`}
-          icone="message-circle"
-          rotulo={`Tutor de ${disciplina.nome}`}
-        />
-      )}
-    </>
-  );
 }
 
 /** Disciplinas no formato do protótipo: busca, abas, grade de cartões ou lista (ACE-RF-10). */
@@ -207,7 +167,9 @@ export function PaginaDisciplinas() {
                       <CartaoDeDisciplina
                         disciplina={disciplina}
                         destino={destino(disciplina)}
-                        atalhos={<Atalhos disciplina={disciplina} professor={professor} />}
+                        atalhos={
+                          <AtalhosDaDisciplina disciplina={disciplina} professor={professor} />
+                        }
                         favoritando={favoritar.isPending}
                         aoFavoritar={(favorita) =>
                           favoritar.mutate({ id: disciplina.id, favorita })

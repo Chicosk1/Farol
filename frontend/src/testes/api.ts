@@ -27,6 +27,8 @@ const PADROES: Record<string, RespostaSimulada> = {
   'GET /api/entrada': { corpo: { google: true, desenvolvimento: true } },
   // A faixa do menu do professor mostra o nome da turma, tirado da lista de disciplinas.
   'GET /api/disciplinas': { corpo: [] },
+  // O cartão do tutor, na tela inicial, procura uma disciplina com material pronto.
+  'GET /api/disciplinas?filtro=com-tutor': { corpo: [] },
 };
 
 export function simularApi(rotas: Record<string, Rota>) {

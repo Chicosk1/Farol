@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 
 import type { Disciplina } from '../../api/cliente';
 import { Icone } from '../../componentes/Icone';
+import type { NomeDoIcone } from '../../componentes/icones';
 import { Selo } from '../../componentes/Selo';
 import { iconeDaDisciplina } from './icones';
 
@@ -100,5 +101,50 @@ export function LinhaDeDisciplina({
       )}
       <Icone nome="chevron-right" />
     </Link>
+  );
+}
+
+function Atalho({ para, icone, rotulo }: { para: string; icone: NomeDoIcone; rotulo: string }) {
+  return (
+    <Link className="fr-icon-btn fr-icon-btn--sm" to={para} aria-label={rotulo}>
+      <Icone nome={icone} />
+    </Link>
+  );
+}
+
+/** Atalhos do cartão: materiais e tutor para o aluno; materiais, dúvidas e configuração para o professor. */
+export function AtalhosDaDisciplina({
+  disciplina,
+  professor,
+}: {
+  disciplina: Disciplina;
+  professor: boolean;
+}) {
+  const base = `/disciplinas/${disciplina.id}`;
+  return (
+    <>
+      <Atalho para={`${base}/materiais`} icone="files" rotulo={`Materiais de ${disciplina.nome}`} />
+      {professor && (
+        <>
+          <Atalho
+            para={`${base}/duvidas`}
+            icone="message-question"
+            rotulo={`Dúvidas de ${disciplina.nome}`}
+          />
+          <Atalho
+            para={`${base}/tutor/configuracao`}
+            icone="settings"
+            rotulo={`Configurar o tutor de ${disciplina.nome}`}
+          />
+        </>
+      )}
+      {!professor && disciplina.tem_tutor && (
+        <Atalho
+          para={`${base}/tutor`}
+          icone="message-circle"
+          rotulo={`Tutor de ${disciplina.nome}`}
+        />
+      )}
+    </>
   );
 }

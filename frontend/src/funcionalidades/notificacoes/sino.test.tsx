@@ -77,7 +77,9 @@ describe('sino de notificações (MAT-T25)', () => {
 
     fireEvent.click(await screen.findByRole('button', { name: 'Notificações: 1 não lida' }));
     fireEvent.click(
-      screen.getByRole('link', { name: 'Aula 5, Pilhas, está pronta para o tutor.' }),
+      within(screen.getByRole('list', { name: 'Notificações' })).getByRole('link', {
+        name: 'Aula 5, Pilhas, está pronta para o tutor.',
+      }),
     );
 
     await waitFor(() => expect(roteador.state.location.pathname).toBe('/disciplinas/4/materiais'));

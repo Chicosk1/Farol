@@ -15,6 +15,7 @@ export type AvisoDePrivacidade = components['schemas']['AvisoDePrivacidade'];
 export type FiltroDeDisciplinas = 'todas' | 'favoritas' | 'com-tutor';
 export type MaterialDoProfessor = components['schemas']['MaterialDoProfessor'];
 export type Notificacoes = components['schemas']['Notificacoes'];
+export type Notificacao = components['schemas']['Notificacao'];
 export type EstadoDoTutor = components['schemas']['EstadoDoTutor'];
 export type MensagemDoTutor = components['schemas']['Mensagem'];
 export type CitacaoDoTutor = components['schemas']['Citacao'];
