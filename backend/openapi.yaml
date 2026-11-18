@@ -406,6 +406,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/QuestoesDaDisciplina'
           description: ''
+  /api/disciplinas/{disciplina_id}/quizzes:
+    get:
+      operationId: disciplinas_quizzes_list
+      summary: Quizzes da disciplina, com o andamento do aluno
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - questoes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QuizDaAula'
+          description: ''
   /api/disciplinas/{disciplina_id}/tutor:
     get:
       operationId: disciplinas_tutor_retrieve
@@ -794,6 +817,46 @@ paths:
               schema:
                 $ref: '#/components/schemas/Geracao'
           description: ''
+  /api/materiais/{material_id}/quiz:
+    get:
+      operationId: materiais_quiz_retrieve
+      description: Só as questões publicadas, sem o gabarito das que faltam responder
+        (QUE-RF-04).
+      summary: Quiz de uma aula para o aluno
+      parameters:
+      - in: path
+        name: material_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - questoes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quiz'
+          description: ''
+  /api/materiais/{material_id}/quiz/reiniciar:
+    post:
+      operationId: materiais_quiz_reiniciar_create
+      summary: Começa o quiz da aula de novo
+      parameters:
+      - in: path
+        name: material_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - questoes
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/materiais/{material_id}/versoes:
     post:
       operationId: materiais_versoes_create
@@ -970,6 +1033,41 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/QuestaoDoProfessor'
+          description: ''
+  /api/questoes/{questao_id}/respostas:
+    post:
+      operationId: questoes_respostas_create
+      description: Devolve o acerto, a correta, a justificativa e o trecho (QUE-RF-08
+        e 11).
+      summary: Responde a uma questão do quiz
+      parameters:
+      - in: path
+        name: questao_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - questoes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RespostaDoAlunoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RespostaDoAlunoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RespostaDoAlunoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetornoDaQuestao'
           description: ''
   /api/sair:
     post:
@@ -1818,6 +1916,26 @@ components:
       - status
       - topico
       - trecho
+    QuestaoDoQuiz:
+      type: object
+      description: 'A questão como o aluno a vê antes de responder: sem o gabarito
+        nem a justificativa.'
+      properties:
+        id:
+          type: integer
+        enunciado:
+          type: string
+        alternativas:
+          type: array
+          items:
+            type: string
+        topico:
+          type: string
+      required:
+      - alternativas
+      - enunciado
+      - id
+      - topico
     QuestoesDaDisciplina:
       type: object
       properties:
@@ -1830,6 +1948,96 @@ components:
       required:
       - contagens
       - questoes
+    Quiz:
+      type: object
+      properties:
+        material:
+          type: integer
+        disciplina:
+          type: integer
+        aula_numero:
+          type: integer
+        aula_titulo:
+          type: string
+        pausado:
+          type: boolean
+        questoes:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestaoDoQuiz'
+        respostas:
+          type: array
+          items:
+            $ref: '#/components/schemas/RetornoDaQuestao'
+        concluido:
+          type: boolean
+      required:
+      - aula_numero
+      - aula_titulo
+      - concluido
+      - disciplina
+      - material
+      - pausado
+      - questoes
+      - respostas
+    QuizDaAula:
+      type: object
+      properties:
+        material:
+          type: integer
+        aula_numero:
+          type: integer
+        aula_titulo:
+          type: string
+        questoes:
+          type: integer
+        respondidas:
+          type: integer
+        acertos:
+          type: integer
+      required:
+      - acertos
+      - aula_numero
+      - aula_titulo
+      - material
+      - questoes
+      - respondidas
+    RespostaDoAlunoRequest:
+      type: object
+      properties:
+        alternativa:
+          type: integer
+          maximum: 3
+          minimum: 0
+      required:
+      - alternativa
+    RetornoDaQuestao:
+      type: object
+      description: 'O retorno depois de responder: só aqui o aluno recebe o gabarito
+        (QUE-RF-08).'
+      properties:
+        questao:
+          type: integer
+        alternativa:
+          type: integer
+        acerto:
+          type: boolean
+        correta:
+          type: integer
+        justificativa:
+          type: string
+        topico:
+          type: string
+        trecho:
+          $ref: '#/components/schemas/TrechoCitado'
+      required:
+      - acerto
+      - alternativa
+      - correta
+      - justificativa
+      - questao
+      - topico
+      - trecho
     Saude:
       type: object
       properties:
@@ -1886,6 +2094,16 @@ components:
         * `erro` - Erro, tente de novo
         * `retirado` - Retirado
         * `substituido` - Substituído pela versão nova
+    TrechoCitado:
+      type: object
+      properties:
+        id:
+          type: integer
+        rotulo:
+          type: string
+      required:
+      - id
+      - rotulo
     TrechoDaQuestao:
       type: object
       properties:

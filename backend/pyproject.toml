@@ -35,7 +35,7 @@ packages = []
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "farol.configuracoes.teste"
 python_files = ["test_*.py"]
-addopts = "-ra --strict-markers"
+addopts = "-ra --strict-markers --ds=farol.configuracoes.teste"
 markers = [
     # Lido por scripts/verificar_specs.py para a coluna Testes da matriz de rastreabilidade.
     "requisito(*ids): requisitos da spec que o teste verifica, por exemplo requisito(\"ACE-RF-04\")",

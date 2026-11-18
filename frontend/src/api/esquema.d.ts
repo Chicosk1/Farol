@@ -230,6 +230,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/disciplinas/{disciplina_id}/quizzes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Quizzes da disciplina, com o andamento do aluno */
+        get: operations["disciplinas_quizzes_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/disciplinas/{disciplina_id}/tutor": {
         parameters: {
             query?: never;
@@ -498,6 +515,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/materiais/{material_id}/quiz": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Quiz de uma aula para o aluno
+         * @description Só as questões publicadas, sem o gabarito das que faltam responder (QUE-RF-04).
+         */
+        get: operations["materiais_quiz_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/materiais/{material_id}/quiz/reiniciar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Começa o quiz da aula de novo */
+        post: operations["materiais_quiz_reiniciar_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/materiais/{material_id}/versoes": {
         parameters: {
             query?: never;
@@ -624,6 +678,26 @@ export interface paths {
          * @description A edição só vale em pendentes (409 fora delas). Publicar só a partir de pendentes, e nunca uma questão cujo material foi retirado (QUE-RF-05).
          */
         patch: operations["questoes_partial_update"];
+        trace?: never;
+    };
+    "/api/questoes/{questao_id}/respostas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Responde a uma questão do quiz
+         * @description Devolve o acerto, a correta, a justificativa e o trecho (QUE-RF-08 e 11).
+         */
+        post: operations["questoes_respostas_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/sair": {
@@ -1035,9 +1109,47 @@ export interface components {
             editada: boolean;
             readonly origem_retirada: boolean;
         };
+        /** @description A questão como o aluno a vê antes de responder: sem o gabarito nem a justificativa. */
+        QuestaoDoQuiz: {
+            id: number;
+            enunciado: string;
+            alternativas: string[];
+            topico: string;
+        };
         QuestoesDaDisciplina: {
             contagens: components["schemas"]["Contagens"];
             questoes: components["schemas"]["QuestaoDoProfessor"][];
+        };
+        Quiz: {
+            material: number;
+            disciplina: number;
+            aula_numero: number;
+            aula_titulo: string;
+            pausado: boolean;
+            questoes: components["schemas"]["QuestaoDoQuiz"][];
+            respostas: components["schemas"]["RetornoDaQuestao"][];
+            concluido: boolean;
+        };
+        QuizDaAula: {
+            material: number;
+            aula_numero: number;
+            aula_titulo: string;
+            questoes: number;
+            respondidas: number;
+            acertos: number;
+        };
+        RespostaDoAlunoRequest: {
+            alternativa: number;
+        };
+        /** @description O retorno depois de responder: só aqui o aluno recebe o gabarito (QUE-RF-08). */
+        RetornoDaQuestao: {
+            questao: number;
+            alternativa: number;
+            acerto: boolean;
+            correta: number;
+            justificativa: string;
+            topico: string;
+            trecho: components["schemas"]["TrechoCitado"];
         };
         Saude: {
             /** @description Sempre "ok" quando a API está no ar. */
@@ -1075,6 +1187,10 @@ export interface components {
          * @enum {string}
          */
         StatusDoMaterialEnum: "processando" | "pronto" | "atencao" | "erro" | "retirado" | "substituido";
+        TrechoCitado: {
+            id: number;
+            rotulo: string;
+        };
         TrechoDaQuestao: {
             id: number;
             pagina: number;
@@ -1451,6 +1567,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["QuestoesDaDisciplina"];
+                };
+            };
+        };
+    };
+    disciplinas_quizzes_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuizDaAula"][];
                 };
             };
         };
@@ -1834,6 +1971,47 @@ export interface operations {
             };
         };
     };
+    materiais_quiz_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                material_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Quiz"];
+                };
+            };
+        };
+    };
+    materiais_quiz_reiniciar_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                material_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     materiais_versoes_create: {
         parameters: {
             query?: never;
@@ -2024,6 +2202,33 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["QuestaoDoProfessor"];
+                };
+            };
+        };
+    };
+    questoes_respostas_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                questao_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RespostaDoAlunoRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RespostaDoAlunoRequest"];
+                "multipart/form-data": components["schemas"]["RespostaDoAlunoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RetornoDaQuestao"];
                 };
             };
         };

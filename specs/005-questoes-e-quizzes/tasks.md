@@ -42,8 +42,8 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Produto: História 3, fazer o quiz (P1)
 
-- [ ] QUE-T40 [P] [H3] Testes do quiz: gabarito escondido até a resposta, retorno e progresso (QUE-RF-08)
-- [ ] QUE-T41 [H3] Rotas do quiz e registro de respostas com identificador pseudônimo (QUE-RF-07, QUE-RF-08, QUE-RF-11)
+- [x] QUE-T40 [P] [H3] Testes do quiz: gabarito escondido até a resposta, retorno e progresso (QUE-RF-08)
+- [x] QUE-T41 [H3] Rotas do quiz e registro de respostas com identificador pseudônimo (QUE-RF-07, QUE-RF-08, QUE-RF-11)
 - [ ] QUE-T42 [H3] Tela do quiz com retorno, botão "Perguntar ao tutor sobre isso" e resumo final (QUE-RF-09, QUE-RF-10, QUE-RNF-02)
 
 ## Produto: acabamento
