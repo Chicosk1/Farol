@@ -429,6 +429,86 @@ paths:
                 items:
                   $ref: '#/components/schemas/QuizDaAula'
           description: ''
+  /api/disciplinas/{disciplina_id}/radar:
+    get:
+      operationId: disciplinas_radar_retrieve
+      description: Só o professor da disciplina. Sem semana, vale a atual (RAD-RF-02
+        a 09).
+      summary: O radar da turma numa semana
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: semana
+        schema:
+          type: string
+          format: date
+      tags:
+      - radar
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Radar'
+          description: ''
+  /api/disciplinas/{disciplina_id}/radar/exemplos-ocultos:
+    post:
+      operationId: disciplinas_radar_exemplos_ocultos_create
+      summary: Esconde uma pergunta de exemplo do radar
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - radar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExemploRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExemploRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExemploRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/disciplinas/{disciplina_id}/radar/semanas:
+    get:
+      operationId: disciplinas_radar_semanas_list
+      summary: As semanas que o seletor do radar oferece
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - radar
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Semana'
+          description: ''
   /api/disciplinas/{disciplina_id}/tutor:
     get:
       operationId: disciplinas_tutor_retrieve
@@ -1244,6 +1324,22 @@ paths:
           description: ''
 components:
   schemas:
+    Acerto:
+      type: object
+      properties:
+        topico:
+          type: string
+        taxa:
+          type: integer
+        alunos:
+          type: integer
+        material:
+          type: integer
+      required:
+      - alunos
+      - material
+      - taxa
+      - topico
     AgendaDoCartao:
       type: object
       properties:
@@ -1393,6 +1489,9 @@ components:
         politica:
           type: string
           title: Política de uso de IA
+        resumo_semanal:
+          type: boolean
+          title: Resumo semanal do radar por e-mail
     Contagens:
       type: object
       properties:
@@ -1609,6 +1708,15 @@ components:
       - perfil_ativo
       - perfis
       - precisa_ver_aviso
+    ExemploRequest:
+      type: object
+      properties:
+        texto:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - texto
     FormasDeEntrar:
       type: object
       description: Como se pode entrar neste ambiente, para a tela de entrada mostrar
@@ -1708,6 +1816,26 @@ components:
       required:
       - id
       - status
+    Indicadores:
+      type: object
+      properties:
+        alunos_ativos:
+          type: integer
+        matriculados:
+          type: integer
+        perguntas:
+          type: integer
+        acerto_medio:
+          type: integer
+          nullable: true
+        duvidas_sem_resposta:
+          type: integer
+      required:
+      - acerto_medio
+      - alunos_ativos
+      - duvidas_sem_resposta
+      - matriculados
+      - perguntas
     ItemDoAviso:
       type: object
       properties:
@@ -2013,6 +2141,9 @@ components:
         politica:
           type: string
           title: Política de uso de IA
+        resumo_semanal:
+          type: boolean
+          title: Resumo semanal do radar por e-mail
     PatchedMudancaDeQuestaoRequest:
       type: object
       description: Campos a editar (só em pendentes) e, ou, o novo status.
@@ -2073,6 +2204,16 @@ components:
           type: string
       required:
       - texto_filtrado
+    QuestaoComAcerto:
+      type: object
+      properties:
+        enunciado:
+          type: string
+        taxa:
+          type: integer
+      required:
+      - enunciado
+      - taxa
     QuestaoDoProfessor:
       type: object
       description: 'A questão completa, com o gabarito: só o professor da disciplina
@@ -2210,6 +2351,45 @@ components:
       - material
       - questoes
       - respondidas
+    Radar:
+      type: object
+      description: 'Só dados agregados: nenhum nome, e-mail, horário ou contagem por
+        aluno (RAD-RF-06).'
+      properties:
+        semana:
+          type: string
+          format: date
+        rotulo:
+          type: string
+        indicadores:
+          $ref: '#/components/schemas/Indicadores'
+        pouco_uso:
+          type: boolean
+        topicos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Topico'
+        acertos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Acerto'
+        questoes_com_menor_acerto:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestaoComAcerto'
+        sugestao:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sugestao'
+      required:
+      - acertos
+      - indicadores
+      - pouco_uso
+      - questoes_com_menor_acerto
+      - rotulo
+      - semana
+      - sugestao
+      - topicos
     RespostaAoCartaoRequest:
       type: object
       properties:
@@ -2365,6 +2545,20 @@ components:
           description: Sempre "ok" quando a API está no ar.
       required:
       - status
+    Semana:
+      type: object
+      properties:
+        semana:
+          type: string
+          format: date
+        rotulo:
+          type: string
+        atual:
+          type: boolean
+      required:
+      - atual
+      - rotulo
+      - semana
     StatusDaGeracaoEnum:
       enum:
       - processando
@@ -2413,6 +2607,34 @@ components:
         * `erro` - Erro, tente de novo
         * `retirado` - Retirado
         * `substituido` - Substituído pela versão nova
+    Sugestao:
+      type: object
+      properties:
+        nome:
+          type: string
+        material:
+          type: integer
+      required:
+      - material
+      - nome
+    Topico:
+      type: object
+      properties:
+        nome:
+          type: string
+        alunos:
+          type: integer
+        exemplos:
+          type: array
+          items:
+            type: string
+        material:
+          type: integer
+      required:
+      - alunos
+      - exemplos
+      - material
+      - nome
     TrechoCitado:
       type: object
       properties:

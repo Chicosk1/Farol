@@ -24,6 +24,7 @@ class ConfiguracaoTutor(models.Model):
     modo_pistas = models.BooleanField("modo pistas", default=True)
     limite_diario = models.PositiveSmallIntegerField("limite diário", choices=LIMITES, default=40)
     politica = models.TextField("política de uso de IA", blank=True)
+    resumo_semanal = models.BooleanField("resumo semanal do radar por e-mail", default=True)
 
     class Meta:
         verbose_name = "configuração do tutor"

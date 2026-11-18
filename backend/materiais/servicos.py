@@ -502,3 +502,25 @@ def trecho_para_abrir(pessoa, perfil: str | None, trecho_id: int) -> TrechoParaA
         fim=fim,
         atualizado=atual.id != trecho.material_id,
     )
+
+
+@dataclass(frozen=True)
+class AulaDoTrecho:
+    id: int
+    aula_numero: int
+    aula_titulo: str
+
+
+def aulas_dos_trechos(trecho_ids: set[int]) -> dict[int, AulaDoTrecho]:
+    """De que aula é cada trecho, para agrupar as perguntas no radar."""
+    return {
+        t.id: AulaDoTrecho(t.material_id, t.material.aula_numero, t.material.aula_titulo)
+        for t in Trecho.objects.filter(id__in=trecho_ids).select_related("material")
+    }
+
+
+def aulas_dos_materiais(material_ids: set[int]) -> dict[int, AulaDoTrecho]:
+    return {
+        m.id: AulaDoTrecho(m.id, m.aula_numero, m.aula_titulo)
+        for m in Material.objects.filter(id__in=material_ids)
+    }

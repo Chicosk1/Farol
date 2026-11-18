@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "tutor",
     "questoes",
     "revisao",
+    "radar",
     "ia",
     "demonstracao",
 ]
@@ -245,6 +246,15 @@ CELERY_BEAT_SCHEDULE = {
     "lembretes-da-revisao": {
         "task": "revisao.enviar_lembretes",
         "schedule": 15 * 60,
+    },
+    # O radar é recalculado de madrugada, e o resumo sai às segundas, antes das 7h (RAD-RF-10).
+    "radar-da-turma": {
+        "task": "radar.calcular",
+        "schedule": crontab(hour=3, minute=0),
+    },
+    "resumo-do-radar": {
+        "task": "radar.enviar_resumos",
+        "schedule": crontab(hour=6, minute=30, day_of_week=1),
     },
 }
 

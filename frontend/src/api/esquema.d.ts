@@ -247,6 +247,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/disciplinas/{disciplina_id}/radar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * O radar da turma numa semana
+         * @description Só o professor da disciplina. Sem semana, vale a atual (RAD-RF-02 a 09).
+         */
+        get: operations["disciplinas_radar_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/disciplinas/{disciplina_id}/radar/exemplos-ocultos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Esconde uma pergunta de exemplo do radar */
+        post: operations["disciplinas_radar_exemplos_ocultos_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/disciplinas/{disciplina_id}/radar/semanas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** As semanas que o seletor do radar oferece */
+        get: operations["disciplinas_radar_semanas_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/disciplinas/{disciplina_id}/tutor": {
         parameters: {
             query?: never;
@@ -827,6 +881,12 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Acerto: {
+            topico: string;
+            taxa: number;
+            alunos: number;
+            material: number;
+        };
         AgendaDoCartao: {
             /** Format: date */
             proxima_data: string;
@@ -894,6 +954,8 @@ export interface components {
             limite_diario?: components["schemas"]["LimiteDiarioEnum"];
             /** Política de uso de IA */
             politica?: string;
+            /** Resumo semanal do radar por e-mail */
+            resumo_semanal?: boolean;
         };
         Contagens: {
             pendente: number;
@@ -986,6 +1048,9 @@ export interface components {
             /** @description Se o aluno ainda precisa ler a versão atual do aviso de privacidade. */
             precisa_ver_aviso: boolean;
         };
+        ExemploRequest: {
+            texto: string;
+        };
         /** @description Como se pode entrar neste ambiente, para a tela de entrada mostrar só os botões que valem. */
         FormasDeEntrar: {
             /** @description Se o login com o Google está configurado. */
@@ -1026,6 +1091,13 @@ export interface components {
         ImportacaoCriada: {
             id: number;
             status: components["schemas"]["StatusDaImportacaoEnum"];
+        };
+        Indicadores: {
+            alunos_ativos: number;
+            matriculados: number;
+            perguntas: number;
+            acerto_medio: number | null;
+            duvidas_sem_resposta: number;
         };
         ItemDoAviso: {
             titulo: string;
@@ -1170,6 +1242,8 @@ export interface components {
             limite_diario?: components["schemas"]["LimiteDiarioEnum"];
             /** Política de uso de IA */
             politica?: string;
+            /** Resumo semanal do radar por e-mail */
+            resumo_semanal?: boolean;
         };
         /** @description Campos a editar (só em pendentes) e, ou, o novo status. */
         PatchedMudancaDeQuestaoRequest: {
@@ -1199,6 +1273,10 @@ export interface components {
         };
         Previa: {
             texto_filtrado: string;
+        };
+        QuestaoComAcerto: {
+            enunciado: string;
+            taxa: number;
         };
         /** @description A questão completa, com o gabarito: só o professor da disciplina a vê. */
         QuestaoDoProfessor: {
@@ -1245,6 +1323,18 @@ export interface components {
             questoes: number;
             respondidas: number;
             acertos: number;
+        };
+        /** @description Só dados agregados: nenhum nome, e-mail, horário ou contagem por aluno (RAD-RF-06). */
+        Radar: {
+            /** Format: date */
+            semana: string;
+            rotulo: string;
+            indicadores: components["schemas"]["Indicadores"];
+            pouco_uso: boolean;
+            topicos: components["schemas"]["Topico"][];
+            acertos: components["schemas"]["Acerto"][];
+            questoes_com_menor_acerto: components["schemas"]["QuestaoComAcerto"][];
+            sugestao: components["schemas"]["Sugestao"][];
         };
         RespostaAoCartaoRequest: {
             alternativa: number;
@@ -1300,6 +1390,12 @@ export interface components {
             /** @description Sempre "ok" quando a API está no ar. */
             status: string;
         };
+        Semana: {
+            /** Format: date */
+            semana: string;
+            rotulo: string;
+            atual: boolean;
+        };
         /**
          * @description * `processando` - Gerando
          *     * `pronto` - Pronto
@@ -1332,6 +1428,16 @@ export interface components {
          * @enum {string}
          */
         StatusDoMaterialEnum: "processando" | "pronto" | "atencao" | "erro" | "retirado" | "substituido";
+        Sugestao: {
+            nome: string;
+            material: number;
+        };
+        Topico: {
+            nome: string;
+            alunos: number;
+            exemplos: string[];
+            material: number;
+        };
         TrechoCitado: {
             id: number;
             rotulo: string;
@@ -1737,6 +1843,76 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["QuizDaAula"][];
+                };
+            };
+        };
+    };
+    disciplinas_radar_retrieve: {
+        parameters: {
+            query?: {
+                semana?: string;
+            };
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Radar"];
+                };
+            };
+        };
+    };
+    disciplinas_radar_exemplos_ocultos_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExemploRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ExemploRequest"];
+                "multipart/form-data": components["schemas"]["ExemploRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    disciplinas_radar_semanas_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Semana"][];
                 };
             };
         };

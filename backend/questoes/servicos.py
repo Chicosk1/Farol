@@ -438,3 +438,28 @@ def ids_publicadas(disciplina_ids: set[int]) -> set[int]:
             status=StatusDaQuestao.PUBLICADA,
         ).values_list("id", flat=True)
     )
+
+
+def respostas_do_periodo(disciplina_id: int, inicio, fim) -> list[dict]:
+    """As respostas do período, só com o pseudônimo, para as taxas do radar (RAD-RF-07)."""
+    return [
+        {
+            "pseudonimo": p,
+            "questao": q,
+            "enunciado": enunciado,
+            "topico": topico,
+            "material": material,
+            "acerto": acerto,
+        }
+        for p, q, enunciado, topico, material, acerto in RespostaQuiz.objects.filter(
+            questao__material__disciplina_id=disciplina_id,
+            respondida_em__range=(inicio, fim),
+        ).values_list(
+            "aluno_pseudonimo",
+            "questao_id",
+            "questao__enunciado",
+            "questao__topico",
+            "questao__material_id",
+            "acerto",
+        )
+    ]

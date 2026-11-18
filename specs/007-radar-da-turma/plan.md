@@ -9,14 +9,14 @@
 
 ## Resumo
 
-Uma tarefa do Celery roda toda madrugada para cada disciplina: reúne os registros de uso da semana (spec 003), agrupa as perguntas pela proximidade dos vetores com um algoritmo simples do scikit-learn, descarta grupos com menos de 5 alunos distintos, pede ao modelo um nome curto e exemplos para cada grupo e cruza com as taxas de acerto (spec 005). O resultado é gravado pronto em `RadarSemanal`, e a tela só lê.
+Uma tarefa do Celery roda toda madrugada para cada disciplina: reúne os registros de uso da semana (spec 003), agrupa as perguntas pela aula do trecho que as respondeu (o tópico é a aula, com o link para o material), descarta grupos com menos de 5 alunos distintos, escolhe até 3 perguntas de exemplo e cruza com as taxas de acerto (spec 005). O resultado é gravado pronto em `RadarSemanal`, e a tela só lê.
 
 ## Contexto técnico
 
 | Item | Valor |
 | --- | --- |
 | Linguagens | Python 3.13, TypeScript 5 |
-| Dependências principais | scikit-learn (agrupamento), Celery beat, e-mail transacional |
+| Dependências principais | Celery beat, e-mail transacional (sem dependência nova: o agrupamento é pela aula) |
 | Armazenamento | PostgreSQL |
 | Testes | pytest com registros sintéticos, incluindo grupos de 4 e de 5 alunos |
 | Metas de desempenho | Tela em até 2 s (RAD-RNF-01); cálculo de todas as disciplinas antes das 6h |
@@ -30,7 +30,7 @@ Uma tarefa do Celery roda toda madrugada para cada disciplina: reúne os registr
 | III. Ensinar, não entregar respostas | N.A. | |
 | IV. Privacidade por padrão | Sim | Mínimo de 5 alunos distintos para tópicos e taxas; só identificadores pseudônimos; exemplos filtrados |
 | V. Acessível e pensado para o celular | Sim | Barras com o número escrito ao lado, sem depender só de cor |
-| VI. Simplicidade e ferramentas populares | Sim | scikit-learn, sem serviço de análise externo |
+| VI. Simplicidade e ferramentas populares | Sim | Agrupamento pela aula do trecho citado, sem biblioteca nem serviço externo |
 | VII. Especificação antes do código | Sim | |
 | VIII. Qualidade verificável | Sim | Teste automático da regra dos 5 alunos (RAD-RF-04, RAD-RF-07) |
 

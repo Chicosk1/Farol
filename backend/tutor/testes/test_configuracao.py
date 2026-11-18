@@ -70,7 +70,12 @@ def test_o_padrao_e_modo_pistas_ligado_limite_40_e_sem_politica(cliente_professo
     resposta = cliente_professor.get(url(disciplina))
 
     assert resposta.status_code == 200
-    assert resposta.json() == {"modo_pistas": True, "limite_diario": 40, "politica": ""}
+    assert resposta.json() == {
+        "modo_pistas": True,
+        "limite_diario": 40,
+        "politica": "",
+        "resumo_semanal": True,  # RAD-RF-10: o resumo do radar vem ligado
+    }
 
 
 @pytest.mark.requisito("TUT-RF-06")

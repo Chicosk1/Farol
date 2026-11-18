@@ -30,7 +30,7 @@ class JanelaSerializer(serializers.ModelSerializer):
 class ConfiguracaoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConfiguracaoTutor
-        fields = ["modo_pistas", "limite_diario", "politica"]
+        fields = ["modo_pistas", "limite_diario", "politica", "resumo_semanal"]
 
 
 class CitacaoSerializer(serializers.ModelSerializer):
