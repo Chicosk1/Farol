@@ -10,6 +10,8 @@ class Notificacao(models.Model):
         MATERIAL_PRONTO = "material_pronto", "Material pronto"
         MATERIAL_ATENCAO = "material_atencao", "Material precisa de atenção"
         MATERIAL_ERRO = "material_erro", "Material com erro"
+        DUVIDA_NOVA = "duvida_nova", "Dúvida nova"
+        ORCAMENTO_IA = "orcamento_ia", "Custo de IA acima do orçamento"
 
     pessoa = models.ForeignKey(
         settings.AUTH_USER_MODEL,

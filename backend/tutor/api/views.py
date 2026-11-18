@@ -16,6 +16,7 @@ from tutor import servicos
 from .serializers import (
     AvaliacaoSerializer,
     ConfiguracaoSerializer,
+    ConversaDoHistoricoSerializer,
     EstadoDoTutorSerializer,
     JanelaSerializer,
     NovaJanelaSerializer,
@@ -179,3 +180,27 @@ def avaliar(request: Request, mensagem_id: int) -> Response:
     except servicos.AvaliacaoInvalida as invalida:
         return Response({"avaliacao": [str(invalida)]}, status=status.HTTP_400_BAD_REQUEST)
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class Historico(APIView):
+    """O histórico do aluno com o tutor: ver e apagar (ACE-RF-09)."""
+
+    permission_classes = [exige_perfil_ativo("aluno")]
+
+    @extend_schema(
+        summary="As conversas do aluno com o tutor, por disciplina",
+        responses=ConversaDoHistoricoSerializer(many=True),
+        tags=["tutor"],
+    )
+    def get(self, request: Request) -> Response:
+        dados = servicos.historico_do_aluno(request.user)
+        return Response(ConversaDoHistoricoSerializer(dados, many=True).data)
+
+    @extend_schema(
+        summary="Apaga todo o histórico do aluno com o tutor",
+        responses={204: None},
+        tags=["tutor"],
+    )
+    def delete(self, request: Request) -> Response:
+        servicos.apagar_historico(request.user)
+        return Response(status=status.HTTP_204_NO_CONTENT)

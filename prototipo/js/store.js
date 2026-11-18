@@ -26,6 +26,7 @@
       practice: null,
       reviewDone: null,
       radarWeek: 's17',
+      privacidadeVista: false,
     };
   }
 

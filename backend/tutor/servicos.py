@@ -431,3 +431,133 @@ def pergunta_respondida(resposta: Mensagem) -> Mensagem | None:
         .order_by("-id")
         .first()
     )
+
+
+@dataclass
+class PerguntaSemResposta:
+    mensagem_id: int
+    disciplina_id: int
+    texto: str
+
+
+def pergunta_sem_resposta(aluno, mensagem_id: int) -> PerguntaSemResposta | None:
+    """A pergunta do aluno que recebeu "não encontrei", já filtrada; None se não for o caso.
+
+    Levanta MensagemNaoEncontrada se a mensagem não é da conversa deste aluno.
+    """
+    try:
+        mensagem = Mensagem.objects.select_related("conversa").get(
+            id=mensagem_id, conversa__aluno=aluno
+        )
+    except Mensagem.DoesNotExist:
+        raise MensagemNaoEncontrada(mensagem_id) from None
+    if mensagem.autor != Mensagem.Autor.TUTOR or mensagem.tipo != Mensagem.Tipo.NAO_ENCONTRADO:
+        return None
+    pergunta = pergunta_respondida(mensagem)
+    if pergunta is None:
+        return None
+    return PerguntaSemResposta(mensagem.id, mensagem.conversa.disciplina_id, pergunta.texto)
+
+
+def historico_do_aluno(aluno) -> list[dict]:
+    """As conversas do aluno com o tutor, uma por disciplina (ACE-RF-09)."""
+    from django.db.models import Count, Max
+
+    conversas = (
+        Conversa.objects.filter(aluno=aluno)
+        .select_related("disciplina")
+        .annotate(total=Count("mensagens"), ultima=Max("mensagens__criada_em"))
+        .order_by("-ultima")
+    )
+    return [
+        {
+            "disciplina_id": conversa.disciplina_id,
+            "disciplina_nome": conversa.disciplina.nome,
+            "mensagens": conversa.total,
+            "ultima_em": conversa.ultima or conversa.criada_em,
+        }
+        for conversa in conversas
+    ]
+
+
+def apagar_historico(aluno) -> None:
+    """Exclui do banco as conversas do aluno, com as mensagens e as citações (ACE-RF-09).
+
+    O registro de uso, só com o pseudônimo, e as dúvidas enviadas ao professor ficam: eles não
+    têm ligação com o aluno.
+    """
+    Conversa.objects.filter(aluno=aluno).delete()
+
+
+@dataclass
+class CustoDaDisciplina:
+    """O uso do tutor numa disciplina num mês, para o orçamento de IA (TUT-RNF-05)."""
+
+    disciplina_id: int
+    disciplina_nome: str
+    perguntas: int
+    alunos: int
+    custo_total: Decimal
+    custo_por_aluno: Decimal
+    acima_do_orcamento: bool
+
+
+def custos_do_mes(ano: int, mes: int) -> list[CustoDaDisciplina]:
+    """Custo total e por aluno de cada disciplina no mês, do maior custo por aluno ao menor.
+
+    Os alunos são contados pelo pseudônimo do registro de uso: a conta não identifica ninguém.
+    """
+    from django.db.models import Count, Sum
+
+    orcamento = Decimal(settings.FAROL_IA_ORCAMENTO_POR_ALUNO_MES)
+    linhas = (
+        RegistroUso.objects.filter(criado_em__year=ano, criado_em__month=mes)
+        .values("disciplina_id", "disciplina__nome")
+        .annotate(
+            perguntas=Count("id"),
+            alunos=Count("aluno_pseudonimo", distinct=True),
+            custo_total=Sum("custo"),
+        )
+    )
+    custos = []
+    for linha in linhas:
+        total = linha["custo_total"] or Decimal(0)
+        por_aluno = (total / linha["alunos"]).quantize(Decimal("0.0001"))
+        custos.append(
+            CustoDaDisciplina(
+                disciplina_id=linha["disciplina_id"],
+                disciplina_nome=linha["disciplina__nome"],
+                perguntas=linha["perguntas"],
+                alunos=linha["alunos"],
+                custo_total=total,
+                custo_por_aluno=por_aluno,
+                acima_do_orcamento=por_aluno > orcamento,
+            )
+        )
+    return sorted(custos, key=lambda custo: custo.custo_por_aluno, reverse=True)
+
+
+def verificar_orcamento(hoje=None) -> int:
+    """Avisa os administradores das disciplinas acima do orçamento no mês, uma vez por mês.
+
+    Devolve quantos avisos novos foram criados.
+    """
+    from contas import servicos as contas
+    from notificacoes import servicos as notificacoes
+
+    hoje = hoje or timezone.localdate()
+    novos = 0
+    for custo in custos_do_mes(hoje.year, hoje.month):
+        if not custo.acima_do_orcamento:
+            continue
+        link = f"/admin/tutor/registrouso/custos/?mes={hoje:%Y-%m}#disciplina-{custo.disciplina_id}"
+        texto = (
+            f"Custo de IA acima do orçamento em {custo.disciplina_nome}: "
+            f"R$ {custo.custo_por_aluno:.2f} por aluno em {hoje:%m/%Y}."
+        )
+        for pessoa in contas.administradores():
+            if notificacoes.ja_avisada(pessoa, notificacoes.Tipo.ORCAMENTO_IA, link):
+                continue
+            notificacoes.notificar(pessoa, notificacoes.Tipo.ORCAMENTO_IA, texto, link=link)
+            novos += 1
+    return novos

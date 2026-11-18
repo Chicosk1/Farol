@@ -88,6 +88,74 @@ paths:
                 items:
                   $ref: '#/components/schemas/Disciplina'
           description: ''
+  /api/disciplinas/{disciplina_id}/duvidas:
+    get:
+      operationId: disciplinas_duvidas_list
+      summary: As dúvidas da disciplina para o professor, sem dados do aluno
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - aberta
+          - respondida
+        description: 'Padrão: aberta'
+      tags:
+      - duvidas
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DuvidaDoProfessor'
+          description: ''
+  /api/disciplinas/{disciplina_id}/duvidas/{duvida_id}:
+    patch:
+      operationId: disciplinas_duvidas_partial_update
+      summary: Marca a dúvida como respondida em aula ou a oculta
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: duvida_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - duvidas
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMudancaDeStatusRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMudancaDeStatusRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMudancaDeStatusRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DuvidaDoProfessor'
+          description: ''
   /api/disciplinas/{disciplina_id}/favorito:
     put:
       operationId: disciplinas_favorito_update
@@ -253,6 +321,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/MaterialEnviado'
           description: ''
+  /api/disciplinas/{disciplina_id}/minhas-duvidas:
+    get:
+      operationId: disciplinas_minhas_duvidas_list
+      summary: As dúvidas que o aluno enviou na disciplina e o status de cada uma
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - duvidas
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MinhaDuvida'
+          description: ''
   /api/disciplinas/{disciplina_id}/tutor:
     get:
       operationId: disciplinas_tutor_retrieve
@@ -405,6 +496,35 @@ paths:
             schema:
               $ref: '#/components/schemas/CienciaDoAvisoRequest'
         required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/eu/historico:
+    get:
+      operationId: eu_historico_list
+      description: 'O histórico do aluno com o tutor: ver e apagar (ACE-RF-09).'
+      summary: As conversas do aluno com o tutor, por disciplina
+      tags:
+      - tutor
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConversaDoHistorico'
+          description: ''
+    delete:
+      operationId: eu_historico_destroy
+      description: 'O histórico do aluno com o tutor: ver e apagar (ACE-RF-09).'
+      summary: Apaga todo o histórico do aluno com o tutor
+      tags:
+      - tutor
       security:
       - cookieAuth: []
       responses:
@@ -588,6 +708,58 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/mensagens/{mensagem_id}/duvida:
+    post:
+      operationId: mensagens_duvida_create
+      summary: Envia a dúvida ao professor, sem o nome do aluno
+      parameters:
+      - in: path
+        name: mensagem_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - duvidas
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DuvidaEnviada'
+          description: ''
+        '400':
+          description: A mensagem não é uma resposta "não encontrei".
+        '409':
+          description: A dúvida já foi enviada.
+        '429':
+          description: O aluno já enviou 5 dúvidas hoje nesta disciplina.
+  /api/mensagens/{mensagem_id}/duvida/previa:
+    post:
+      operationId: mensagens_duvida_previa_create
+      summary: Mostra o texto que vai ao professor, já sem dados pessoais
+      parameters:
+      - in: path
+        name: mensagem_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - duvidas
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Previa'
+          description: ''
+        '400':
+          description: A mensagem não é uma resposta "não encontrei".
+        '409':
+          description: A dúvida já foi enviada.
   /api/notificacoes:
     get:
       operationId: notificacoes_retrieve
@@ -769,6 +941,23 @@ components:
         politica:
           type: string
           title: Política de uso de IA
+    ConversaDoHistorico:
+      type: object
+      properties:
+        disciplina_id:
+          type: integer
+        disciplina_nome:
+          type: string
+        mensagens:
+          type: integer
+        ultima_em:
+          type: string
+          format: date-time
+      required:
+      - disciplina_id
+      - disciplina_nome
+      - mensagens
+      - ultima_em
     Disciplina:
       type: object
       properties:
@@ -795,6 +984,37 @@ components:
       - professor_nome
       - semestre
       - turma
+    DuvidaDoProfessor:
+      type: object
+      description: 'O que o professor vê: nunca o aluno, nem a hora do envio (DUV-RF-03).'
+      properties:
+        id:
+          type: integer
+        texto:
+          type: string
+        data:
+          type: string
+          format: date
+        status:
+          type: string
+        nova:
+          type: boolean
+      required:
+      - data
+      - id
+      - nova
+      - status
+      - texto
+    DuvidaEnviada:
+      type: object
+      properties:
+        duvida_id:
+          type: integer
+        status:
+          type: string
+      required:
+      - duvida_id
+      - status
     EntradaDeDesenvolvimentoRequest:
       type: object
       properties:
@@ -1130,6 +1350,32 @@ components:
         * `nao_encontrado` - Não encontrei no material
         * `saudacao` - Saudação
         * `erro` - Erro
+    MinhaDuvida:
+      type: object
+      properties:
+        mensagem_id:
+          type: integer
+        status:
+          $ref: '#/components/schemas/MinhaDuvidaStatusEnum'
+      required:
+      - mensagem_id
+      - status
+    MinhaDuvidaStatusEnum:
+      enum:
+      - aberta
+      - respondida
+      type: string
+      description: |-
+        * `aberta` - aberta
+        * `respondida` - respondida
+    MudancaDeStatusStatusEnum:
+      enum:
+      - respondida
+      - oculta
+      type: string
+      description: |-
+        * `respondida` - respondida
+        * `oculta` - oculta
     Notificacao:
       type: object
       properties:
@@ -1158,11 +1404,15 @@ components:
       - material_pronto
       - material_atencao
       - material_erro
+      - duvida_nova
+      - orcamento_ia
       type: string
       description: |-
         * `material_pronto` - Material pronto
         * `material_atencao` - Material precisa de atenção
         * `material_erro` - Material com erro
+        * `duvida_nova` - Dúvida nova
+        * `orcamento_ia` - Custo de IA acima do orçamento
     Notificacoes:
       type: object
       properties:
@@ -1213,6 +1463,11 @@ components:
         politica:
           type: string
           title: Política de uso de IA
+    PatchedMudancaDeStatusRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/MudancaDeStatusStatusEnum'
     PerfilEnum:
       enum:
       - aluno
@@ -1234,6 +1489,13 @@ components:
           maxLength: 1000
       required:
       - texto
+    Previa:
+      type: object
+      properties:
+        texto_filtrado:
+          type: string
+      required:
+      - texto_filtrado
     Saude:
       type: object
       properties:

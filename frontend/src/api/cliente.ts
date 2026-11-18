@@ -329,6 +329,51 @@ export async function marcarNotificacaoComoLida(notificacaoId: number): Promise<
   await enviar<undefined>(`/api/notificacoes/${notificacaoId}/lida`);
 }
 
+export type MinhaDuvida = components['schemas']['MinhaDuvida'];
+
+/** GET /api/disciplinas/{id}/minhas-duvidas: as dúvidas que o aluno enviou e o status de cada uma. */
+export function listarMinhasDuvidas(disciplinaId: number): Promise<MinhaDuvida[]> {
+  return requisitar<MinhaDuvida[]>(`/api/disciplinas/${disciplinaId}/minhas-duvidas`);
+}
+
+/** POST /api/mensagens/{id}/duvida/previa: o texto exato que vai ao professor (DUV-RF-02). */
+export async function previaDaDuvida(mensagemId: number): Promise<string> {
+  const previa = await enviar<{ texto_filtrado: string }>(
+    `/api/mensagens/${mensagemId}/duvida/previa`,
+  );
+  return previa.texto_filtrado;
+}
+
+/** POST /api/mensagens/{id}/duvida: envia a dúvida ao professor, sem o nome do aluno. */
+export async function enviarDuvida(mensagemId: number): Promise<void> {
+  await enviar<unknown>(`/api/mensagens/${mensagemId}/duvida`);
+}
+
+export type DuvidaDoProfessor = components['schemas']['DuvidaDoProfessor'];
+
+/** GET /api/disciplinas/{id}/duvidas: as dúvidas abertas ou respondidas, sem dados dos alunos. */
+export function listarDuvidasDaDisciplina(
+  disciplinaId: number,
+  status: 'aberta' | 'respondida',
+): Promise<DuvidaDoProfessor[]> {
+  return requisitar<DuvidaDoProfessor[]>(
+    `/api/disciplinas/${disciplinaId}/duvidas?status=${status}`,
+  );
+}
+
+/** PATCH /api/disciplinas/{id}/duvidas/{duvida}: respondida em aula ou oculta (DUV-RF-07). */
+export function mudarStatusDaDuvida(
+  disciplinaId: number,
+  duvidaId: number,
+  status: 'respondida' | 'oculta',
+): Promise<DuvidaDoProfessor> {
+  return enviar<DuvidaDoProfessor>(
+    `/api/disciplinas/${disciplinaId}/duvidas/${duvidaId}`,
+    { status },
+    'PATCH',
+  );
+}
+
 /** O que a aluna vê de um material: só os prontos, sem status, etapa nem erro. */
 export type MaterialDoAluno = Pick<
   MaterialDoProfessor,
@@ -338,6 +383,18 @@ export type MaterialDoAluno = Pick<
 /** GET /api/disciplinas/{id}/materiais: para a aluna, só os materiais prontos (MAT-RF-08). */
 export function listarMateriaisDoAluno(disciplinaId: number): Promise<MaterialDoAluno[]> {
   return requisitar<MaterialDoAluno[]>(`/api/disciplinas/${disciplinaId}/materiais`);
+}
+
+export type ConversaDoHistorico = components['schemas']['ConversaDoHistorico'];
+
+/** GET /api/eu/historico: as conversas do aluno com o tutor, por disciplina (ACE-RF-09). */
+export function obterHistorico(): Promise<ConversaDoHistorico[]> {
+  return requisitar<ConversaDoHistorico[]>('/api/eu/historico');
+}
+
+/** DELETE /api/eu/historico: apaga todas as conversas do aluno com o tutor. */
+export async function apagarHistorico(): Promise<void> {
+  await enviar<undefined>('/api/eu/historico', undefined, 'DELETE');
 }
 
 export type TrechoParaAbrir = components['schemas']['TrechoParaAbrir'];

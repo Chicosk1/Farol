@@ -10,7 +10,7 @@ from django.utils.html import format_html, format_html_join
 from contas.servicos import Perfil
 
 from . import servicos
-from .models import RevisaoResposta
+from .models import RegistroUso, RevisaoResposta
 
 
 def _e_administrador(request) -> bool:
@@ -77,6 +77,66 @@ class RevisaoRespostaAdmin(admin.ModelAdmin):
         return _e_administrador(request)
 
     def has_add_permission(self, request) -> bool:
+        return False
+
+    def has_delete_permission(self, request, obj=None) -> bool:
+        return False
+
+
+@admin.register(RegistroUso)
+class RegistroUsoAdmin(admin.ModelAdmin):
+    """O uso do tutor, sem identificar alunos, e a tela de custo por aluno (TUT-RNF-05)."""
+
+    list_display = ("criado_em", "disciplina", "tipo", "tokens_entrada", "tokens_saida", "custo")
+    list_filter = ("tipo",)
+
+    def get_urls(self):
+        from django.urls import path
+
+        return [
+            path(
+                "custos/",
+                self.admin_site.admin_view(self.custos_view),
+                name="tutor_registrouso_custos",
+            ),
+            *super().get_urls(),
+        ]
+
+    def custos_view(self, request):
+        from datetime import date
+
+        from django.conf import settings
+        from django.core.exceptions import PermissionDenied
+        from django.template.response import TemplateResponse
+        from django.utils import timezone
+
+        if not _e_administrador(request):
+            raise PermissionDenied
+        hoje = timezone.localdate()
+        try:
+            ano, mes = (int(parte) for parte in request.GET.get("mes", "").split("-"))
+            referencia = date(ano, mes, 1)
+        except ValueError:
+            referencia = hoje.replace(day=1)
+        contexto = {
+            **self.admin_site.each_context(request),
+            "title": f"Custo do tutor em {referencia:%m/%Y}",
+            "custos": servicos.custos_do_mes(referencia.year, referencia.month),
+            "orcamento": settings.FAROL_IA_ORCAMENTO_POR_ALUNO_MES,
+            "mes": f"{referencia:%Y-%m}",
+        }
+        return TemplateResponse(request, "admin/tutor/custos.html", contexto)
+
+    def has_module_permission(self, request) -> bool:
+        return _e_administrador(request)
+
+    def has_view_permission(self, request, obj=None) -> bool:
+        return _e_administrador(request)
+
+    def has_add_permission(self, request) -> bool:
+        return False
+
+    def has_change_permission(self, request, obj=None) -> bool:
         return False
 
     def has_delete_permission(self, request, obj=None) -> bool:

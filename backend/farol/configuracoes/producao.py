@@ -37,3 +37,14 @@ DATABASES = {
         "HOST": ambiente.obrigatoria("POSTGRES_HOST"),
     }
 }
+
+# HTTPS em toda comunicação (ACE-RNF-02). O certificado fica no proxy à frente do Django, que
+# avisa pelo cabeçalho X-Forwarded-Proto que a conexão original era segura.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = int(ambiente.opcional("DJANGO_HSTS_SEGUNDOS", str(365 * 24 * 3600)))
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = "same-origin"
+CSRF_TRUSTED_ORIGINS = [f"https://{host}" for host in ALLOWED_HOSTS]

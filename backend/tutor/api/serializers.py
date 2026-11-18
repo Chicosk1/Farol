@@ -73,3 +73,10 @@ class AvaliacaoSerializer(serializers.Serializer):
     """util, nao_util ou incorreta; vazio desfaz a marcação."""
 
     avaliacao = serializers.ChoiceField(choices=Mensagem.Avaliacao.choices, allow_blank=True)
+
+
+class ConversaDoHistoricoSerializer(serializers.Serializer):
+    disciplina_id = serializers.IntegerField()
+    disciplina_nome = serializers.CharField()
+    mensagens = serializers.IntegerField()
+    ultima_em = serializers.DateTimeField()

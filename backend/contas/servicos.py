@@ -110,3 +110,8 @@ def registrar_ciencia(pessoa: Pessoa, versao: str) -> None:
 def texto_do_aviso() -> dict:
     """A versão atual do aviso e o seu texto, para a tela mostrar."""
     return {"versao": aviso.VERSAO_ATUAL, "titulo": aviso.TITULO, "itens": aviso.ITENS}
+
+
+def administradores() -> list[Pessoa]:
+    """As pessoas ativas com o perfil de administrador, para avisos da equipe."""
+    return [p for p in Pessoa.objects.filter(is_active=True) if Perfil.ADMIN in p.perfis]

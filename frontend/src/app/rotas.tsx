@@ -2,7 +2,9 @@ import type { RouteObject } from 'react-router';
 
 import { ExigeLogin } from '../funcionalidades/contas/ExigeLogin';
 import { PaginaEntrar } from '../funcionalidades/contas/PaginaEntrar';
+import { PaginaMeusDados } from '../funcionalidades/contas/PaginaMeusDados';
 import { PaginaDisciplinas } from '../funcionalidades/disciplinas/PaginaDisciplinas';
+import { PaginaDuvidas } from '../funcionalidades/duvidas/PaginaDuvidas';
 import { PaginaMateriais } from '../funcionalidades/materiais/PaginaMateriais';
 import { PaginaTrecho } from '../funcionalidades/materiais/PaginaTrecho';
 import { PaginaConfiguracaoDoTutor } from '../funcionalidades/tutor/PaginaConfiguracaoDoTutor';
@@ -22,7 +24,9 @@ export const rotas: RouteObject[] = [
         children: [
           { path: '/', element: <PaginaInicial /> },
           { path: '/disciplinas', element: <PaginaDisciplinas /> },
+          { path: '/meus-dados', element: <PaginaMeusDados /> },
           { path: '/disciplinas/:id/materiais', element: <PaginaMateriais /> },
+          { path: '/disciplinas/:id/duvidas', element: <PaginaDuvidas /> },
           { path: '/trechos/:id', element: <PaginaTrecho /> },
           { path: '/disciplinas/:id/tutor', element: <PaginaTutor /> },
           {

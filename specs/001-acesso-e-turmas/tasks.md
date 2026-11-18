@@ -18,7 +18,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ### Pendências do protótipo
 
-- [ ] ACE-T06 [H4] Aviso de privacidade na primeira entrada da aluna, com botão "Entendi", em `prototipo/js/screens/aluno-inicio.js` (ACE-RF-08)
+- [x] ACE-T06 [H4] Aviso de privacidade na primeira entrada da aluna, com botão "Entendi", em `prototipo/js/screens/aluno-inicio.js` (ACE-RF-08)
 
 ## Primeira fatia: arquitetura de pé
 
@@ -70,16 +70,16 @@ A primeira entrega do produto prova a arquitetura em todas as camadas com uma fu
 - [x] ACE-T50 [H4] Testes do aviso versionado, entregues junto da ACE-T51; os da exclusão de histórico vão com a ACE-T52 (ACE-RF-08, ACE-RF-09)
 - [x] ACE-T51 [H4] Aviso de privacidade versionado no back-end: modelo `CienciaPrivacidade`, `GET /api/aviso-privacidade`, `POST /api/eu/ciencia-privacidade` e `precisa_ver_aviso` em `GET /api/eu` (ACE-RF-08)
 - [x] ACE-T53 [H4] Tela do aviso de privacidade no front-end, que bloqueia o uso até o aluno confirmar que leu (ACE-RF-08)
-- [ ] ACE-T52 [H4] Tela "Meus dados" com exclusão do histórico, depois da spec 003, com os testes da exclusão (ACE-RF-09)
+- [x] ACE-T52 [H4] Tela "Meus dados" com exclusão do histórico, depois da spec 003, com os testes da exclusão (ACE-RF-09)
 
 ## Produto: História 5, usar como app (P3)
 
-- [ ] ACE-T60 [H5] Manifesto e service worker com vite-plugin-pwa (ACE-RF-11)
+- [x] ACE-T60 [H5] Manifesto e service worker com vite-plugin-pwa (ACE-RF-11)
 
 ## Produto: acabamento
 
-- [ ] ACE-T90 Auditoria de acessibilidade das telas desta spec (ACE-RNF-01)
-- [ ] ACE-T91 Configurar HTTPS e expiração de sessão (ACE-RNF-02)
+- [x] ACE-T90 Auditoria de acessibilidade das telas desta spec (ACE-RNF-01)
+- [x] ACE-T91 Configurar HTTPS e expiração de sessão (ACE-RNF-02)
 
 ## Dependências
 

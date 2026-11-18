@@ -17,24 +17,25 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ### Pendências do protótipo
 
-- [ ] DUV-T05 [H1] Modal de pré-visualização antes do envio, com o aviso de anonimato, em `prototipo/js/screens/aluno-tutor.js` (DUV-RF-02)
+- [x] DUV-T05 [H1] Modal de pré-visualização antes do envio, com o aviso de anonimato, em `prototipo/js/screens/aluno-tutor.js` (DUV-RF-02)
 
 ## Produto: História 1, enviar a dúvida (P1)
 
-- [ ] DUV-T10 [P] [H1] Testes de pré-visualização, envio e reenvio bloqueado (DUV-RF-02, DUV-RF-04)
-- [ ] DUV-T11 [H1] Modelos `Duvida` e `EnvioDuvida` e rotas de prévia e envio (DUV-RF-01, DUV-RF-02, DUV-RF-03, DUV-RF-04)
-- [ ] DUV-T12 [H1] Modal de pré-visualização no tutor (DUV-RF-02)
+- [x] DUV-T10 [P] [H1] Testes de pré-visualização, envio e reenvio bloqueado (DUV-RF-02, DUV-RF-04)
+- [x] DUV-T11 [H1] Modelos `Duvida` e `EnvioDuvida` e rotas de prévia e envio (DUV-RF-01, DUV-RF-02, DUV-RF-03, DUV-RF-04)
+- [x] DUV-T12 [H1] Modal de pré-visualização no tutor (DUV-RF-02)
 
 ## Produto: História 2, ver as dúvidas da turma (P1)
 
-- [ ] DUV-T20 [P] [H2] Teste de que nenhuma rota do professor devolve dados do aluno (DUV-RF-03, DUV-RNF-01, DUV-CS-01)
-- [ ] DUV-T21 [H2] Rota de listagem para o professor e marcação de vista (DUV-RF-05)
-- [ ] DUV-T22 [H2] Notificação de nova dúvida (DUV-RF-06)
+- [x] DUV-T20 [P] [H2] Teste de que nenhuma rota do professor devolve dados do aluno (DUV-RF-03, DUV-RNF-01, DUV-CS-01)
+- [x] DUV-T21 [H2] Rota de listagem para o professor e marcação de vista (DUV-RF-05)
+- [x] DUV-T22 [H2] Notificação de nova dúvida (DUV-RF-06)
+- [x] DUV-T23 [H2] Tela de dúvidas do professor no front-end, com a marca "Nova", as abas abertas e respondidas e os botões "Respondida em aula" e "Ocultar", até o radar da spec 007 existir (DUV-RF-05, DUV-RF-07)
 
 ## Produto: Histórias 3 e 4, acompanhar a resposta (P2 e P3)
 
-- [ ] DUV-T30 [H3] Marcar como respondida e ocultar dúvida ofensiva (DUV-RF-07)
-- [ ] DUV-T31 [H4] Status da dúvida na conversa do aluno (DUV-RF-08)
+- [x] DUV-T30 [H3] Marcar como respondida e ocultar dúvida ofensiva (DUV-RF-07)
+- [x] DUV-T31 [H4] Status da dúvida na conversa do aluno (DUV-RF-08)
 
 ## Produto: acabamento
 

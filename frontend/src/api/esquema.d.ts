@@ -59,6 +59,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/disciplinas/{disciplina_id}/duvidas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** As dúvidas da disciplina para o professor, sem dados do aluno */
+        get: operations["disciplinas_duvidas_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/disciplinas/{disciplina_id}/duvidas/{duvida_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Marca a dúvida como respondida em aula ou a oculta */
+        patch: operations["disciplinas_duvidas_partial_update"];
+        trace?: never;
+    };
     "/api/disciplinas/{disciplina_id}/favorito": {
         parameters: {
             query?: never;
@@ -136,6 +170,23 @@ export interface paths {
          * @description Guarda o PDF, cria o material e põe o processamento na fila (MAT-RF-01 a 03).
          */
         post: operations["disciplinas_materiais_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/disciplinas/{disciplina_id}/minhas-duvidas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** As dúvidas que o aluno enviou na disciplina e o status de cada uma */
+        get: operations["disciplinas_minhas_duvidas_list"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -232,6 +283,30 @@ export interface paths {
         /** Registra que a pessoa leu a versão atual do aviso de privacidade */
         post: operations["eu_ciencia_privacidade_create"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/eu/historico": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * As conversas do aluno com o tutor, por disciplina
+         * @description O histórico do aluno com o tutor: ver e apagar (ACE-RF-09).
+         */
+        get: operations["eu_historico_list"];
+        put?: never;
+        post?: never;
+        /**
+         * Apaga todo o histórico do aluno com o tutor
+         * @description O histórico do aluno com o tutor: ver e apagar (ACE-RF-09).
+         */
+        delete: operations["eu_historico_destroy"];
         options?: never;
         head?: never;
         patch?: never;
@@ -362,6 +437,40 @@ export interface paths {
          */
         put: operations["mensagens_avaliacao_update"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mensagens/{mensagem_id}/duvida": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Envia a dúvida ao professor, sem o nome do aluno */
+        post: operations["mensagens_duvida_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mensagens/{mensagem_id}/duvida/previa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mostra o texto que vai ao professor, já sem dados pessoais */
+        post: operations["mensagens_duvida_previa_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -504,6 +613,13 @@ export interface components {
             /** Política de uso de IA */
             politica?: string;
         };
+        ConversaDoHistorico: {
+            disciplina_id: number;
+            disciplina_nome: string;
+            mensagens: number;
+            /** Format: date-time */
+            ultima_em: string;
+        };
         Disciplina: {
             id: number;
             codigo: string;
@@ -513,6 +629,19 @@ export interface components {
             professor_nome: string;
             /** @description Se a pessoa marcou a disciplina como favorita. */
             favorita: boolean;
+        };
+        /** @description O que o professor vê: nunca o aluno, nem a hora do envio (DUV-RF-03). */
+        DuvidaDoProfessor: {
+            id: number;
+            texto: string;
+            /** Format: date */
+            data: string;
+            status: string;
+            nova: boolean;
+        };
+        DuvidaEnviada: {
+            duvida_id: number;
+            status: string;
         };
         EntradaDeDesenvolvimentoRequest: {
             /** Format: email */
@@ -657,6 +786,22 @@ export interface components {
          * @enum {string}
          */
         MensagemTipoEnum: "resposta" | "pistas" | "nao_encontrado" | "saudacao" | "erro";
+        MinhaDuvida: {
+            mensagem_id: number;
+            status: components["schemas"]["MinhaDuvidaStatusEnum"];
+        };
+        /**
+         * @description * `aberta` - aberta
+         *     * `respondida` - respondida
+         * @enum {string}
+         */
+        MinhaDuvidaStatusEnum: "aberta" | "respondida";
+        /**
+         * @description * `respondida` - respondida
+         *     * `oculta` - oculta
+         * @enum {string}
+         */
+        MudancaDeStatusStatusEnum: "respondida" | "oculta";
         Notificacao: {
             readonly id: number;
             tipo: components["schemas"]["NotificacaoTipoEnum"];
@@ -670,9 +815,11 @@ export interface components {
          * @description * `material_pronto` - Material pronto
          *     * `material_atencao` - Material precisa de atenção
          *     * `material_erro` - Material com erro
+         *     * `duvida_nova` - Dúvida nova
+         *     * `orcamento_ia` - Custo de IA acima do orçamento
          * @enum {string}
          */
-        NotificacaoTipoEnum: "material_pronto" | "material_atencao" | "material_erro";
+        NotificacaoTipoEnum: "material_pronto" | "material_atencao" | "material_erro" | "duvida_nova" | "orcamento_ia";
         Notificacoes: {
             notificacoes: components["schemas"]["Notificacao"][];
             nao_lidas: number;
@@ -700,6 +847,9 @@ export interface components {
             /** Política de uso de IA */
             politica?: string;
         };
+        PatchedMudancaDeStatusRequest: {
+            status?: components["schemas"]["MudancaDeStatusStatusEnum"];
+        };
         /**
          * @description * `aluno` - Aluno
          *     * `professor` - Professor
@@ -710,6 +860,9 @@ export interface components {
         PerfilEnum: "aluno" | "professor" | "coordenacao" | "admin";
         PerguntaRequest: {
             texto: string;
+        };
+        Previa: {
+            texto_filtrado: string;
         };
         Saude: {
             /** @description Sempre "ok" quando a API está no ar. */
@@ -827,6 +980,58 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Disciplina"][];
+                };
+            };
+        };
+    };
+    disciplinas_duvidas_list: {
+        parameters: {
+            query?: {
+                /** @description Padrão: aberta */
+                status?: "aberta" | "respondida";
+            };
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DuvidaDoProfessor"][];
+                };
+            };
+        };
+    };
+    disciplinas_duvidas_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+                duvida_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedMudancaDeStatusRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedMudancaDeStatusRequest"];
+                "multipart/form-data": components["schemas"]["PatchedMudancaDeStatusRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DuvidaDoProfessor"];
                 };
             };
         };
@@ -986,6 +1191,27 @@ export interface operations {
             };
         };
     };
+    disciplinas_minhas_duvidas_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MinhaDuvida"][];
+                };
+            };
+        };
+    };
     disciplinas_tutor_retrieve: {
         parameters: {
             query?: never;
@@ -1136,6 +1362,43 @@ export interface operations {
                 "multipart/form-data": components["schemas"]["CienciaDoAvisoRequest"];
             };
         };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    eu_historico_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversaDoHistorico"][];
+                };
+            };
+        };
+    };
+    eu_historico_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description No response body */
             204: {
@@ -1303,6 +1566,83 @@ export interface operations {
         responses: {
             /** @description No response body */
             204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    mensagens_duvida_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mensagem_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DuvidaEnviada"];
+                };
+            };
+            /** @description A mensagem não é uma resposta "não encontrei". */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description A dúvida já foi enviada. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description O aluno já enviou 5 dúvidas hoje nesta disciplina. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    mensagens_duvida_previa_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mensagem_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Previa"];
+                };
+            };
+            /** @description A mensagem não é uma resposta "não encontrei". */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description A dúvida já foi enviada. */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

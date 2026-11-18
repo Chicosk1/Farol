@@ -21,7 +21,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ### Pendências do protótipo
 
-- [ ] TUT-T07 [H6] Acrescentar a avaliação "Não útil" ao lado de "Útil" e "Incorreta" em `prototipo/js/screens/aluno-tutor.js` (TUT-RF-09)
+- [x] TUT-T07 [H6] Acrescentar a avaliação "Não útil" ao lado de "Útil" e "Incorreta" em `prototipo/js/screens/aluno-tutor.js` (TUT-RF-09)
 
 ## Produto: fundação
 
@@ -76,8 +76,8 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 - [x] TUT-T90 [P] Filtro de dados pessoais com testes de CPF, e-mail, telefone e nomes (TUT-RF-11)
 - [x] TUT-T91 [P] Registro de uso com identificador pseudônimo por disciplina (TUT-RF-12)
-- [ ] TUT-T92 Teste de carga para a meta de 3 segundos (TUT-RNF-01)
-- [ ] TUT-T93 Painel de custo por aluno e alerta de orçamento (TUT-RNF-05)
+- [x] TUT-T92 Teste de carga para a meta de 3 segundos (TUT-RNF-01)
+- [x] TUT-T93 Painel de custo por aluno e alerta de orçamento (TUT-RNF-05)
 
 ## Dependências
 

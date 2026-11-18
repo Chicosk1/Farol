@@ -1,0 +1,32 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<form method="get" style="margin-bottom: 1em">
+  <label for="mes">Mês</label>
+  <input id="mes" name="mes" type="month" value="{{ mes }}">
+  <button type="submit">Ver</button>
+</form>
+<p>Orçamento: R$ {{ orcamento }} por aluno por mês (TUT-RNF-05). Alunos contados pelo pseudônimo.</p>
+{% if custos %}
+<table>
+  <caption>Custo de IA por disciplina</caption>
+  <thead>
+    <tr><th scope="col">Disciplina</th><th scope="col">Perguntas</th><th scope="col">Alunos</th>
+      <th scope="col">Custo total (R$)</th><th scope="col">Por aluno (R$)</th><th scope="col">Situação</th></tr>
+  </thead>
+  <tbody>
+    {% for custo in custos %}
+    <tr id="disciplina-{{ custo.disciplina_id }}">
+      <td>{{ custo.disciplina_nome }}</td>
+      <td>{{ custo.perguntas }}</td>
+      <td>{{ custo.alunos }}</td>
+      <td>{{ custo.custo_total|floatformat:2 }}</td>
+      <td>{{ custo.custo_por_aluno|floatformat:2 }}</td>
+      <td>{% if custo.acima_do_orcamento %}<strong>Acima do orçamento</strong>{% else %}Dentro do orçamento{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Nenhuma pergunta ao tutor neste mês.</p>
+{% endif %}
+{% endblock %}

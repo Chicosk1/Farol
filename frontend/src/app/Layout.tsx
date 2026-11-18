@@ -29,6 +29,7 @@ export function Layout() {
           <nav aria-label="Principal" className="flex gap-4 font-bold">
             <Link to="/">Início</Link>
             <Link to="/disciplinas">Disciplinas</Link>
+            {eu.data?.perfil_ativo === 'aluno' && <Link to="/meus-dados">Meus dados</Link>}
           </nav>
           <div className="flex items-center gap-2">
             <SinoDeNotificacoes />

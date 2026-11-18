@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "contas",
     "disciplinas",
     "materiais",
+    "duvidas",
     "notificacoes",
     "tutor",
     "ia",
@@ -57,6 +58,9 @@ FAROL_TUTOR_SIMILARIDADE_MINIMA = 0.3
 # Preço do provedor de IA por mil tokens, em reais, para o custo de cada pergunta (TUT-RNF-05).
 # Fica em zero até a escolha do provedor (ADR 0005).
 FAROL_IA_PRECO_POR_MIL_TOKENS = {"entrada": "0", "saida": "0"}
+
+# Orçamento de IA por aluno por mês, em reais (TUT-RNF-05). Acima dele, a equipe é avisada.
+FAROL_IA_ORCAMENTO_POR_ALUNO_MES = "2.00"
 
 # Segredo do identificador pseudônimo do aluno (nucleo/pseudonimo.py). Fica fora do banco; trocá-lo
 # muda todos os identificadores. O padrão só serve ao desenvolvimento e aos testes.
@@ -107,6 +111,13 @@ DATABASES = {
     }
 }
 
+# Sessão: expira depois de um período sem uso (ACE-RNF-02). Cada requisição renova o prazo; o
+# padrão de 12 horas é a sugestão da spec, a confirmar com a TI.
+FAROL_SESSAO_HORAS = int(ambiente.opcional("FAROL_SESSAO_HORAS", "12"))
+SESSION_COOKIE_AGE = FAROL_SESSAO_HORAS * 3600
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_SAMESITE = "Lax"
+
 # Pessoa é o usuário desde a primeira migração: o Django não permite trocar depois.
 AUTH_USER_MODEL = "contas.Pessoa"
 
@@ -135,6 +146,13 @@ CELERY_BROKER_URL = ambiente.opcional("REDIS_URL", "redis://localhost:6379/0")
 FAROL_REDIS_URL = CELERY_BROKER_URL
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_IGNORE_RESULT = True
+# Tarefas agendadas (serviço beat do Docker Compose), chamadas pelo nome.
+CELERY_BEAT_SCHEDULE = {
+    "orcamento-de-ia": {
+        "task": "tutor.verificar_orcamento",
+        "schedule": 24 * 3600,  # uma vez por dia
+    },
+}
 
 # E-mail: no desenvolvimento, o Mailpit captura tudo (ADR 0008).
 EMAIL_HOST = ambiente.opcional("EMAIL_HOST", "localhost")
