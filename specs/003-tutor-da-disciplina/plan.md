@@ -94,6 +94,7 @@ def responder(regras: str, trechos: list[TrechoNumerado], pergunta: str) -> Iter
 - **Detecção de pedido de exercício para o modo pistas:** feita pelo próprio modelo, com instrução nas regras fixas, e não por palavras-chave. As palavras-chave do protótipo servem só para a demonstração.
 - **Streaming por SSE (Server-Sent Events)** e não WebSocket: comunicação de uma via, suportada pelo Django e pelo Nginx sem componente extra.
 - **Identificador pseudônimo por disciplina:** conta alunos distintos para a regra dos 5 alunos do radar sem permitir cruzar disciplinas.
+- **Conferência da citação:** modelos pequenos, como o `gemma3:4b` do Ollama (ADR 0009), às vezes escrevem a frase de um trecho e põem o número de outro, quase sempre o [1]. Antes de mostrar cada frase, o servidor compara as palavras dela com as dos trechos enviados. Se a frase claramente vem de outro trecho, a citação passa para ele: pelo menos 60% das palavras da frase estão nesse trecho, e pelo menos 30 pontos a mais que no trecho citado. Frases sem marcação continuam descartadas (TUT-RF-03).
 - **Avaliação automática no GitHub Actions:** o conjunto de 100 perguntas fica em `backend/tutor/avaliacao/`, com resposta esperada e trecho esperado. A métrica principal é a proporção de respostas que citam o trecho esperado.
 
 ## Complexidade justificada
