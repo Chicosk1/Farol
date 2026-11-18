@@ -45,3 +45,11 @@ class ProvedorDeIA(Protocol):
     ) -> Iterator[EventoResposta]:
         """A resposta em streaming, citando os trechos pelo número entre colchetes, como [1]."""
         ...
+
+    def gerar_questoes(self, regras: str, trechos: list[TrechoNumerado], quantidade: int) -> str:
+        """O texto devolvido pelo modelo, que deve ser um JSON {"questoes": [...]}.
+
+        Cada questão cita o número do trecho de origem. O adaptador não valida nada: quem chama
+        confere o formato e os trechos e descarta o que não passar (QUE-RF-03).
+        """
+        ...
