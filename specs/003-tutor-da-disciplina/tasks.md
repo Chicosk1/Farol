@@ -81,6 +81,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 - [x] TUT-T91 [P] Registro de uso com identificador pseudônimo por disciplina (TUT-RF-12)
 - [x] TUT-T92 Teste de carga para a meta de 3 segundos (TUT-RNF-01)
 - [x] TUT-T93 Painel de custo por aluno e alerta de orçamento (TUT-RNF-05)
+- [ ] TUT-T94 Tirar do `RegistroUso` o campo `avaliacao`, que nunca é preenchido: o registro não tem ligação com a mensagem (TUT-RF-12)
 
 ## Dependências
 

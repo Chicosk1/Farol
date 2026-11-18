@@ -44,7 +44,7 @@ RAG (geração aumentada por recuperação) com o PostgreSQL e o pgvector: a per
 | `Citacao` | `mensagem`, `trecho` (FK Trecho), `ordem` | Rótulo "Aula N, p. M" montado a partir do trecho |
 | `ConfiguracaoTutor` | `disciplina`, `modo_pistas` (padrão verdadeiro), `limite_diario` (20, 40 ou 60), `politica` | |
 | `JanelaProva` | `disciplina`, `inicio`, `fim`, `criada_por` | Modo prova imediato = janela com início agora e fim em aberto |
-| `RegistroUso` | `aluno_pseudonimo` (HMAC do id do aluno com segredo por disciplina), `disciplina`, `pergunta_filtrada`, `trechos`, `tipo`, `avaliacao`, `tokens_entrada`, `tokens_saida`, `custo` | Base do radar (spec 007) e da análise de qualidade |
+| `RegistroUso` | `aluno_pseudonimo` (HMAC do id do aluno com segredo por disciplina), `disciplina`, `pergunta_filtrada`, `trechos`, `tipo`, `tokens_entrada`, `tokens_saida`, `custo` | Base do radar (spec 007) e da análise de qualidade |
 | `RevisaoResposta` | `mensagem`, `status`, `nota_da_equipe` | Fila de respostas marcadas como incorretas |
 
 Contador diário no Redis: chave `limite:{disciplina}:{aluno}:{AAAA-MM-DD}` com expiração de 48 horas.
