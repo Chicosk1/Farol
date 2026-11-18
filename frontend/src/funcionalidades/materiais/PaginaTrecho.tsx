@@ -9,7 +9,7 @@ export function PaginaTrecho() {
   const trecho = useQuery({ queryKey: ['trecho', trechoId], queryFn: () => obterTrecho(trechoId) });
 
   return (
-    <main id="conteudo" className="mx-auto flex max-w-3xl flex-col gap-4 p-4 text-ink">
+    <div className="page">
       {trecho.isPending && (
         <p role="status" className="text-ink-muted">
           Abrindo o trecho citado…
@@ -55,6 +55,6 @@ export function PaginaTrecho() {
           </a>
         </>
       )}
-    </main>
+    </div>
   );
 }

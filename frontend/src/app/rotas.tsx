@@ -9,6 +9,7 @@ import { PaginaMateriais } from '../funcionalidades/materiais/PaginaMateriais';
 import { PaginaTrecho } from '../funcionalidades/materiais/PaginaTrecho';
 import { PaginaConfiguracaoDoTutor } from '../funcionalidades/tutor/PaginaConfiguracaoDoTutor';
 import { PaginaTutor } from '../funcionalidades/tutor/PaginaTutor';
+import { PaginaTutorInicial } from '../funcionalidades/tutor/PaginaTutorInicial';
 import { Layout } from './Layout';
 import { PaginaInicial } from './PaginaInicial';
 import { PaginaNaoEncontrada } from './PaginaNaoEncontrada';
@@ -28,6 +29,7 @@ export const rotas: RouteObject[] = [
           { path: '/disciplinas/:id/materiais', element: <PaginaMateriais /> },
           { path: '/disciplinas/:id/duvidas', element: <PaginaDuvidas /> },
           { path: '/trechos/:id', element: <PaginaTrecho /> },
+          { path: '/tutor', element: <PaginaTutorInicial /> },
           { path: '/disciplinas/:id/tutor', element: <PaginaTutor /> },
           {
             path: '/disciplinas/:id/tutor/configuracao',

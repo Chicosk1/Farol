@@ -105,12 +105,12 @@ export function PaginaMateriais() {
   const perfil = useEu().data?.perfil_ativo;
   if (perfil === 'aluno') {
     return (
-      <main id="conteudo" className="mx-auto flex max-w-3xl flex-col gap-4 p-4 text-ink">
+      <div className="page">
         <h1 className="text-2xl font-extrabold">
           {disciplina ? `Materiais de ${disciplina.nome}` : 'Materiais da disciplina'}
         </h1>
         <MateriaisDoAluno disciplinaId={disciplinaId} />
-      </main>
+      </div>
     );
   }
   return <MateriaisDoProfessor />;
@@ -187,7 +187,7 @@ function MateriaisDoProfessor() {
     (enviarVersao.isError ? motivo(enviarVersao.error) : '');
 
   return (
-    <main id="conteudo" className="mx-auto flex max-w-3xl flex-col gap-4 p-4 text-ink">
+    <div className="page">
       <h1 className="text-2xl font-extrabold">
         {disciplina ? `Materiais de ${disciplina.nome}` : 'Materiais da disciplina'}
       </h1>
@@ -302,6 +302,6 @@ function MateriaisDoProfessor() {
             </ul>
           ))}
       </section>
-    </main>
+    </div>
   );
 }

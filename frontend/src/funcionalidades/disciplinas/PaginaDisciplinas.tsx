@@ -49,7 +49,7 @@ export function PaginaDisciplinas() {
   const perfil = useEu().data?.perfil_ativo;
 
   return (
-    <main id="conteudo" className="mx-auto max-w-5xl p-4">
+    <div className="page">
       <h1 className="text-2xl font-extrabold text-ink">Disciplinas</h1>
 
       <div className="mt-4 flex flex-wrap items-end gap-3">
@@ -186,6 +186,6 @@ export function PaginaDisciplinas() {
           )}
         </Abas>
       </div>
-    </main>
+    </div>
   );
 }

@@ -35,11 +35,12 @@ describe('meus dados (ACE-T52)', () => {
     vi.unstubAllGlobals();
   });
 
-  it('a aluna chega pelo cabeçalho e vê as conversas guardadas', async () => {
+  it('a aluna chega pelo menu da conta e vê as conversas guardadas', async () => {
     simular();
     const { container } = renderizarApp('/');
 
-    fireEvent.click(await screen.findByRole('link', { name: 'Meus dados' }));
+    fireEvent.click(await screen.findByRole('button', { name: /^Conta de / }));
+    fireEvent.click(screen.getByRole('link', { name: 'Meus dados' }));
 
     const lista = await screen.findByRole('list', { name: 'Conversas guardadas' });
     expect(within(lista).getByText('Estruturas de Dados')).toBeInTheDocument();

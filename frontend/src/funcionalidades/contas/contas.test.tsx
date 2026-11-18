@@ -108,7 +108,8 @@ describe('entrada e sessão (ACE-T26)', () => {
     });
     const { roteador } = renderizarApp('/');
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Sair' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Conta de Ana Souza' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Sair' }));
 
     await waitFor(() => expect(roteador.state.location.pathname).toBe('/entrar'));
     expect(chamadas.some((c) => c.metodo === 'POST' && c.caminho === '/api/sair')).toBe(true);
@@ -179,7 +180,8 @@ describe('login com o Google e troca de perfil (ACE-T23)', () => {
     });
     renderizarApp('/');
 
-    const seletor = await screen.findByRole('combobox', { name: 'Perfil em uso' });
+    fireEvent.click(await screen.findByRole('button', { name: 'Conta de Carlos Mendes' }));
+    const seletor = screen.getByRole('combobox', { name: 'Perfil em uso' });
     expect(seletor).toHaveValue('professor');
     fireEvent.change(seletor, { target: { value: 'aluno' } });
 
@@ -194,6 +196,7 @@ describe('login com o Google e troca de perfil (ACE-T23)', () => {
     renderizarApp('/');
 
     await screen.findByText('Olá, Ana Souza');
+    fireEvent.click(screen.getByRole('button', { name: 'Conta de Ana Souza' }));
     expect(screen.queryByRole('combobox', { name: 'Perfil em uso' })).not.toBeInTheDocument();
   });
 
@@ -201,6 +204,7 @@ describe('login com o Google e troca de perfil (ACE-T23)', () => {
     const duplo = { ...CARLOS, perfis: ['professor', 'aluno'], perfil_ativo: 'professor' };
     simularApi({ 'GET /api/eu': { corpo: duplo }, ...FAVORITAS_VAZIAS });
     const { container } = renderizarApp('/');
+    fireEvent.click(await screen.findByRole('button', { name: 'Conta de Carlos Mendes' }));
     await screen.findByRole('combobox', { name: 'Perfil em uso' });
 
     expect(await violacoesDeAcessibilidade(container)).toEqual([]);

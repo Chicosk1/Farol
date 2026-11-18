@@ -1,0 +1,24 @@
+/*
+ * Peças que só o produto tem, no mesmo estilo do protótipo (componentes.css e layout.css).
+ * Usam só os tokens do design system.
+ */
+
+/* Campo dentro de um menu suspenso do cabeçalho, como o perfil em uso no menu da conta. */
+.popover-campo {
+  padding: var(--space-2) var(--space-4) var(--space-3);
+  border-top: 1px solid var(--line);
+}
+
+/* Link de menu suspenso: o mesmo visual do botão de ação. */
+a.popover-action {
+  text-decoration: none;
+}
+
+/* Notificação ainda não lida, no sino. */
+.popover-item.is-unread {
+  background: var(--accent-soft);
+}
+.popover-item a {
+  color: var(--ink);
+  font-weight: 700;
+}

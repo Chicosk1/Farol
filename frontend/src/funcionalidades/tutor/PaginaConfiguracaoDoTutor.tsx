@@ -126,7 +126,7 @@ export function PaginaConfiguracaoDoTutor() {
   });
 
   return (
-    <main id="conteudo" className="mx-auto flex max-w-3xl flex-col gap-4 p-4 text-ink">
+    <div className="page">
       <h1 className="text-2xl font-extrabold">
         {disciplina ? `Tutor de ${disciplina.nome}` : 'Tutor da disciplina'}
       </h1>
@@ -142,6 +142,6 @@ export function PaginaConfiguracaoDoTutor() {
       )}
       {configuracao.data && <Formulario disciplinaId={disciplinaId} inicial={configuracao.data} />}
       <JanelasDeProva disciplinaId={disciplinaId} />
-    </main>
+    </div>
   );
 }

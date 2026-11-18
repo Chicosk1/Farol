@@ -206,10 +206,11 @@ describe('tela do tutor (TUT-T24)', () => {
         ],
       }),
     );
-    const { container } = renderizarApp(`/disciplinas/${ESTRUTURAS.id}/tutor`);
+    renderizarApp(`/disciplinas/${ESTRUTURAS.id}/tutor`);
 
-    expect(await screen.findByText('<b>negrito</b> [1]')).toBeInTheDocument();
-    expect(container.querySelector('b')).toBeNull();
+    const resposta = await screen.findByText('<b>negrito</b> [1]');
+    expect(screen.getByRole('main').querySelector('b')).toBeNull();
+    expect(resposta.querySelector('b')).toBeNull();
   });
 
   it('a lista de disciplinas da aluna leva ao tutor de cada disciplina', async () => {

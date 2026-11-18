@@ -26,7 +26,7 @@ export function PaginaMeusDados() {
   });
 
   return (
-    <main id="conteudo" className="mx-auto flex max-w-3xl flex-col gap-4 p-4 text-ink">
+    <div className="page">
       <h1 className="text-2xl font-extrabold">Meus dados</h1>
       <p className="text-ink-muted">
         O Farol guarda as suas conversas com o tutor para você continuar de onde parou. O professor
@@ -104,6 +104,6 @@ export function PaginaMeusDados() {
           </p>
         )}
       </section>
-    </main>
+    </div>
   );
 }

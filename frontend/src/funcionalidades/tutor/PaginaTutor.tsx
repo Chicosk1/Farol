@@ -447,7 +447,7 @@ export function PaginaTutor() {
   }
 
   return (
-    <main id="conteudo" className="mx-auto flex max-w-3xl flex-col gap-4 p-4">
+    <div className="page">
       <div>
         <h1 className="text-2xl font-extrabold text-ink">{titulo}</h1>
         <p className="text-ink-muted">
@@ -580,6 +580,6 @@ export function PaginaTutor() {
       <p data-testid="anuncio-do-tutor" aria-live="polite" className="sr-only">
         {anuncio}
       </p>
-    </main>
+    </div>
   );
 }

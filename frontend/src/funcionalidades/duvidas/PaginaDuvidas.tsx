@@ -55,7 +55,7 @@ export function PaginaDuvidas() {
   });
 
   return (
-    <main id="conteudo" className="mx-auto flex max-w-3xl flex-col gap-4 p-4 text-ink">
+    <div className="page">
       <div>
         <h1 className="text-2xl font-extrabold">Dúvidas que o material não respondeu</h1>
         {disciplina && <p className="text-ink-muted">{disciplina.nome}</p>}
@@ -115,6 +115,6 @@ export function PaginaDuvidas() {
             </ul>
           ))}
       </Abas>
-    </main>
+    </div>
   );
 }
