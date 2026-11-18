@@ -23,6 +23,15 @@ def vetor(*posicoes_com_valor: tuple[int, float]) -> list[float]:
     return v
 
 
+@pytest.fixture(autouse=True)
+def busca_exata(db):
+    """Os testes deste módulo conferem a ordem exata pela distância. O índice HNSW, que é
+    aproximado, fica de fora: no banco de testes ele acumula entradas mortas dos testes desfeitos
+    e pode pular trechos (TUT-T28). A busca do tutor não usa o índice."""
+    with connection.cursor() as cursor:
+        cursor.execute("SET LOCAL enable_indexscan = off")
+
+
 @pytest.fixture
 def disciplina(professor) -> Disciplina:
     return Disciplina.objects.create(
