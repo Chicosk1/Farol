@@ -211,5 +211,5 @@ ano; use um valor pequeno no primeiro deploy).
   primeira palavra do tutor, com perguntas simultâneas (meta de 3 segundos no p95, TUT-RNF-01).
   Usa o material da disciplina e não guarda conversas.
 
-Com o provedor falso, as medições cobrem só a parte do Farol. Os números que valem para as metas
+Os números medidos com o Ollama em CPU estão na [ADR 0009](adr/0009-ia-com-modelos-abertos-no-ollama.md#medições-18112026). Com o provedor falso, as medições cobrem só a parte do Farol. Os números que valem para as metas
 saem no servidor, com o provedor de IA real.

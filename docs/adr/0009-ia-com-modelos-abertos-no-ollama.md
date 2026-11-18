@@ -37,4 +37,19 @@ Opções gratuitas consideradas:
 - Em CPU, o tempo até a primeira palavra é maior. O comando `medir_tutor` mede esse tempo no servidor do piloto, e uma GPU modesta resolve, se for preciso.
 - O servidor precisa de cerca de 6 GB de memória a mais para o Ollama e os dois modelos.
 - A similaridade mínima do tutor precisa ser recalibrada para o `embeddinggemma`.
-- Nos testes, continua valendo o adaptador falso. O adaptador real é testado contra um servidor HTTP falso, sem internet.
+- Nos testes, continua valendo o adaptador falso.
+
+## Medições (18/11/2026)
+
+Feitas num computador de desenvolvimento com 16 núcleos de CPU, sem GPU, e o Ollama no Docker:
+
+| Medição | Resultado | Meta |
+| --- | --- | --- |
+| `avaliar_tutor`, citação da página certa (TUT-CS-01) | 81/85 = 95,3% | 90% |
+| `avaliar_tutor`, afirmações sem citação (TUT-CS-03) | 0 | 0 |
+| `avaliar_tutor`, "não encontrei" sem base (TUT-CS-04) | 15/15 | 100% |
+| `medir_processamento`, PDF de 40 páginas (MAT-RNF-01) | 13,7 s | 120 s |
+| `medir_tutor`, primeira frase, 1 pergunta por vez (TUT-RNF-01) | mediana 13,3 s, p95 16,1 s | 3 s no p95 |
+| `medir_tutor`, primeira frase, 3 perguntas ao mesmo tempo | mediana 21,5 s, p95 30,4 s | 3 s no p95 |
+
+A qualidade atinge as metas, mas o tempo de resposta em CPU fica muito acima dos 3 segundos. Para o piloto, as saídas são uma GPU modesta no servidor, que costuma reduzir esse tempo a poucos segundos, ou um provedor de mercado pago compatível com a API, trocado só pela configuração. A escolha fica com o dono do produto e a TI. A citação certa não garante a resposta certa: em algumas perguntas, o modelo citou a página certa e errou o conteúdo, o que a avaliação dos alunos (TUT-CS-02) deve mostrar no piloto. O adaptador real é testado contra um servidor HTTP falso, sem internet.
