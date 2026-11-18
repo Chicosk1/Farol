@@ -33,6 +33,11 @@ a.popover-action {
   outline-offset: 2px;
 }
 
+/* Texto da página citada: mantém as quebras de linha do PDF. */
+.trecho-texto {
+  white-space: pre-wrap;
+}
+
 /* Notificação ainda não lida, no sino. */
 .popover-item.is-unread {
   background: var(--accent-soft);
