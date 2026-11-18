@@ -6,9 +6,17 @@ from pathlib import Path
 
 from . import ambiente
 from .base import *  # noqa: F403
-from .base import DATABASES
+from .base import DATABASES, login_do_google
 
 DEBUG = False
+
+# O login com o Google é a única forma de entrar (ACE-RF-01): sem domínio e credencial, não sobe.
+FAROL_DOMINIO_INSTITUCIONAL = ambiente.obrigatoria("FAROL_DOMINIO_INSTITUCIONAL")
+FAROL_GOOGLE_CLIENT_ID = ambiente.obrigatoria("FAROL_GOOGLE_CLIENT_ID")
+FAROL_GOOGLE_SECRET = ambiente.obrigatoria("FAROL_GOOGLE_SECRET")
+SOCIALACCOUNT_PROVIDERS = login_do_google(
+    FAROL_DOMINIO_INSTITUCIONAL, FAROL_GOOGLE_CLIENT_ID, FAROL_GOOGLE_SECRET
+)
 
 # Em produção, a única forma de entrar é o login institucional (ACE-RNF-03).
 # Fixo no código, de propósito: nenhuma variável de ambiente liga o atalho.

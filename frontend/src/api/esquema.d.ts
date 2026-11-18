@@ -254,6 +254,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/entrada": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Formas de entrar disponíveis neste ambiente
+         * @description Diz se há o login com o Google e o atalho de desenvolvimento. Entrega também o cookie
+         *     CSRF que o formulário "Entrar com o Google" envia (ACE-RF-01).
+         */
+        get: operations["entrada_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/eu": {
         parameters: {
             query?: never;
@@ -691,6 +712,13 @@ export interface components {
             perfil_ativo: (components["schemas"]["PerfilEnum"] | components["schemas"]["NullEnum"]) | null;
             /** @description Se o aluno ainda precisa ler a versão atual do aviso de privacidade. */
             precisa_ver_aviso: boolean;
+        };
+        /** @description Como se pode entrar neste ambiente, para a tela de entrada mostrar só os botões que valem. */
+        FormasDeEntrar: {
+            /** @description Se o login com o Google está configurado. */
+            google: boolean;
+            /** @description Se o atalho de desenvolvimento existe (nunca em produção). */
+            desenvolvimento: boolean;
         };
         Importacao: {
             readonly id: number;
@@ -1326,6 +1354,25 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    entrada_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormasDeEntrar"];
+                };
             };
         };
     };

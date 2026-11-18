@@ -17,5 +17,13 @@ ALLOWED_HOSTS = ["testserver", "localhost"]
 CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
 
+# Credencial fictícia do Google: os testes simulam a resposta dele (contas/testes/test_login.py).
+FAROL_DOMINIO_INSTITUCIONAL = "exemplo.edu.br"
+FAROL_GOOGLE_CLIENT_ID = "cliente-de-teste.apps.googleusercontent.com"
+FAROL_GOOGLE_SECRET = "segredo-de-teste"
+SOCIALACCOUNT_PROVIDERS = login_do_google(  # noqa: F405
+    FAROL_DOMINIO_INSTITUCIONAL, FAROL_GOOGLE_CLIENT_ID, FAROL_GOOGLE_SECRET
+)
+
 # Os testes zeram o Redis a cada teste: usam um banco só deles, para não apagar o do ambiente.
 FAROL_REDIS_URL = FAROL_REDIS_URL.rsplit("/", 1)[0] + "/15"  # noqa: F405

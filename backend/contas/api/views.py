@@ -1,5 +1,6 @@
 """Rotas da própria pessoa. Só HTTP: as regras ficam em contas/servicos.py (ADR 0007)."""
 
+from django.conf import settings
 from django.contrib.auth import login, logout
 from django.views.decorators.csrf import ensure_csrf_cookie
 from drf_spectacular.utils import extend_schema
@@ -16,6 +17,7 @@ from .serializers import (
     CienciaDoAvisoSerializer,
     EntradaDeDesenvolvimentoSerializer,
     EuSerializer,
+    FormasDeEntrarSerializer,
     TrocaDePerfilSerializer,
 )
 
@@ -85,6 +87,27 @@ def entrar_em_desenvolvimento(request: Request) -> Response:
     login(request._request, pessoa, backend="django.contrib.auth.backends.ModelBackend")
     request.user = pessoa
     return Response(EuSerializer(_dados_da_pessoa(request)).data)
+
+
+@extend_schema(
+    summary="Formas de entrar disponíveis neste ambiente",
+    responses=FormasDeEntrarSerializer,
+    tags=["contas"],
+)
+@api_view(["GET"])
+@permission_classes([AllowAny])
+@ensure_csrf_cookie
+def formas_de_entrar(request: Request) -> Response:
+    """Diz se há o login com o Google e o atalho de desenvolvimento. Entrega também o cookie
+    CSRF que o formulário "Entrar com o Google" envia (ACE-RF-01)."""
+    return Response(
+        FormasDeEntrarSerializer(
+            {
+                "google": servicos.login_google_configurado(),
+                "desenvolvimento": settings.FAROL_LOGIN_DESENVOLVIMENTO,
+            }
+        ).data
+    )
 
 
 @extend_schema(summary="Encerra a sessão", request=None, responses={204: None}, tags=["contas"])

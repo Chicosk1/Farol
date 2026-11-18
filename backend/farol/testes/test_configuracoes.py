@@ -19,6 +19,9 @@ VARIAVEIS_DE_PRODUCAO = {
     "FAROL_ARQUIVOS": "/arquivos",
     "FAROL_SEGREDO_PSEUDONIMO": "segredo-de-teste-do-pseudonimo",
     "FAROL_IA_ADAPTADOR": "ia.adaptadores.falso.ProvedorFalso",
+    "FAROL_DOMINIO_INSTITUCIONAL": "exemplo.edu.br",
+    "FAROL_GOOGLE_CLIENT_ID": "cliente-de-teste.apps.googleusercontent.com",
+    "FAROL_GOOGLE_SECRET": "segredo-de-teste",
 }
 
 

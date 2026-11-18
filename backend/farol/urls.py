@@ -17,6 +17,9 @@ urlpatterns = [
     path("api/", include("tutor.api.urls")),
     path("api/", include("duvidas.api.urls")),
     path("admin/", admin.site.urls),
+    # Login com o Google pelo allauth (ACE-RF-01): ida em /contas/google/login/ e volta em
+    # /contas/google/login/callback/. Cadastro e senha próprios ficam desligados (ACE-RF-02).
+    path("contas/", include("allauth.urls")),
 ]
 
 # O atalho de login só existe onde a configuração o liga (desenvolvimento e teste): em produção,

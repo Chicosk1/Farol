@@ -17,6 +17,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "drf_spectacular",
+    # Login institucional com o Google (ACE-RF-01), só com contas sociais
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
     # Módulos do Farol (ADR 0007)
     "nucleo",
     "contas",
@@ -37,6 +42,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 # Funções dos módulos que o núcleo usa na permissão por disciplina (nucleo/permissoes.py).
@@ -75,6 +81,48 @@ FAROL_DIMENSAO_DO_VETOR = 256
 # Provedor de IA, atrás do módulo ia. Por padrão (desenvolvimento e testes) é o adaptador falso;
 # a produção precisa indicar o adaptador do provedor escolhido (ADR 0005).
 FAROL_IA = {"ADAPTADOR": "ia.adaptadores.falso.ProvedorFalso"}
+
+# Login institucional com o Google Workspace, pelo django-allauth (ACE-RF-01, specs/001 plan.md).
+# Só entra um e-mail verificado do domínio da instituição. Sem a credencial OAuth, o botão do
+# Google não aparece (GET /api/entrada). Os padrões só servem ao desenvolvimento.
+FAROL_DOMINIO_INSTITUCIONAL = ambiente.opcional("FAROL_DOMINIO_INSTITUCIONAL", "exemplo.edu.br")
+FAROL_GOOGLE_CLIENT_ID = ambiente.opcional("FAROL_GOOGLE_CLIENT_ID", "")
+FAROL_GOOGLE_SECRET = ambiente.opcional("FAROL_GOOGLE_SECRET", "")
+
+
+def login_do_google(dominio: str, client_id: str, secret: str) -> dict:
+    """A configuração do provedor Google do allauth, com o domínio sugerido ao escolher a conta."""
+    return {
+        "google": {
+            "SCOPE": ["openid", "email", "profile"],
+            "AUTH_PARAMS": {"hd": dominio, "prompt": "select_account"},
+            "OAUTH_PKCE_ENABLED": True,
+            "APPS": [{"client_id": client_id, "secret": secret, "key": ""}] if client_id else [],
+        }
+    }
+
+
+SOCIALACCOUNT_PROVIDERS = login_do_google(
+    FAROL_DOMINIO_INSTITUCIONAL, FAROL_GOOGLE_CLIENT_ID, FAROL_GOOGLE_SECRET
+)
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+# Só contas sociais: sem cadastro, senha nem recuperação de senha próprios (ACE-RF-02).
+SOCIALACCOUNT_ONLY = True
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_STORE_TOKENS = False
+# A conta do Google se liga à pessoa que já existe com o mesmo e-mail (importação de turmas).
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+SOCIALACCOUNT_ADAPTER = "contas.api.login_google.AdaptadorDoGoogle"
+ACCOUNT_ADAPTER = "contas.api.login_google.AdaptadorDeContas"
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*"]
+ACCOUNT_EMAIL_VERIFICATION = "none"
+LOGIN_REDIRECT_URL = "/"
 
 # Atalho para entrar sem o login institucional (POST /api/dev/entrar). Desligado por padrão:
 # só as configurações de desenvolvimento e de teste ligam (ACE-RNF-03).
