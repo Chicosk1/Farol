@@ -30,7 +30,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 - [x] TUT-T14 Adaptador `ia/adaptadores/compativel_openai.py`: respostas em streaming e vetores de 256 dimensões pela API compatível com a da OpenAI, com testes contra um servidor HTTP falso (ADR 0009)
 - [x] TUT-T15 Serviço `ollama` no Docker Compose, no perfil `ia`, com o comando que baixa os modelos e o passo a passo em `docs/desenvolvimento.md` (ADR 0009)
 - [x] TUT-T12 [P] Montar o conjunto de 100 perguntas de Estruturas de Dados com resposta e trecho esperados em `backend/tutor/avaliacao/`
-- [ ] TUT-T13 Comando `avaliar_tutor`, que roda o conjunto e calcula a taxa de citação correta, as afirmações sem citação e o "não encontrei" das perguntas sem base, e sugere o limite de similaridade (TUT-CS-01, TUT-CS-03, TUT-CS-04)
+- [x] TUT-T13 Comando `avaliar_tutor`, que roda o conjunto e calcula a taxa de citação correta, as afirmações sem citação e o "não encontrei" das perguntas sem base, e sugere o limite de similaridade (TUT-CS-01, TUT-CS-03, TUT-CS-04)
 - [ ] TUT-T16 Workflow do GitHub Actions que roda o `avaliar_tutor` com o Ollama toda semana e nos pull requests que mudam o módulo `ia` ou o conjunto (TUT-CS-01)
 
 ## Produto: História 1, perguntar e receber resposta com a fonte (P1)
