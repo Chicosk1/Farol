@@ -229,3 +229,28 @@ def test_aluno_sem_matricula_recebe_403_e_sem_login_recebe_401(cliente, discipli
 
     assert perguntar(cliente_do_outro, disciplina, "O que é uma pilha?").status_code == 403
     assert perguntar(cliente, disciplina, "O que é uma pilha?").status_code == 401
+
+
+@pytest.mark.requisito("TUT-RF-13")
+def test_o_navegador_pede_eventos_e_recebe_a_resposta_em_streaming(cliente_aluna, disciplina):
+    """O fetch do front-end manda Accept: text/event-stream (TUT-T29)."""
+    resposta = cliente_aluna.post(
+        url(disciplina),
+        {"texto": "O que é uma lista encadeada?"},
+        format="json",
+        HTTP_ACCEPT="text/event-stream",
+    )
+
+    assert resposta.status_code == 200
+    assert resposta["Content-Type"].startswith("text/event-stream")
+    assert [tipo for tipo, _ in eventos_de(resposta)][0] == "inicio"
+
+
+@pytest.mark.requisito("TUT-RF-13")
+def test_a_recusa_vem_em_json_mesmo_quando_o_navegador_pede_eventos(cliente_aluna, disciplina):
+    resposta = cliente_aluna.post(
+        url(disciplina), {"texto": ""}, format="json", HTTP_ACCEPT="text/event-stream"
+    )
+
+    assert resposta.status_code == 400
+    assert "texto" in json.loads(resposta.content)

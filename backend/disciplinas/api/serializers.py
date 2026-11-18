@@ -13,6 +13,12 @@ class DisciplinaSerializer(serializers.Serializer):
     semestre = serializers.CharField()
     professor_nome = serializers.CharField(source="professor.nome")
     favorita = serializers.BooleanField(help_text="Se a pessoa marcou a disciplina como favorita.")
+    tem_tutor = serializers.SerializerMethodField(
+        help_text="Se a disciplina tem material pronto, e o tutor já responde (ACE-RF-10)."
+    )
+
+    def get_tem_tutor(self, disciplina) -> bool:
+        return disciplina.id in self.context.get("com_material_pronto", set())
 
 
 class ConsultaDeDisciplinasSerializer(serializers.Serializer):

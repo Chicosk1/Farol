@@ -53,6 +53,13 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 - [x] MAT-T90 Medir o tempo de processamento de um PDF de 40 páginas (MAT-RNF-01)
 - [x] MAT-T91 Teste de permissão de envio e retirada, entregue junto das MAT-T21 e MAT-T51 em test_api_envio.py e test_api_retirada.py (MAT-RNF-02)
 
+## Produto: telas iguais ao protótipo
+
+- [x] MAT-T60 Página da disciplina do aluno, como no protótipo: cabeçalho da disciplina, acesso ao tutor e os materiais prontos (MAT-RF-07, MAT-RF-08)
+- [x] MAT-T61 Materiais do professor no formato do protótipo: área de arrastar, lista com a etapa e o status de cada PDF (MAT-RF-01, MAT-RF-03, MAT-RF-10, MAT-RF-11)
+- [x] MAT-T63 Dados de demonstração com as 13 aulas fictícias de Estruturas de Dados, processadas e prontas para o tutor, para testar logo depois do `popular_demo` (MAT-RF-08)
+- [x] MAT-T62 Trecho citado no formato de página do protótipo, com o trecho destacado (MAT-RF-09)
+
 ## Dependências
 
 Depende das Histórias 1 e 2 da spec 001. A História 1 desta spec bloqueia as specs 003 e 005.

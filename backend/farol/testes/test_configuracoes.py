@@ -148,3 +148,9 @@ def test_similaridade_fora_de_0_a_1_impede_o_django_de_subir(monkeypatch, valor)
 
 def test_os_testes_usam_sempre_a_similaridade_do_adaptador_falso(settings):
     assert settings.FAROL_TUTOR_SIMILARIDADE_MINIMA == 0.3
+
+
+def test_no_desenvolvimento_o_limite_serve_ao_adaptador_falso_com_as_aulas_da_demonstracao():
+    from farol.configuracoes import desenvolvimento
+
+    assert desenvolvimento.FAROL_TUTOR_SIMILARIDADE_MINIMA == 0.15

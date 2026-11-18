@@ -30,7 +30,7 @@ describe('configuração do tutor pelo professor (TUT-T43)', () => {
     const { container } = renderizarApp(`/disciplinas/${ESTRUTURAS.id}/tutor/configuracao`);
 
     expect(
-      await screen.findByRole('heading', { name: 'Tutor de Estruturas de Dados' }),
+      await screen.findByRole('heading', { level: 1, name: 'Disciplina' }),
     ).toBeInTheDocument();
     expect(await screen.findByRole('checkbox', { name: /Modo pistas/ })).toBeChecked();
     expect(screen.getByRole('combobox', { name: 'Limite de perguntas por dia' })).toHaveValue('40');

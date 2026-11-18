@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState, type FormEvent } from 'react';
-import { Link, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 
 import {
   avaliarResposta,
@@ -16,7 +16,10 @@ import {
   type TipoDeMensagem,
 } from '../../api/cliente';
 import { Botao } from '../../componentes/Botao';
-import { useDisciplinas } from '../disciplinas/consultas';
+import { Icone } from '../../componentes/Icone';
+import { Modal } from '../../componentes/Modal';
+import { Selo } from '../../componentes/Selo';
+import { useDisciplina, useDisciplinas } from '../disciplinas/consultas';
 import { useTutor } from './consultas';
 
 const LIMITE_DE_CARACTERES = 1000;
@@ -58,14 +61,11 @@ function mensagemDeErro(erro: unknown): string {
 function Citacoes({ citacoes }: { citacoes: CitacaoDoTutor[] }) {
   if (citacoes.length === 0) return null;
   return (
-    <ul aria-label="Fontes da resposta" className="mt-2 flex flex-wrap gap-2">
+    <ul aria-label="Fontes da resposta" className="row">
       {citacoes.map((citacao) => (
         <li key={citacao.ordem}>
-          <Link
-            to={`/trechos/${citacao.trecho_id}`}
-            className="inline-flex min-h-12 items-center rounded-lg border border-line-control bg-surface px-3 text-sm font-bold text-ink underline"
-          >
-            [{citacao.ordem}] {citacao.rotulo}
+          <Link to={`/trechos/${citacao.trecho_id}`} className="fr-cite">
+            <Icone nome="file-text" />[{citacao.ordem}] {citacao.rotulo}
             <span className="sr-only"> (abre a página com o trecho destacado)</span>
           </Link>
         </li>
@@ -75,9 +75,9 @@ function Citacoes({ citacoes }: { citacoes: CitacaoDoTutor[] }) {
 }
 
 const OPCOES_DE_AVALIACAO = [
-  { valor: 'util', rotulo: 'Útil' },
-  { valor: 'nao_util', rotulo: 'Não útil' },
-  { valor: 'incorreta', rotulo: 'Incorreta' },
+  { valor: 'util', rotulo: 'Útil', icone: 'check' },
+  { valor: 'nao_util', rotulo: 'Não útil', icone: 'x' },
+  { valor: 'incorreta', rotulo: 'Incorreta', icone: 'alert-triangle' },
 ] as const;
 
 const OBRIGADO = 'Obrigado. Respostas marcadas como incorretas vão para revisão da equipe.';
@@ -109,24 +109,26 @@ function AvaliarResposta({
   }
 
   return (
-    <div className="mt-2">
-      <div role="group" aria-label="Avaliar resposta" className="flex flex-wrap gap-2">
+    <>
+      <div role="group" aria-label="Avaliar resposta" className="answer-tools">
         {OPCOES_DE_AVALIACAO.map((opcao) => (
-          <Botao
+          <button
             key={opcao.valor}
-            variante="secundario"
+            type="button"
+            className="tool-btn"
             aria-pressed={atual === opcao.valor}
             disabled={salvando}
             onClick={() => void marcar(opcao.valor)}
           >
+            <Icone nome={opcao.icone} />
             {opcao.rotulo}
-          </Botao>
+          </button>
         ))}
       </div>
-      <p role="status" className="mt-1 text-sm text-ink-muted">
+      <p role="status" className="small muted">
         {aviso}
       </p>
-    </div>
+    </>
   );
 }
 
@@ -135,9 +137,12 @@ type StatusDaDuvida = 'aberta' | 'respondida';
 /** A nota da dúvida enviada ao professor, com o status dela (DUV-RF-08). */
 function DuvidaEnviada({ status }: { status: StatusDaDuvida }) {
   return (
-    <div className="mt-2 text-sm">
-      <p className="font-bold text-success-text">Dúvida enviada ao professor, sem o seu nome.</p>
-      <p className="text-ink-muted">
+    <div>
+      <p className="bubble-note">
+        <Icone nome="circle-check" />
+        Dúvida enviada ao professor, sem o seu nome.
+      </p>
+      <p className="small muted">
         {status === 'respondida'
           ? 'O professor marcou como respondida em aula.'
           : 'Aguardando o professor tratar em aula.'}
@@ -163,52 +168,25 @@ function PreviaDaDuvida({
   erro: string;
 }) {
   return (
-    <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/50 p-4">
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="titulo-duvida"
-        aria-describedby="aviso-duvida"
-        onKeyDown={(evento) => {
-          if (evento.key === 'Escape') {
-            aoFechar();
-            return;
-          }
-          // O foco fica dentro do modal: Tab no último volta ao primeiro, e vice-versa.
-          if (evento.key !== 'Tab') return;
-          const focaveis = [
-            ...evento.currentTarget.querySelectorAll<HTMLElement>('button:not([disabled])'),
-          ];
-          const primeiro = focaveis[0];
-          const ultimo = focaveis[focaveis.length - 1];
-          if (evento.shiftKey && document.activeElement === primeiro) {
-            evento.preventDefault();
-            ultimo?.focus();
-          } else if (!evento.shiftKey && document.activeElement === ultimo) {
-            evento.preventDefault();
-            primeiro?.focus();
-          }
-        }}
-        className="w-full max-w-lg rounded-lg bg-surface p-4 text-ink"
-      >
-        <h2 id="titulo-duvida" className="text-lg font-bold">
-          Enviar dúvida ao professor
-        </h2>
-        <p className="mt-2 text-sm text-ink-muted">O professor vai ler exatamente este texto:</p>
-        <blockquote className="mt-1 whitespace-pre-wrap rounded-lg border border-line p-3">
-          {previa.texto}
-        </blockquote>
-        <p id="aviso-duvida" className="mt-2 text-sm">
-          O professor não verá o seu nome, o seu e-mail nem o horário do envio. Em turmas pequenas,
-          o jeito de escrever ainda pode identificar você.
+    <Modal
+      titulo="Enviar dúvida ao professor"
+      subtitulo="O professor vai ler exatamente este texto"
+      aoFechar={aoFechar}
+    >
+      <div className="stack">
+        <blockquote className="panel trecho-texto">{previa.texto}</blockquote>
+        <p className="privacy-note">
+          <Icone nome="lock" />O professor não verá o seu nome, o seu e-mail nem o horário do envio.
+          Em turmas pequenas, o jeito de escrever ainda pode identificar você.
         </p>
         {erro && (
-          <p role="alert" className="mt-2 text-danger-text">
+          <p role="alert" className="notice notice--danger">
+            <Icone nome="alert-triangle" />
             {erro}
           </p>
         )}
-        <div className="mt-4 flex flex-wrap justify-end gap-2">
-          <Botao variante="secundario" onClick={aoFechar} autoFocus>
+        <div className="row row--end">
+          <Botao variante="contorno" onClick={aoFechar} data-foco-inicial>
             Cancelar
           </Botao>
           <Botao onClick={aoEnviar} disabled={enviando}>
@@ -216,7 +194,7 @@ function PreviaDaDuvida({
           </Botao>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }
 
@@ -231,36 +209,41 @@ function Mensagem({
 }) {
   if (mensagem.autor === 'aluno') {
     return (
-      <li className="ml-auto max-w-[85%] rounded-lg bg-accent-soft p-3 text-ink">
+      <li className="fr-bubble fr-bubble--student">
         <span className="sr-only">Você: </span>
-        <p className="whitespace-pre-wrap">{mensagem.texto}</p>
+        <p className="trecho-texto">{mensagem.texto}</p>
       </li>
     );
   }
   const erro = mensagem.tipo === 'erro';
+  if (mensagem.respondendo && !mensagem.texto) {
+    return (
+      <li className="fr-bubble fr-bubble--tutor is-typing">
+        <span className="spin">
+          <Icone nome="loader-2" />
+        </span>
+        Procurando no material…
+      </li>
+    );
+  }
   return (
-    <li
-      className={`max-w-[85%] rounded-lg border p-3 ${
-        erro ? 'border-danger bg-danger-soft text-danger-text' : 'border-line bg-surface text-ink'
-      }`}
-    >
+    <li className={erro ? 'fr-bubble fr-bubble--tutor bolha-erro' : 'fr-bubble fr-bubble--tutor'}>
       <span className="sr-only">Tutor: </span>
       {mensagem.tipo === 'pistas' && (
-        <p className="mb-1 text-xs font-bold uppercase text-accent">Modo pistas</p>
+        <span className="bubble-tag">
+          <Icone nome="bulb" />
+          Modo pistas
+        </span>
       )}
-      <p className="whitespace-pre-wrap">
-        {mensagem.texto || (mensagem.respondendo ? 'O tutor está respondendo…' : '')}
-      </p>
+      <p className="trecho-texto">{mensagem.texto}</p>
       <Citacoes citacoes={mensagem.citacoes} />
       {duvida && <DuvidaEnviada status={duvida} />}
       {!duvida && mensagem.tipo === 'nao_encontrado' && mensagem.id !== undefined && (
-        <Botao
-          variante="secundario"
-          className="mt-2"
-          onClick={() => aoPedirDuvida(mensagem.id as number)}
-        >
-          Enviar dúvida ao professor
-        </Botao>
+        <div className="fr-bubble-actions">
+          <Botao variante="contorno" pequeno onClick={() => aoPedirDuvida(mensagem.id as number)}>
+            Enviar dúvida ao professor
+          </Botao>
+        </div>
       )}
       {mensagem.id !== undefined &&
         (mensagem.tipo === 'resposta' || mensagem.tipo === 'pistas') && (
@@ -270,43 +253,82 @@ function Mensagem({
   );
 }
 
-/** O texto do professor e o resumo das regras do tutor, abertos por um botão (TUT-RF-10). */
-function PoliticaDeUso({ politica, modoPistas }: { politica: string; modoPistas: boolean }) {
+/** O texto do professor e o resumo das regras do tutor, num modal como no protótipo (TUT-RF-10). */
+function PoliticaDeUso({
+  politica,
+  modoPistas,
+  professor,
+}: {
+  politica: string;
+  modoPistas: boolean;
+  professor?: string;
+}) {
   const [aberta, setAberta] = useState(false);
   return (
-    <div>
-      <Botao
-        variante="secundario"
-        aria-expanded={aberta}
-        aria-controls="politica-de-uso"
-        onClick={() => setAberta((valor) => !valor)}
-      >
+    <>
+      <button type="button" className="link-btn" onClick={() => setAberta(true)}>
+        <Icone nome="shield-lock" />
         Política de uso de IA
-      </Botao>
+      </button>
       {aberta && (
-        <section
-          id="politica-de-uso"
-          aria-labelledby="titulo-politica"
-          className="mt-2 rounded-lg border border-line bg-surface p-4 text-ink"
+        <Modal
+          titulo="Política de uso de IA"
+          subtitulo={professor ? `Definida por Prof. ${professor}` : undefined}
+          aoFechar={() => setAberta(false)}
         >
-          <h2 id="titulo-politica" className="text-lg font-bold">
-            Política de uso de IA
-          </h2>
-          <p className="mt-1 whitespace-pre-wrap">
+          <p className="policy-text trecho-texto">
             {politica.trim() || 'O professor ainda não escreveu uma política para esta disciplina.'}
           </p>
-          <h3 className="mt-3 font-bold">Regras do tutor</h3>
-          <ul className="list-disc pl-5">
-            <li>Responde só com o material desta disciplina, sempre com a página citada.</li>
+          <h3 className="strong">Regras do tutor</h3>
+          <ul className="policy-list">
             <li>
+              <Icone nome="file-text" />
+              Responde só com o material desta disciplina, sempre com a página citada.
+            </li>
+            <li>
+              <Icone nome="bulb" />
               {modoPistas
                 ? 'Em exercícios, dá pistas em vez da resposta pronta.'
                 : 'O modo pistas está desligado nesta disciplina.'}
             </li>
-            <li>Fica pausado durante as provas.</li>
+            <li>
+              <Icone nome="lock" />
+              Fica pausado durante as provas.
+            </li>
           </ul>
-        </section>
+        </Modal>
       )}
+    </>
+  );
+}
+
+/** A escolha da disciplina, como no protótipo: só as que têm material pronto para o tutor. */
+function EscolhaDaDisciplina({ disciplinaId }: { disciplinaId: number }) {
+  const navegar = useNavigate();
+  const comTutor = useDisciplinas('', 'com-tutor').data ?? [];
+  const atual = useDisciplina(disciplinaId).data;
+  const opcoes =
+    comTutor.some((d) => d.id === disciplinaId) || !atual ? comTutor : [atual, ...comTutor];
+  if (opcoes.length < 2) return null;
+  return (
+    <div className="tutor-select">
+      <label htmlFor="tutor-disciplina" className="fr-label">
+        Disciplina
+      </label>
+      <span className="fr-select-wrap">
+        <select
+          id="tutor-disciplina"
+          className="fr-select"
+          value={disciplinaId}
+          onChange={(evento) => navegar(`/disciplinas/${evento.target.value}/tutor`)}
+        >
+          {opcoes.map((d) => (
+            <option key={d.id} value={d.id}>
+              {d.nome}
+            </option>
+          ))}
+        </select>
+      </span>
     </div>
   );
 }
@@ -323,11 +345,8 @@ export function PaginaTutor() {
   const [erroDaDuvida, setErroDaDuvida] = useState('');
   const [enviandoDuvida, setEnviandoDuvida] = useState(false);
 
-  const quemAbriuAPrevia = useRef<HTMLElement | null>(null);
-
   async function pedirDuvida(mensagemId: number) {
     setErroDaDuvida('');
-    quemAbriuAPrevia.current = document.activeElement as HTMLElement | null;
     try {
       setPrevia({ mensagemId, texto: await previaDaDuvida(mensagemId) });
     } catch (falha) {
@@ -353,7 +372,7 @@ export function PaginaTutor() {
   const statusDasDuvidas = new Map(
     (minhasDuvidas.data ?? []).map((duvida) => [duvida.mensagem_id, duvida.status]),
   );
-  const disciplina = useDisciplinas('').data?.find((d) => d.id === disciplinaId);
+  const disciplina = useDisciplina(disciplinaId).data;
   const [novas, setNovas] = useState<MensagemNaTela[]>([]);
   const [pergunta, setPergunta] = useState('');
   const [erro, setErro] = useState('');
@@ -447,43 +466,60 @@ export function PaginaTutor() {
   }
 
   return (
-    <main id="conteudo" className="mx-auto flex max-w-3xl flex-col gap-4 p-4">
-      <div>
-        <h1 className="text-2xl font-extrabold text-ink">{titulo}</h1>
-        <p className="text-ink-muted">
-          Respostas só com o material da disciplina, sempre com a página citada.
-        </p>
+    <div className="page page--tutor">
+      <div className="tutor-head">
+        <div>
+          <h1 className="page-title">{titulo}</h1>
+          <p className="page-sub">
+            Respostas só com o material
+            {disciplina ? ` do Prof. ${disciplina.professor_nome}` : ' da disciplina'}, sempre com a
+            página citada.
+          </p>
+        </div>
+        <EscolhaDaDisciplina disciplinaId={disciplinaId} />
       </div>
 
       {tutor.isPending && (
-        <p role="status" className="text-ink-muted">
+        <p role="status" className="muted">
           Carregando o tutor…
         </p>
       )}
       {tutor.isError && (
-        <p role="alert" className="text-danger-text">
+        <p role="alert" className="notice notice--danger">
+          <Icone nome="alert-triangle" />
           Não foi possível abrir o tutor desta disciplina. Tente de novo em instantes.
         </p>
       )}
 
       {tutor.data && (
         <>
-          <PoliticaDeUso politica={tutor.data.politica} modoPistas={tutor.data.modo_pistas} />
-          {tutor.data.modo_pistas && (
-            <p className="w-fit rounded-full bg-accent-soft px-3 py-1 text-sm font-bold text-ink">
-              Modo pistas ligado
-            </p>
-          )}
+          <div className="tutor-status">
+            {tutor.data.modo_pistas && (
+              <Selo tom="destaque" pilula icone="bulb">
+                Modo pistas ligado
+              </Selo>
+            )}
+            {tutor.data.pausado && (
+              <Selo tom="perigo" icone="lock">
+                Modo prova
+              </Selo>
+            )}
+            <PoliticaDeUso
+              politica={tutor.data.politica}
+              modoPistas={tutor.data.modo_pistas}
+              professor={disciplina?.professor_nome}
+            />
+          </div>
 
           {tutor.data.pausado ? (
-            <section
-              aria-labelledby="titulo-pausa"
-              className="rounded-lg border border-line bg-surface p-4 text-ink"
-            >
-              <h2 id="titulo-pausa" className="text-lg font-bold">
+            <section className="panel tutor-locked" aria-labelledby="titulo-pausa">
+              <span className="empty-state-icon">
+                <Icone nome="lock" />
+              </span>
+              <h2 id="titulo-pausa" className="section-title">
                 O tutor está pausado durante a prova
               </h2>
-              <p className="text-ink-muted">
+              <p className="muted">
                 O professor ativou o modo prova nesta disciplina. O tutor volta a responder quando a
                 prova terminar.
               </p>
@@ -491,28 +527,23 @@ export function PaginaTutor() {
           ) : (
             <>
               {mensagens.length === 0 ? (
-                <section aria-labelledby="titulo-vazio" className="text-ink">
-                  <h2 id="titulo-vazio" className="text-lg font-bold">
-                    Pergunte sobre {disciplina?.nome ?? 'a disciplina'}
-                  </h2>
-                  <p className="text-ink-muted">
-                    O tutor só usa o material publicado pelo professor e mostra a página de onde
-                    tirou cada resposta.
-                  </p>
-                  {tutor.data.sugestoes.length > 0 && (
-                    <ul aria-label="Sugestões de pergunta" className="mt-3 flex flex-wrap gap-2">
-                      {tutor.data.sugestoes.map((sugestao) => (
-                        <li key={sugestao}>
-                          <Botao variante="secundario" onClick={() => void perguntar(sugestao)}>
-                            {sugestao}
-                          </Botao>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                <section className="tutor-log" aria-labelledby="titulo-vazio">
+                  <div className="tutor-empty">
+                    <span className="empty-state-icon">
+                      <Icone nome="message-circle" />
+                    </span>
+                    <h2 id="titulo-vazio" className="section-title">
+                      Pergunte sobre {disciplina?.nome ?? 'a disciplina'}
+                    </h2>
+                    <p className="muted">
+                      O tutor só usa o material publicado pelo professor e mostra a página de onde
+                      tirou cada resposta. Quando o assunto não estiver no material, ele avisa, e
+                      você pode mandar a dúvida para o professor sem se identificar.
+                    </p>
+                  </div>
                 </section>
               ) : (
-                <ol aria-label="Conversa com o tutor" className="flex flex-col gap-3">
+                <ol aria-label="Conversa com o tutor" className="tutor-log">
                   {mensagens.map((mensagem) => (
                     <Mensagem
                       key={mensagem.chave}
@@ -526,14 +557,30 @@ export function PaginaTutor() {
                 </ol>
               )}
 
-              <form onSubmit={aoEnviar} noValidate className="flex flex-col gap-2">
-                <label htmlFor="pergunta" className="text-sm font-bold text-ink">
-                  Sua pergunta
-                </label>
-                <div className="flex gap-2">
+              <div className="composer">
+                {mensagens.length === 0 && tutor.data.sugestoes.length > 0 && (
+                  <ul aria-label="Sugestões de pergunta" className="suggestions">
+                    {tutor.data.sugestoes.map((sugestao) => (
+                      <li key={sugestao}>
+                        <button
+                          type="button"
+                          className="chip-btn"
+                          onClick={() => void perguntar(sugestao)}
+                        >
+                          {sugestao}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <form onSubmit={aoEnviar} noValidate className="composer-form">
+                  <label htmlFor="pergunta" className="sr-only">
+                    Sua pergunta
+                  </label>
                   <input
                     id="pergunta"
                     ref={campo}
+                    className="fr-input"
                     value={pergunta}
                     onChange={(evento) => {
                       setPergunta(evento.target.value);
@@ -542,22 +589,28 @@ export function PaginaTutor() {
                     maxLength={LIMITE_DE_CARACTERES}
                     autoComplete="off"
                     placeholder={`Pergunte sobre ${disciplina?.nome ?? 'a disciplina'}`}
-                    className="min-h-12 min-w-0 flex-1 rounded-lg border border-line-control bg-surface px-3 text-ink"
                   />
-                  <Botao type="submit" disabled={enviando}>
-                    Enviar pergunta
-                  </Botao>
-                </div>
+                  <Botao
+                    type="submit"
+                    className="composer-send"
+                    icone="send"
+                    aria-label="Enviar pergunta"
+                    disabled={enviando}
+                  />
+                </form>
                 {erro && (
-                  <p role="alert" className="text-danger-text">
+                  <p role="alert" className="composer-error">
                     {erro}
                   </p>
                 )}
-                <p className="text-sm text-ink-muted">
-                  {tutor.data.uso.usadas + usadasNestaVisita} de {tutor.data.uso.limite} perguntas
-                  hoje
+                <p className="small muted composer-meta">
+                  <span>
+                    {tutor.data.uso.usadas + usadasNestaVisita} de {tutor.data.uso.limite} perguntas
+                    hoje
+                  </span>{' '}
+                  · As dúvidas chegam ao professor sem o seu nome.
                 </p>
-              </form>
+              </div>
             </>
           )}
         </>
@@ -566,10 +619,7 @@ export function PaginaTutor() {
       {previa && (
         <PreviaDaDuvida
           previa={previa}
-          aoFechar={() => {
-            setPrevia(null);
-            quemAbriuAPrevia.current?.focus(); // o foco volta ao botão que abriu
-          }}
+          aoFechar={() => setPrevia(null)}
           aoEnviar={() => void confirmarDuvida()}
           enviando={enviandoDuvida}
           erro={erroDaDuvida}
@@ -580,6 +630,6 @@ export function PaginaTutor() {
       <p data-testid="anuncio-do-tutor" aria-live="polite" className="sr-only">
         {anuncio}
       </p>
-    </main>
+    </div>
   );
 }

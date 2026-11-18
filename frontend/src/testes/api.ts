@@ -25,6 +25,10 @@ export type ChamadaSimulada = {
 const PADROES: Record<string, RespostaSimulada> = {
   'GET /api/notificacoes': { corpo: { notificacoes: [], nao_lidas: 0 } },
   'GET /api/entrada': { corpo: { google: true, desenvolvimento: true } },
+  // A faixa do menu do professor mostra o nome da turma, tirado da lista de disciplinas.
+  'GET /api/disciplinas': { corpo: [] },
+  // O cartão do tutor, na tela inicial, procura uma disciplina com material pronto.
+  'GET /api/disciplinas?filtro=com-tutor': { corpo: [] },
 };
 
 export function simularApi(rotas: Record<string, Rota>) {
@@ -112,7 +116,11 @@ export const DISCIPLINAS = [
   semestre: '2026/2',
   professor_nome,
   favorita: false,
+  tem_tutor: false,
 }));
+
+/** Estruturas de Dados, a disciplina do Carlos, que aparece na maioria dos testes. */
+export const ESTRUTURAS = DISCIPLINAS[3]!;
 
 /** A página inicial pede as disciplinas favoritas; testes que não tratam delas usam esta rota. */
 export const FAVORITAS_VAZIAS = {

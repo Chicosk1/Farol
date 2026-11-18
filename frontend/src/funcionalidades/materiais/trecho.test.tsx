@@ -35,7 +35,10 @@ describe('página citada com o trecho destacado (MAT-T32)', () => {
     simular();
     const { container } = renderizarApp('/trechos/31');
 
-    expect(await screen.findByRole('heading', { name: 'Aula 5: Pilhas' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Aula 5, página 3' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Pilhas · PDF publicado pelo professor')).toBeInTheDocument();
     expect(container.querySelector('mark')).toHaveTextContent(
       'O último inserido é o primeiro a sair.',
     );

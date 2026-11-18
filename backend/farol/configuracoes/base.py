@@ -178,6 +178,10 @@ DATABASES = {
         "PASSWORD": ambiente.opcional("POSTGRES_PASSWORD", "farol"),
         "HOST": ambiente.opcional("POSTGRES_HOST", "localhost"),
         "PORT": ambiente.opcional("POSTGRES_PORT", "5432"),
+        # Busca vetorial exata com o índice HNSW (TUT-T28): sem a varredura iterativa do pgvector
+        # 0.8, o índice para nos 40 candidatos mais próximos de todo o banco, e o filtro por
+        # disciplina, aplicado depois, podia esconder os trechos da disciplina certa.
+        "OPTIONS": {"options": "-c hnsw.iterative_scan=strict_order"},
     }
 }
 

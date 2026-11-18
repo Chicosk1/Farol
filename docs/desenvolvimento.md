@@ -142,7 +142,7 @@ Toda dependência nova precisa de justificativa no `plan.md` da spec ou de um AD
 
 ### Popular os dados de demonstração
 
-O comando `popular_demo` cria as pessoas, as disciplinas e as matrículas fictícias do protótipo: a aluna Ana Souza, matriculada nas seis disciplinas do 2º período de Sistemas de Informação, e os professores de cada uma (Carlos Mendes leciona Estruturas de Dados). Pode ser rodado várias vezes e só funciona em desenvolvimento e em teste. Com ele, o login de desenvolvimento (`POST /api/dev/entrar`) entra como `ana.souza@exemplo.edu.br` ou `carlos.mendes@exemplo.edu.br`:
+O comando `popular_demo` cria as pessoas, as disciplinas e as matrículas fictícias do protótipo: a aluna Ana Souza, matriculada nas seis disciplinas do 2º período de Sistemas de Informação, e os professores de cada uma (Carlos Mendes leciona Estruturas de Dados). Estruturas de Dados já vem com as 13 aulas fictícias do conjunto de avaliação do tutor publicadas e processadas com o provedor de IA configurado, para o tutor responder logo de cara. Pode ser rodado várias vezes e só funciona em desenvolvimento e em teste. Com ele, o login de desenvolvimento (`POST /api/dev/entrar`) entra como `ana.souza@exemplo.edu.br` ou `carlos.mendes@exemplo.edu.br`:
 
 ```bash
 docker compose run --rm backend python manage.py popular_demo

@@ -50,7 +50,7 @@ describe('entrada e sessão (ACE-T26)', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Entrar como aluna' }));
 
     await waitFor(() => expect(roteador.state.location.pathname).toBe('/'));
-    expect(await screen.findByText('Olá, Ana Souza')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Olá, Ana' })).toBeInTheDocument();
     expect(chamadas.find((c) => c.metodo === 'POST')?.corpo).toEqual({ email: ANA.email });
   });
 
@@ -63,7 +63,9 @@ describe('entrada e sessão (ACE-T26)', () => {
 
     fireEvent.click(await screen.findByRole('button', { name: 'Entrar como professor' }));
 
-    expect(await screen.findByText('Olá, Carlos Mendes')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Olá, Carlos' }),
+    ).toBeInTheDocument();
     expect(chamadas.find((c) => c.metodo === 'POST')?.corpo).toEqual({ email: CARLOS.email });
   });
 
@@ -96,8 +98,8 @@ describe('entrada e sessão (ACE-T26)', () => {
     simularApi({ 'GET /api/eu': { corpo: ANA }, ...FAVORITAS_VAZIAS });
     renderizarApp('/');
 
-    expect(await screen.findByText('Olá, Ana Souza')).toBeInTheDocument();
-    expect(screen.getByText('Perfil: aluno')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Olá, Ana' })).toBeInTheDocument();
+    expect(screen.getByText(/feira|sábado|domingo/)).toBeInTheDocument();
   });
 
   it('sair encerra a sessão e volta para a tela de entrada', async () => {
@@ -108,7 +110,8 @@ describe('entrada e sessão (ACE-T26)', () => {
     });
     const { roteador } = renderizarApp('/');
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Sair' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Conta de Ana Souza' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Sair' }));
 
     await waitFor(() => expect(roteador.state.location.pathname).toBe('/entrar'));
     expect(chamadas.some((c) => c.metodo === 'POST' && c.caminho === '/api/sair')).toBe(true);
@@ -179,11 +182,16 @@ describe('login com o Google e troca de perfil (ACE-T23)', () => {
     });
     renderizarApp('/');
 
-    const seletor = await screen.findByRole('combobox', { name: 'Perfil em uso' });
+    fireEvent.click(await screen.findByRole('button', { name: 'Conta de Carlos Mendes' }));
+    const seletor = screen.getByRole('combobox', { name: 'Perfil em uso' });
     expect(seletor).toHaveValue('professor');
     fireEvent.change(seletor, { target: { value: 'aluno' } });
 
-    expect(await screen.findByText('Perfil: aluno')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByRole('link', { name: 'Farol, página inicial' })).toHaveTextContent(
+        'Tutor de estudos',
+      ),
+    );
     expect(chamadas.find((c) => c.caminho === '/api/eu/perfil-ativo')?.corpo).toEqual({
       perfil: 'aluno',
     });
@@ -193,7 +201,8 @@ describe('login com o Google e troca de perfil (ACE-T23)', () => {
     simularApi({ 'GET /api/eu': { corpo: ANA }, ...FAVORITAS_VAZIAS });
     renderizarApp('/');
 
-    await screen.findByText('Olá, Ana Souza');
+    await screen.findByRole('heading', { name: 'Olá, Ana' });
+    fireEvent.click(screen.getByRole('button', { name: 'Conta de Ana Souza' }));
     expect(screen.queryByRole('combobox', { name: 'Perfil em uso' })).not.toBeInTheDocument();
   });
 
@@ -201,6 +210,7 @@ describe('login com o Google e troca de perfil (ACE-T23)', () => {
     const duplo = { ...CARLOS, perfis: ['professor', 'aluno'], perfil_ativo: 'professor' };
     simularApi({ 'GET /api/eu': { corpo: duplo }, ...FAVORITAS_VAZIAS });
     const { container } = renderizarApp('/');
+    fireEvent.click(await screen.findByRole('button', { name: 'Conta de Carlos Mendes' }));
     await screen.findByRole('combobox', { name: 'Perfil em uso' });
 
     expect(await violacoesDeAcessibilidade(container)).toEqual([]);

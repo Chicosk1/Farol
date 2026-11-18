@@ -60,6 +60,11 @@ def listar_disciplinas(
     return disciplinas.select_related("professor").order_by(Lower(Unaccent("nome")), "id")
 
 
+def disciplina_da_pessoa(pessoa, perfil: str | None, disciplina_id: int) -> Disciplina | None:
+    """Uma das disciplinas da pessoa no perfil em uso, com a marca de favorita (ACE-RF-04)."""
+    return listar_disciplinas(pessoa, perfil).filter(id=disciplina_id).first()
+
+
 def garantir_disciplina(
     codigo: str, nome: str, turma: str, semestre: str, professor
 ) -> tuple[Disciplina, bool]:

@@ -44,7 +44,10 @@ function simularTutor(
 ) {
   return simularApi({
     'GET /api/eu': { corpo: ANA },
-    'GET /api/disciplinas': { corpo: DISCIPLINAS },
+    'GET /api/disciplinas': {
+      corpo: DISCIPLINAS.map((d) => ({ ...d, tem_tutor: d.id === ESTRUTURAS.id })),
+    },
+    [`GET /api/disciplinas/${ESTRUTURAS.id}`]: { corpo: { ...ESTRUTURAS, tem_tutor: true } },
     [`GET ${URL_DO_TUTOR}`]: { corpo: tutor },
     [`GET /api/disciplinas/${ESTRUTURAS.id}/minhas-duvidas`]: { corpo: duvidas },
     ...(pergunta ? { [`POST ${URL_DO_TUTOR}/perguntas`]: pergunta } : {}),
@@ -206,10 +209,11 @@ describe('tela do tutor (TUT-T24)', () => {
         ],
       }),
     );
-    const { container } = renderizarApp(`/disciplinas/${ESTRUTURAS.id}/tutor`);
+    renderizarApp(`/disciplinas/${ESTRUTURAS.id}/tutor`);
 
-    expect(await screen.findByText('<b>negrito</b> [1]')).toBeInTheDocument();
-    expect(container.querySelector('b')).toBeNull();
+    const resposta = await screen.findByText('<b>negrito</b> [1]');
+    expect(screen.getByRole('main').querySelector('b')).toBeNull();
+    expect(resposta.querySelector('b')).toBeNull();
   });
 
   it('a lista de disciplinas da aluna leva ao tutor de cada disciplina', async () => {
@@ -283,11 +287,9 @@ describe('tela do tutor (TUT-T24)', () => {
     const { container } = renderizarApp(`/disciplinas/${ESTRUTURAS.id}/tutor`);
 
     const botao = await screen.findByRole('button', { name: 'Política de uso de IA' });
-    expect(botao).toHaveAttribute('aria-expanded', 'false');
     fireEvent.click(botao);
 
-    const politica = screen.getByRole('region', { name: 'Política de uso de IA' });
-    expect(botao).toHaveAttribute('aria-expanded', 'true');
+    const politica = screen.getByRole('dialog', { name: 'Política de uso de IA' });
     expect(within(politica).getByText('Use o tutor para estudar, não para copiar.')).toBeVisible();
     expect(within(politica).getByText(/só com o material desta disciplina/)).toBeVisible();
     expect(within(politica).getByText(/dá pistas em vez da resposta pronta/)).toBeVisible();
@@ -301,7 +303,7 @@ describe('tela do tutor (TUT-T24)', () => {
 
     fireEvent.click(await screen.findByRole('button', { name: 'Política de uso de IA' }));
 
-    const politica = screen.getByRole('region', { name: 'Política de uso de IA' });
+    const politica = screen.getByRole('dialog', { name: 'Política de uso de IA' });
     expect(
       within(politica).getByText(
         'O professor ainda não escreveu uma política para esta disciplina.',
@@ -443,14 +445,15 @@ describe('tela do tutor (TUT-T24)', () => {
     abrir.focus();
     fireEvent.click(abrir);
     const dialogo = await screen.findByRole('dialog');
+    const fechar = within(dialogo).getByRole('button', { name: 'Fechar' });
     const cancelar = within(dialogo).getByRole('button', { name: 'Cancelar' });
     const enviar = within(dialogo).getByRole('button', { name: 'Enviar ao professor' });
-    expect(cancelar).toHaveFocus();
+    expect(cancelar).toHaveFocus(); // começa no Cancelar: enviar exige uma decisão
 
     enviar.focus();
     fireEvent.keyDown(enviar, { key: 'Tab' });
-    expect(cancelar).toHaveFocus();
-    fireEvent.keyDown(cancelar, { key: 'Tab', shiftKey: true });
+    expect(fechar).toHaveFocus();
+    fireEvent.keyDown(fechar, { key: 'Tab', shiftKey: true });
     expect(enviar).toHaveFocus();
 
     fireEvent.keyDown(enviar, { key: 'Escape' });

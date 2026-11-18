@@ -4,3 +4,8 @@ package-lock.json
 src/api/esquema.d.ts
 # Cópia fiel de prototipo/css/tokens.css, para as duas versões continuarem fáceis de comparar.
 src/estilos/tokens.css
+# Cópias do CSS do protótipo (prototipo/css/components.css e app.css) e dos ícones, geradas para o
+# React com o mesmo conteúdo (ACE-T70): ficam no formato do protótipo, fáceis de comparar.
+src/estilos/componentes.css
+src/estilos/layout.css
+src/componentes/icones.ts

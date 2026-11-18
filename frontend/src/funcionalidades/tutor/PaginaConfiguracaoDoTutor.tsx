@@ -8,7 +8,8 @@ import {
   type ConfiguracaoDoTutor,
 } from '../../api/cliente';
 import { Botao } from '../../componentes/Botao';
-import { useDisciplinas } from '../disciplinas/consultas';
+import { Icone } from '../../componentes/Icone';
+import { useDisciplina } from '../disciplinas/consultas';
 import { JanelasDeProva } from './JanelasDeProva';
 
 const LIMITES = [20, 40, 60] as const;
@@ -40,75 +41,92 @@ function Formulario({
   }
 
   return (
-    <form
-      onSubmit={aoEnviar}
-      className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-4"
-    >
-      <h2 className="text-lg font-bold">Configuração</h2>
-      <div className="flex items-start gap-3">
-        <input
-          id="modo-pistas"
-          type="checkbox"
-          checked={modoPistas}
-          onChange={(evento) => setModoPistas(evento.target.checked)}
-          aria-describedby="modo-pistas-ajuda"
-          className="mt-1 h-6 w-6"
-        />
-        <div>
-          <label htmlFor="modo-pistas" className="font-bold">
-            Modo pistas
-          </label>
-          <p id="modo-pistas-ajuda" className="text-sm text-ink-muted">
-            Em exercícios, o tutor dá pistas em etapas em vez da resposta pronta.
-          </p>
+    <form onSubmit={aoEnviar} className="stack">
+      <section className="panel" aria-labelledby="titulo-tutor">
+        <h2 id="titulo-tutor" className="card-heading">
+          <Icone nome="message-circle" />
+          Tutor
+        </h2>
+        <div className="switch-row">
+          <div className="switch-text">
+            <label htmlFor="modo-pistas" className="strong">
+              Modo pistas
+            </label>
+            <p id="modo-pistas-ajuda" className="small muted">
+              Em perguntas de exercício, o tutor guia em etapas e não entrega a resposta final.
+            </p>
+          </div>
+          <input
+            id="modo-pistas"
+            type="checkbox"
+            className="switch"
+            checked={modoPistas}
+            onChange={(evento) => setModoPistas(evento.target.checked)}
+            aria-describedby="modo-pistas-ajuda"
+          />
         </div>
-      </div>
+        <div className="switch-row">
+          <div className="switch-text">
+            <label htmlFor="limite" className="strong">
+              Limite de perguntas por dia
+            </label>
+            <p id="limite-ajuda" className="small muted">
+              Por aluno. Controla o custo e evita abuso; o contador zera à meia-noite.
+            </p>
+          </div>
+          <span className="fr-select-wrap select-inline">
+            <select
+              id="limite"
+              className="fr-select"
+              value={limite}
+              aria-describedby="limite-ajuda"
+              onChange={(evento) =>
+                setLimite(Number(evento.target.value) as (typeof LIMITES)[number])
+              }
+            >
+              {LIMITES.map((valor) => (
+                <option key={valor} value={valor}>
+                  {valor} perguntas
+                </option>
+              ))}
+            </select>
+          </span>
+        </div>
+      </section>
 
-      <div>
-        <label htmlFor="limite" className="block font-bold">
-          Limite de perguntas por dia
-        </label>
-        <select
-          id="limite"
-          value={limite}
-          onChange={(evento) => setLimite(Number(evento.target.value) as (typeof LIMITES)[number])}
-          className="mt-1 min-h-12 rounded-lg border border-line-control bg-surface px-3 text-ink"
-        >
-          {LIMITES.map((valor) => (
-            <option key={valor} value={valor}>
-              {valor} perguntas por aluno
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label htmlFor="politica" className="block font-bold">
+      <section className="panel" aria-labelledby="titulo-politica">
+        <h2 id="titulo-politica" className="card-heading">
+          <Icone nome="shield-lock" />
+          Política de uso de IA
+        </h2>
+        <p id="politica-ajuda" className="small muted">
+          Os alunos veem este texto no tutor, no link "Política de uso de IA", junto com o resumo
+          das regras.
+        </p>
+        <label htmlFor="politica" className="sr-only">
           Política de uso de IA
         </label>
         <textarea
           id="politica"
+          className="fr-input textarea"
+          rows={5}
           value={politica}
           onChange={(evento) => setPolitica(evento.target.value)}
-          rows={5}
           aria-describedby="politica-ajuda"
-          className="mt-1 w-full rounded-lg border border-line-control bg-surface p-3 text-ink"
         />
-        <p id="politica-ajuda" className="text-sm text-ink-muted">
-          Os alunos veem este texto no tutor, junto com o resumo das regras.
-        </p>
-      </div>
+      </section>
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="row row--end">
+        <p role="status" className="bubble-note">
+          {salvar.isSuccess ? 'Configuração salva.' : ''}
+        </p>
         <Botao type="submit" disabled={salvar.isPending}>
           Salvar configuração
         </Botao>
-        <p role="status" className="text-success-text">
-          {salvar.isSuccess ? 'Configuração salva.' : ''}
-        </p>
       </div>
       {salvar.isError && (
-        <p role="alert" className="text-danger-text">
+        <p role="alert" className="notice notice--danger">
+          <Icone nome="alert-triangle" />
           Não foi possível salvar a configuração. Tente de novo.
         </p>
       )}
@@ -116,32 +134,41 @@ function Formulario({
   );
 }
 
-/** O tutor da disciplina para o professor: configuração e, depois, as janelas de prova. */
+/**
+ * A configuração da disciplina para o professor, como a tela "Disciplina" do protótipo: o tutor
+ * (modo pistas e limite), a política de uso de IA e as provas (TUT-RF-06 a 08 e 10).
+ */
 export function PaginaConfiguracaoDoTutor() {
   const disciplinaId = Number(useParams().id);
-  const disciplina = useDisciplinas('').data?.find((d) => d.id === disciplinaId);
+  const disciplina = useDisciplina(disciplinaId).data;
   const configuracao = useQuery({
     queryKey: ['tutor-configuracao', disciplinaId],
     queryFn: () => obterConfiguracaoDoTutor(disciplinaId),
   });
 
   return (
-    <main id="conteudo" className="mx-auto flex max-w-3xl flex-col gap-4 p-4 text-ink">
-      <h1 className="text-2xl font-extrabold">
-        {disciplina ? `Tutor de ${disciplina.nome}` : 'Tutor da disciplina'}
-      </h1>
+    <div className="page page--narrow">
+      <div className="page-head">
+        <div>
+          <h1 className="page-title">Disciplina</h1>
+          <p className="page-sub">
+            {disciplina ? `${disciplina.nome} · ${disciplina.turma}` : 'Configuração do tutor'}
+          </p>
+        </div>
+      </div>
       {configuracao.isPending && (
-        <p role="status" className="text-ink-muted">
+        <p role="status" className="muted">
           Carregando a configuração…
         </p>
       )}
       {configuracao.isError && (
-        <p role="alert" className="text-danger-text">
+        <p role="alert" className="notice notice--danger">
+          <Icone nome="alert-triangle" />
           Não foi possível carregar a configuração do tutor. Tente de novo em instantes.
         </p>
       )}
       {configuracao.data && <Formulario disciplinaId={disciplinaId} inicial={configuracao.data} />}
       <JanelasDeProva disciplinaId={disciplinaId} />
-    </main>
+    </div>
   );
 }

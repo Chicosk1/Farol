@@ -9,7 +9,9 @@ import {
 } from '../../api/cliente';
 import { Abas } from '../../componentes/Abas';
 import { Botao } from '../../componentes/Botao';
-import { useDisciplinas } from '../disciplinas/consultas';
+import { Icone } from '../../componentes/Icone';
+import { Selo } from '../../componentes/Selo';
+import { useDisciplina } from '../disciplinas/consultas';
 
 type Aba = 'aberta' | 'respondida';
 type DuvidaNaTela = DuvidaDoProfessor & { quando: string };
@@ -41,7 +43,7 @@ async function carregar(disciplinaId: number, aba: Aba): Promise<DuvidaNaTela[]>
 /** As dúvidas que o material não respondeu, sem dados dos alunos (DUV-RF-05 e DUV-RF-07). */
 export function PaginaDuvidas() {
   const disciplinaId = Number(useParams().id);
-  const disciplina = useDisciplinas('').data?.find((d) => d.id === disciplinaId);
+  const disciplina = useDisciplina(disciplinaId).data;
   const [aba, setAba] = useState<Aba>('aberta');
   const clienteDeDados = useQueryClient();
   const duvidas = useQuery({
@@ -55,66 +57,97 @@ export function PaginaDuvidas() {
   });
 
   return (
-    <main id="conteudo" className="mx-auto flex max-w-3xl flex-col gap-4 p-4 text-ink">
-      <div>
-        <h1 className="text-2xl font-extrabold">Dúvidas que o material não respondeu</h1>
-        {disciplina && <p className="text-ink-muted">{disciplina.nome}</p>}
-        <p className="text-sm text-ink-muted">
-          As dúvidas chegam sem o nome dos alunos. Trate delas em aula e marque como respondidas.
-        </p>
+    <div className="page">
+      <div className="page-head">
+        <div>
+          <h1 className="page-title">Dúvidas que o material não respondeu</h1>
+          <p className="page-sub">
+            {disciplina ? `${disciplina.nome} · ${disciplina.turma} · ` : ''}Trate delas em aula e
+            marque como respondidas.
+          </p>
+        </div>
+        {aba === 'aberta' && duvidas.data && (
+          <Selo pilula>
+            {duvidas.data.length} {duvidas.data.length === 1 ? 'pendente' : 'pendentes'}
+          </Selo>
+        )}
       </div>
       <Abas rotulo="Situação das dúvidas" abas={ABAS} ativa={aba} aoMudar={setAba}>
         {duvidas.isPending && (
-          <p role="status" className="mt-4 text-ink-muted">
+          <p role="status" className="muted">
             Carregando as dúvidas…
           </p>
         )}
         {(duvidas.isError || mudar.isError) && (
-          <p role="alert" className="mt-4 text-danger-text">
+          <p role="alert" className="notice notice--danger">
+            <Icone nome="alert-triangle" />
             Não foi possível atualizar as dúvidas. Tente de novo em instantes.
           </p>
         )}
         {duvidas.data &&
           (duvidas.data.length === 0 ? (
-            <p className="mt-4 text-ink-muted">
-              {aba === 'aberta' ? 'Nenhuma dúvida aberta.' : 'Nenhuma dúvida respondida ainda.'}
-            </p>
+            <ul className="panel list">
+              <li className="list-row muted">
+                {aba === 'aberta' ? 'Nenhuma dúvida aberta.' : 'Nenhuma dúvida respondida ainda.'}
+              </li>
+            </ul>
           ) : (
-            <ul aria-label="Dúvidas" className="mt-4 flex flex-col gap-2">
+            <ul aria-label="Dúvidas" className="panel list">
               {duvidas.data.map((duvida) => (
-                <li key={duvida.id} className="rounded-lg border border-line bg-surface p-4">
-                  <div className="flex flex-wrap items-center gap-2 text-sm text-ink-muted">
-                    {duvida.nova && (
-                      <span className="rounded-full bg-brand-yellow px-2 font-bold text-on-yellow">
-                        Nova
-                      </span>
-                    )}
-                    <span>{duvida.quando}</span>
-                  </div>
-                  <p className="mt-1 whitespace-pre-wrap">{duvida.texto}</p>
-                  <div className="mt-2 flex flex-wrap gap-2">
+                <li key={duvida.id} className={aba === 'aberta' ? 'list-row' : 'list-row is-done'}>
+                  {aba === 'aberta' ? (
+                    <span className="file-icon">
+                      <Icone nome="message-question" />
+                    </span>
+                  ) : (
+                    <Icone nome="circle-check" />
+                  )}
+                  <span className="list-row-main">
+                    <span className="trecho-texto texto-entre-aspas">{duvida.texto}</span>
+                    <span className="small muted">
+                      {duvida.quando} · enviada pelo tutor
+                      {duvida.nova && (
+                        <>
+                          {' · '}
+                          <Selo tom="destaque" pilula>
+                            Nova
+                          </Selo>
+                        </>
+                      )}
+                    </span>
+                  </span>
+                  <span className="row">
                     {aba === 'aberta' && (
                       <Botao
+                        variante="contorno"
+                        pequeno
+                        icone="check"
                         disabled={mudar.isPending}
                         onClick={() => mudar.mutate({ id: duvida.id, status: 'respondida' })}
                       >
                         Respondida em aula
                       </Botao>
                     )}
-                    <Botao
-                      variante="secundario"
+                    <button
+                      type="button"
+                      className="fr-icon-btn fr-icon-btn--sm"
                       aria-label={`Ocultar a dúvida: ${duvida.texto}`}
+                      title="Ocultar a dúvida (por exemplo, se for ofensiva)"
                       disabled={mudar.isPending}
                       onClick={() => mudar.mutate({ id: duvida.id, status: 'oculta' })}
                     >
-                      Ocultar
-                    </Botao>
-                  </div>
+                      <Icone nome="x" />
+                    </button>
+                  </span>
                 </li>
               ))}
             </ul>
           ))}
       </Abas>
-    </main>
+      <p className="privacy-note">
+        <Icone nome="shield-lock" />
+        As dúvidas chegam sem o nome dos alunos, sem o e-mail e sem o horário do envio.
+      </p>
+    </div>
   );
 }

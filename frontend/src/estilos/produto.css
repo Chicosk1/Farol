@@ -1,0 +1,75 @@
+/*
+ * Peças que só o produto tem, no mesmo estilo do protótipo (componentes.css e layout.css).
+ * Usam só os tokens do design system.
+ */
+
+/* Campo dentro de um menu suspenso do cabeçalho, como o perfil em uso no menu da conta. */
+.popover-campo {
+  padding: var(--space-2) var(--space-4) var(--space-3);
+  border-top: 1px solid var(--line);
+}
+
+/* Link de menu suspenso: o mesmo visual do botão de ação. */
+a.popover-action {
+  text-decoration: none;
+}
+
+/* Lista de disciplinas no modo lista: cada linha é um item, com a borda entre elas. */
+.list-panel > li + li > .course-row {
+  border-top: 1px solid var(--line);
+}
+
+/* Atalhos no rodapé do cartão de disciplina, à direita. */
+.cartao-atalhos {
+  justify-content: flex-end;
+}
+
+/* Botão que é o rótulo de um campo de arquivo escondido: o foco do campo aparece no botão. */
+.campo-de-arquivo {
+  cursor: pointer;
+}
+.campo-de-arquivo:focus-within {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Texto da página citada: mantém as quebras de linha do PDF. */
+.trecho-texto {
+  white-space: pre-wrap;
+}
+
+/* Resposta do tutor que deu erro no meio do caminho. */
+.fr-bubble.bolha-erro {
+  background: var(--danger-soft);
+  color: var(--danger-text);
+}
+
+/* Listas que usam o visual de linha do protótipo (sugestões, fontes da resposta). */
+.suggestions,
+.tutor-log .row {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Abas numa coluna (componente Abas): do tamanho do conteúdo, como no protótipo. */
+.stack > .fr-tabs {
+  align-self: flex-start;
+}
+
+/* Texto de aluno citado entre aspas, como as dúvidas do radar no protótipo. */
+.texto-entre-aspas::before {
+  content: '“';
+}
+.texto-entre-aspas::after {
+  content: '”';
+}
+
+/* Notificação ainda não lida, no sino. */
+.popover-item.is-unread {
+  background: var(--accent-soft);
+}
+.popover-item a {
+  color: var(--ink);
+  font-weight: 700;
+}

@@ -23,6 +23,15 @@ def vetor(*posicoes_com_valor: tuple[int, float]) -> list[float]:
     return v
 
 
+@pytest.fixture(autouse=True)
+def busca_exata(db):
+    """Os testes deste módulo conferem a ordem exata pela distância. O índice HNSW, que é
+    aproximado, fica de fora: no banco de testes ele acumula entradas mortas dos testes desfeitos
+    e pode pular trechos (TUT-T28). A busca do tutor não usa o índice."""
+    with connection.cursor() as cursor:
+        cursor.execute("SET LOCAL enable_indexscan = off")
+
+
 @pytest.fixture
 def disciplina(professor) -> Disciplina:
     return Disciplina.objects.create(
@@ -114,11 +123,15 @@ def test_a_busca_vetorial_devolve_primeiro_o_trecho_mais_proximo(material):
         vetor=vetor((1, 1.0)),
     )
 
-    resultado = list(
-        Trecho.objects.order_by(CosineDistance("vetor", vetor((0, 1.0)))).values_list(
-            "id", flat=True
+    # A ordem pela distância é exata. O índice HNSW, que é aproximado, fica de fora: no banco de
+    # testes ele acumula entradas mortas dos testes desfeitos e pode pular trechos (TUT-T28).
+    with connection.cursor() as cursor:
+        cursor.execute("SET LOCAL enable_indexscan = off")
+        resultado = list(
+            Trecho.objects.order_by(CosineDistance("vetor", vetor((0, 1.0)))).values_list(
+                "id", flat=True
+            )
         )
-    )
 
     assert resultado == [perto.id, meio.id, longe.id]
 
@@ -181,3 +194,16 @@ def test_existe_o_indice_hnsw_para_a_busca_por_proximidade():
     indice = restricoes.get("trecho_vetor_hnsw")
     assert indice is not None
     assert indice["columns"] == ["vetor"]
+
+
+@pytest.mark.requisito("TUT-RF-01")
+def test_a_conexao_liga_a_varredura_iterativa_do_indice_hnsw(db):
+    """Sem ela, o índice HNSW para nos 40 candidatos mais próximos, mesmo que sejam entradas
+    mortas ou de outra disciplina, e a busca devolve menos trechos do que existem (TUT-T28)."""
+    from django.db import connection
+
+    with connection.cursor() as cursor:
+        cursor.execute("SHOW hnsw.iterative_scan")
+        (valor,) = cursor.fetchone()
+
+    assert valor == "strict_order"

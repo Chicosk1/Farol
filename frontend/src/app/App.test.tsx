@@ -14,7 +14,7 @@ describe('aplicação', () => {
     simularApi({ 'GET /api/eu': { corpo: ANA }, ...FAVORITAS_VAZIAS });
     renderizarApp('/');
 
-    const titulo = await screen.findByRole('heading', { level: 1, name: 'Farol' });
+    const titulo = await screen.findByRole('heading', { level: 1, name: /^Olá, / });
     expect(screen.getByRole('main')).toContainElement(titulo);
   });
 

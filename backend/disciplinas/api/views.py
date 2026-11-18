@@ -35,18 +35,34 @@ from .serializers import (
 def listar(request: Request) -> Response:
     consulta = ConsultaDeDisciplinasSerializer(data=request.query_params)
     consulta.is_valid(raise_exception=True)
+    # Quem sabe quais disciplinas têm material pronto é o módulo materiais (ACE-T34).
+    prontas = materiais.disciplinas_com_material_pronto()
     disciplinas = servicos.listar_disciplinas(
         request.user,
         contas.perfil_ativo(request.user, request.session),
         busca=consulta.validated_data["busca"],
         filtro=consulta.validated_data["filtro"],
-        com_material_pronto=(
-            materiais.disciplinas_com_material_pronto()
-            if consulta.validated_data["filtro"] == "com-tutor"
-            else None
-        ),
+        com_material_pronto=prontas,
     )
-    return Response(DisciplinaSerializer(disciplinas, many=True).data)
+    contexto = {"com_material_pronto": prontas}
+    return Response(DisciplinaSerializer(disciplinas, many=True, context=contexto).data)
+
+
+@extend_schema(
+    summary="Uma disciplina da pessoa, com os mesmos dados da lista",
+    responses=DisciplinaSerializer,
+    tags=["disciplinas"],
+)
+@api_view(["GET"])
+@permission_classes([AcessoADisciplina])
+def detalhe(request: Request, disciplina_id: int) -> Response:
+    disciplina = servicos.disciplina_da_pessoa(
+        request.user, contas.perfil_ativo(request.user, request.session), disciplina_id
+    )
+    if disciplina is None:  # o perfil em uso não vê esta disciplina
+        return Response(status=status.HTTP_403_FORBIDDEN)
+    contexto = {"com_material_pronto": materiais.disciplinas_com_material_pronto()}
+    return Response(DisciplinaSerializer(disciplina, context=contexto).data)
 
 
 @extend_schema(

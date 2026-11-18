@@ -8,6 +8,13 @@ from django.test import override_settings
 
 from contas.models import Perfil, Pessoa
 from disciplinas.models import Disciplina, Matricula
+from materiais.models import Material, Trecho
+
+
+@pytest.fixture(autouse=True)
+def arquivos_temporarios(settings, tmp_path):
+    """Os PDFs da demonstração vão para uma pasta temporária, apagada depois do teste."""
+    settings.MEDIA_ROOT = tmp_path
 
 
 def popular() -> str:
@@ -145,3 +152,48 @@ def test_cria_a_equipe_de_ti_que_importa_turmas_pelo_painel():
     assert ti.perfis == [Perfil.ADMIN]
     assert ti.is_staff
     assert not ti.has_usable_password()
+
+
+@pytest.mark.requisito("MAT-RF-08")
+@pytest.mark.django_db
+def test_estruturas_de_dados_ganha_as_13_aulas_ficticias_prontas_para_o_tutor():
+    popular()
+
+    materiais = Material.objects.filter(disciplina__nome="Estruturas de Dados")
+    assert materiais.count() == 13
+    assert set(materiais.values_list("status", flat=True)) == {Material.Status.PRONTO}
+    assert materiais.get(aula_numero=4).aula_titulo == "Pilhas"
+    assert Trecho.objects.filter(material__in=materiais).exists()
+    # As outras disciplinas continuam sem material: o professor de cada uma é quem publica.
+    assert not Material.objects.exclude(disciplina__nome="Estruturas de Dados").exists()
+
+
+@pytest.mark.django_db
+def test_rodar_de_novo_nao_duplica_os_materiais():
+    popular()
+
+    popular()
+
+    assert Material.objects.count() == 13
+
+
+@pytest.mark.requisito("MAT-RF-08")
+@pytest.mark.django_db
+def test_a_aluna_ve_o_tutor_de_estruturas_de_dados_depois_da_demonstracao(cliente):
+    popular()
+
+    cliente.post("/api/dev/entrar", {"email": "ana.souza@exemplo.edu.br"}, format="json")
+    com_tutor = cliente.get("/api/disciplinas", {"filtro": "com-tutor"}).json()
+
+    assert [d["nome"] for d in com_tutor] == ["Estruturas de Dados"]
+
+
+@pytest.mark.django_db
+def test_material_retirado_nao_impede_as_aulas_de_demonstracao():
+    popular()
+    Material.objects.update(status=Material.Status.RETIRADO)
+
+    popular()
+
+    prontos = Material.objects.filter(status=Material.Status.PRONTO)
+    assert prontos.count() == 13

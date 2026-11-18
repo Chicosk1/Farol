@@ -39,8 +39,10 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 ## Produto: História 1, perguntar e receber resposta com a fonte (P1)
 
 - [x] TUT-T20 [H1] Testes de aceite dos cenários 1 a 4 com o provedor falso, entregues junto da TUT-T22 (TUT-RF-01, TUT-RF-02, TUT-RF-03)
+- [x] TUT-T28 [H1] Varredura iterativa do índice HNSW (pgvector 0.8) ligada na conexão com o banco, para entradas mortas do índice ou de outras disciplinas não esconderem trechos numa busca pelo índice (TUT-RF-01)
 - [x] TUT-T21 [H1] Busca dos 6 trechos mais próximos, filtrada por disciplina e por material pronto (TUT-RF-01)
 - [x] TUT-T22 [H1] Regras fixas do prompt e conversão das marcações de trecho em citações, descartando frases sem marcação (TUT-RF-02, TUT-RF-03, TUT-RNF-02)
+- [x] TUT-T29 [H1] A rota de perguntas aceita o cabeçalho `Accept: text/event-stream` que o navegador envia; sem isso, a negociação de conteúdo recusava toda pergunta com 406 (TUT-RF-13)
 - [x] TUT-T23 [H1] Rota de perguntas com streaming por SSE (TUT-RF-13)
 - [x] TUT-T26 [H1] Rota `GET /api/disciplinas/{id}/tutor` para a tela do aluno: modo pistas, política, pausa, uso do dia e a conversa guardada com as citações, antes da TUT-T24 (TUT-RF-07, TUT-RF-08, TUT-RF-10, TUT-RF-12)
 - [x] TUT-T27 [H1] Resposta do modelo feita só de frases de "não encontrei", mesmo com citação, vira a resposta padrão de não encontrado (TUT-RF-04, TUT-CS-04)
@@ -86,6 +88,11 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 - [x] TUT-T92 Teste de carga para a meta de 3 segundos (TUT-RNF-01)
 - [x] TUT-T93 Painel de custo por aluno e alerta de orçamento (TUT-RNF-05)
 - [x] TUT-T94 Tirar do `RegistroUso` o campo `avaliacao`, que nunca é preenchido: o registro não tem ligação com a mensagem (TUT-RF-12)
+
+## Produto: telas iguais ao protótipo
+
+- [x] TUT-T95 Tela do tutor no formato do protótipo: bolhas, citações, avaliação, sugestões, política e tutor pausado (TUT-RF-02, TUT-RF-09, TUT-RF-10, TUT-RF-13, TUT-RF-14)
+- [x] TUT-T96 Configuração da disciplina no formato do protótipo: modo pistas, limite diário, provas e política de uso de IA (TUT-RF-06, TUT-RF-07, TUT-RF-08, TUT-RF-10)
 
 ## Dependências
 

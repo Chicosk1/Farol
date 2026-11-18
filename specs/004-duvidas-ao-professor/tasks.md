@@ -41,6 +41,10 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 - [ ] DUV-T90 Incluir as dúvidas abertas no resumo semanal, junto com a spec 007 (DUV-RF-09)
 
+## Produto: telas iguais ao protótipo
+
+- [x] DUV-T50 Dúvidas do professor no formato do protótipo (DUV-RF-05, DUV-RF-07)
+
 ## Dependências
 
 Depende da História 2 da spec 003 (resposta "não encontrei") e do filtro de dados pessoais (TUT-T90).

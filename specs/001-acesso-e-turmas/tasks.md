@@ -81,6 +81,19 @@ A primeira entrega do produto prova a arquitetura em todas as camadas com uma fu
 - [x] ACE-T90 Auditoria de acessibilidade das telas desta spec (ACE-RNF-01)
 - [x] ACE-T91 Configurar HTTPS e expiração de sessão (ACE-RNF-02)
 
+## Produto: telas iguais ao protótipo
+
+As telas do produto passam a ter o mesmo visual e a mesma organização do protótipo navegável. O CSS de componentes do protótipo é reaproveitado no front-end, com as mesmas classes `fr-`.
+
+- [x] ACE-T70 Design system do protótipo no React: CSS de componentes e de layout, ícones do Tabler e os componentes `Icone`, `Botao`, `Selo`, `Avatar`, `Progresso`, `Modal`, `EstadoVazio` e `Avisos` (ACE-RNF-01)
+- [x] ACE-T71 Casca do protótipo: cabeçalho com a marca, o sino e o menu da conta (trocar de perfil e sair), menu lateral por perfil e barra inferior no celular (ACE-RF-03)
+- [x] ACE-T72 Tela de entrada no formato do protótipo (ACE-RF-01)
+- [x] ACE-T73 Rota `GET /api/disciplinas/{id}` e campo `tem_tutor` na lista de disciplinas, para os cartões e a página da disciplina (ACE-RF-04, ACE-RF-10)
+- [x] ACE-T74 Disciplinas em cartões e em lista, com busca, abas e favoritas, como no protótipo (ACE-RF-10)
+- [x] ACE-T75 Início do aluno no formato do protótipo: cartão do tutor, novidades e as disciplinas favoritas (ACE-RF-10)
+- [x] ACE-T76 Início do professor: as disciplinas que leciona, com os atalhos para materiais, dúvidas e configuração (ACE-RF-04)
+- [x] ACE-T77 Aviso de privacidade e Meus dados no formato do protótipo (ACE-RF-08, ACE-RF-09)
+
 ## Dependências
 
 A fundação (ACE-T10 a ACE-T19) vem antes de tudo. Dentro dela, a ordem é ACE-T10, ACE-T11, ACE-T12, ACE-T19, ACE-T13 e depois ACE-T14 a ACE-T18. O login de desenvolvimento (ACE-T24) permite fazer a História 2 antes do login institucional (ACE-T20 e ACE-T21). Todas as outras specs dependem das Histórias 1 e 2.

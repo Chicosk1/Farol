@@ -9,6 +9,7 @@ import {
   type JanelaDeProva,
 } from '../../api/cliente';
 import { Botao } from '../../componentes/Botao';
+import { Icone } from '../../componentes/Icone';
 
 type JanelaNaTela = JanelaDeProva & { ativa: boolean };
 
@@ -74,107 +75,113 @@ export function JanelasDeProva({ disciplinaId }: { disciplinaId: number }) {
   }
 
   return (
-    <section
-      aria-labelledby="titulo-provas"
-      className="flex flex-col gap-4 rounded-lg border border-line bg-surface p-4"
-    >
-      <h2 id="titulo-provas" className="text-lg font-bold">
+    <section className="panel" aria-labelledby="titulo-provas">
+      <h2 id="titulo-provas" className="card-heading">
+        <Icone nome="lock" />
         Provas
       </h2>
-      <p className="text-ink-muted">
-        Durante a prova, o tutor fica pausado para os alunos desta disciplina.
-      </p>
-
       {janelas.data && (
-        <div className="flex flex-wrap items-center gap-3">
-          <p role="status" className="font-bold">
-            {ativa ? 'O tutor está pausado agora.' : 'O tutor está respondendo normalmente.'}
-          </p>
+        <div className="switch-row">
+          <div className="switch-text">
+            <p role="status" className="strong">
+              {ativa ? 'O tutor está pausado agora.' : 'O tutor está respondendo normalmente.'}
+            </p>
+            <p className="small muted">
+              Durante a prova, o tutor fica pausado para os alunos desta disciplina.
+            </p>
+            {ativa && (
+              <p className="notice notice--danger">
+                <Icone nome="lock" />O tutor está pausado para a turma. Desligue quando a prova
+                terminar.
+              </p>
+            )}
+          </div>
           {ativa ? (
             <Botao
-              variante="secundario"
+              variante="contorno"
+              pequeno
               disabled={apagar.isPending}
               onClick={() => apagar.mutate(ativa.id)}
             >
               Desligar o modo prova
             </Botao>
           ) : (
-            <Botao disabled={criar.isPending} onClick={() => criar.mutate({})}>
+            <Botao pequeno icone="lock" disabled={criar.isPending} onClick={() => criar.mutate({})}>
               Pausar o tutor agora
             </Botao>
           )}
         </div>
       )}
 
-      <form onSubmit={agendar} className="flex flex-wrap items-end gap-3">
-        <div>
-          <label htmlFor="dia-prova" className="block text-sm font-bold">
+      <form onSubmit={agendar} className="generator switch-row">
+        <div className="fr-field">
+          <label htmlFor="dia-prova" className="fr-label">
             Dia da prova
           </label>
           <input
             id="dia-prova"
             type="date"
             required
+            className="fr-input"
             value={dia}
             onChange={(evento) => setDia(evento.target.value)}
-            className="mt-1 min-h-12 rounded-lg border border-line-control bg-surface px-3 text-ink"
           />
         </div>
-        <div>
-          <label htmlFor="comeca" className="block text-sm font-bold">
+        <div className="fr-field">
+          <label htmlFor="comeca" className="fr-label">
             Começa às
           </label>
           <input
             id="comeca"
             type="time"
             required
+            className="fr-input"
             value={comeca}
             onChange={(evento) => setComeca(evento.target.value)}
-            className="mt-1 min-h-12 rounded-lg border border-line-control bg-surface px-3 text-ink"
           />
         </div>
-        <div>
-          <label htmlFor="termina" className="block text-sm font-bold">
+        <div className="fr-field">
+          <label htmlFor="termina" className="fr-label">
             Termina às
           </label>
           <input
             id="termina"
             type="time"
             required
+            className="fr-input"
             value={termina}
             onChange={(evento) => setTermina(evento.target.value)}
-            className="mt-1 min-h-12 rounded-lg border border-line-control bg-surface px-3 text-ink"
           />
         </div>
-        <Botao type="submit" variante="secundario" disabled={criar.isPending}>
+        <Botao type="submit" variante="contorno" icone="calendar" disabled={criar.isPending}>
           Agendar janela de prova
         </Botao>
       </form>
       {(criar.isError || apagar.isError) && (
-        <p role="alert" className="text-danger-text">
+        <p role="alert" className="notice notice--danger">
+          <Icone nome="alert-triangle" />
           {motivo(criar.error ?? apagar.error)}
         </p>
       )}
 
       {janelas.data &&
         (agendadas.length === 0 ? (
-          <p className="text-ink-muted">Nenhuma prova agendada.</p>
+          <p className="small muted">Nenhuma prova agendada.</p>
         ) : (
-          <ul aria-label="Janelas de prova agendadas" className="flex flex-col gap-2">
+          <ul aria-label="Janelas de prova agendadas" className="list">
             {agendadas.map((janela) => (
-              <li
-                key={janela.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-line p-3"
-              >
-                <span>{descrever(janela)}</span>
-                <Botao
-                  variante="secundario"
+              <li key={janela.id} className="list-row">
+                <Icone nome="calendar" />
+                <span className="list-row-main">{descrever(janela)}</span>
+                <button
+                  type="button"
+                  className="fr-icon-btn fr-icon-btn--sm"
                   aria-label={`Apagar a janela de ${descrever(janela)}`}
                   disabled={apagar.isPending}
                   onClick={() => apagar.mutate(janela.id)}
                 >
-                  Apagar
-                </Botao>
+                  <Icone nome="trash" />
+                </button>
               </li>
             ))}
           </ul>

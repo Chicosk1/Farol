@@ -72,7 +72,7 @@ describe('abas e favoritos (ACE-T35)', () => {
 
     const lista = await screen.findByRole('list', { name: 'Disciplinas' });
     expect(within(lista).getAllByRole('listitem')).toHaveLength(1);
-    expect(within(lista).getByText('Estruturas de Dados')).toBeInTheDocument();
+    expect(within(lista).getByText(/^Estruturas de Dados/)).toBeInTheDocument();
   });
 
   it('os botões de favoritar começam desmarcados', async () => {
@@ -106,7 +106,9 @@ describe('abas e favoritos (ACE-T35)', () => {
     fireEvent.click(await screen.findByRole('tab', { name: 'Favoritas' }));
 
     expect(await screen.findByText(/Você ainda não tem disciplinas favoritas/)).toBeInTheDocument();
-    expect(screen.queryByText('Nenhuma disciplina encontrada.')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Nenhuma disciplina encontrada' }),
+    ).not.toBeInTheDocument();
   });
 
   it('a busca vale dentro da aba escolhida', async () => {

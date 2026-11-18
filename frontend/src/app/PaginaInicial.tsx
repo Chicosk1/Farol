@@ -1,21 +1,41 @@
 import { useEu } from '../funcionalidades/contas/sessao';
-import { FavoritasNaInicial } from '../funcionalidades/disciplinas/FavoritasNaInicial';
+import { DisciplinasNaInicial } from '../funcionalidades/disciplinas/DisciplinasNaInicial';
+import { TurmasDoProfessor } from '../funcionalidades/disciplinas/TurmasDoProfessor';
+import { Novidades } from '../funcionalidades/notificacoes/Novidades';
+import { CartaoDoTutor } from '../funcionalidades/tutor/CartaoDoTutor';
+import { hojePorExtenso } from './datas';
 
-/** Tela inicial: as disciplinas favoritas no topo e, abaixo, quem entrou. */
+/**
+ * Tela inicial, como no protótipo. O aluno vê os atalhos de estudo, as novidades e as disciplinas,
+ * com as favoritas no topo; o professor vê as novidades e as turmas que leciona.
+ */
 export function PaginaInicial() {
   const eu = useEu();
+  const primeiroNome = eu.data?.nome.split(' ')[0] ?? '';
+  const professor = eu.data?.perfil_ativo === 'professor';
 
   return (
-    <main id="conteudo" className="mx-auto max-w-2xl p-4">
-      <h1 className="text-2xl font-extrabold text-ink">Farol</h1>
-      <p className="mt-2 text-ink-muted">Tutor de estudos com IA da UNIMATER.</p>
-      <FavoritasNaInicial />
-      {eu.data && (
-        <section aria-label="Sessão" className="mt-6">
-          <p className="font-bold text-ink">Olá, {eu.data.nome}</p>
-          <p className="text-ink-muted">Perfil: {eu.data.perfil_ativo}</p>
-        </section>
+    <div className="page">
+      <div className="page-head">
+        <div>
+          <h1 className="page-title">Olá, {primeiroNome}</h1>
+          <p className="page-sub">{hojePorExtenso()}</p>
+        </div>
+      </div>
+      {professor ? (
+        <>
+          <Novidades />
+          <TurmasDoProfessor />
+        </>
+      ) : (
+        <>
+          <div className="home-grid">
+            <CartaoDoTutor />
+          </div>
+          <Novidades />
+          <DisciplinasNaInicial />
+        </>
       )}
-    </main>
+    </div>
   );
 }

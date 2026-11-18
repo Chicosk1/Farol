@@ -6,18 +6,19 @@ import { ANA, DISCIPLINAS, FAVORITAS_VAZIAS, simularApi } from '../../testes/api
 import { renderizarApp } from '../../testes/renderizar';
 
 const ESTRUTURAS = DISCIPLINAS.find((d) => d.nome === 'Estruturas de Dados')!;
-const PAGINA = `/disciplinas/${ESTRUTURAS.id}/materiais`;
+const PAGINA = `/disciplinas/${ESTRUTURAS.id}`;
 
 function simular(materiais: unknown[]) {
   return simularApi({
     'GET /api/eu': { corpo: ANA },
     ...FAVORITAS_VAZIAS,
     'GET /api/disciplinas': { corpo: DISCIPLINAS },
+    [`GET /api/disciplinas/${ESTRUTURAS.id}`]: { corpo: { ...ESTRUTURAS, tem_tutor: true } },
     [`GET /api/disciplinas/${ESTRUTURAS.id}/materiais`]: { corpo: materiais },
   });
 }
 
-describe('materiais da disciplina para a aluna (MAT-T33)', () => {
+describe('página da disciplina para a aluna (MAT-T33, MAT-T60)', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
   });
@@ -30,8 +31,8 @@ describe('materiais da disciplina para a aluna (MAT-T33)', () => {
     const { container } = renderizarApp(PAGINA);
 
     const lista = await screen.findByRole('list', { name: 'Materiais da disciplina' });
-    const [primeira, segunda] = within(lista).getAllByRole('listitem');
-    expect(primeira).toHaveTextContent('Aula 4: Listas encadeadas');
+    const [segunda, primeira] = within(lista).getAllByRole('listitem');
+    expect(primeira).toHaveTextContent('Aula 4 · Listas encadeadas');
     expect(primeira).toHaveTextContent('12 páginas');
     expect(segunda).toHaveTextContent('1 página');
     expect(within(lista).getByRole('link', { name: /Abrir a aula 4/ })).toHaveAttribute(
@@ -51,11 +52,47 @@ describe('materiais da disciplina para a aluna (MAT-T33)', () => {
     ).toBeInTheDocument();
   });
 
-  it('a lista de disciplinas da aluna leva aos materiais', async () => {
+  it('o cartão da disciplina leva a aluna à página da disciplina', async () => {
     simular([]);
     const { roteador } = renderizarApp('/disciplinas');
 
-    fireEvent.click(await screen.findByRole('link', { name: 'Materiais de Estruturas de Dados' }));
+    fireEvent.click(await screen.findByRole('link', { name: 'Estruturas de Dados (SINF201)' }));
+
+    await waitFor(() => expect(roteador.state.location.pathname).toBe(PAGINA));
+  });
+
+  it('o cabeçalho tem a disciplina, o professor e o acesso ao tutor', async () => {
+    simular([]);
+    renderizarApp(PAGINA);
+
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Estruturas de Dados (SINF201)' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Prof\. Carlos Mendes/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Perguntar ao tutor' })).toHaveAttribute(
+      'href',
+      `/disciplinas/${ESTRUTURAS.id}/tutor`,
+    );
+    expect(screen.getByRole('navigation', { name: 'Você está em' })).toHaveTextContent(
+      'Disciplinas',
+    );
+  });
+
+  it('sem material pronto, explica quando o tutor começa', async () => {
+    simularApi({
+      'GET /api/eu': { corpo: ANA },
+      [`GET /api/disciplinas/${ESTRUTURAS.id}`]: { corpo: ESTRUTURAS },
+      [`GET /api/disciplinas/${ESTRUTURAS.id}/materiais`]: { corpo: [] },
+    });
+    renderizarApp(PAGINA);
+
+    expect(await screen.findByText(/começa a funcionar quando o professor/)).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Perguntar ao tutor' })).toBeNull();
+  });
+
+  it('o endereço antigo dos materiais leva a aluna à página da disciplina', async () => {
+    simular([]);
+    const { roteador } = renderizarApp(`${PAGINA}/materiais`);
 
     await waitFor(() => expect(roteador.state.location.pathname).toBe(PAGINA));
   });

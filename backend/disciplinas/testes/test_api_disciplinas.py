@@ -74,6 +74,7 @@ def test_cada_disciplina_traz_codigo_turma_semestre_e_o_nome_do_professor(
         "semestre": "2026/2",
         "professor_nome": "Carlos Mendes",
         "favorita": False,
+        "tem_tutor": False,
     }
 
 
@@ -309,3 +310,65 @@ def test_o_banco_recusa_a_mesma_disciplina_duas_vezes_e_a_mesma_matricula_duas_v
 
     # O mesmo código em outro semestre é outra oferta, e vale.
     criar_disciplina("SINF201", "Estruturas de Dados", professor, semestre="2027/1")
+
+
+# ---------- ACE-T73: tem_tutor e a rota de uma disciplina ----------
+
+
+def _com_material_pronto(disciplina):
+    from materiais.models import Material
+
+    Material.objects.create(
+        disciplina=disciplina, aula_numero=1, aula_titulo="Listas", status=Material.Status.PRONTO
+    )
+
+
+@pytest.mark.requisito("ACE-RF-10")
+def test_a_lista_diz_quais_disciplinas_tem_tutor(cliente_aluna, aluna_matriculada_nas_seis):
+    estruturas = Disciplina.objects.get(codigo="SINF201")
+    _com_material_pronto(estruturas)
+
+    resposta = cliente_aluna.get("/api/disciplinas")
+
+    com_tutor = {item["nome"] for item in resposta.json() if item["tem_tutor"]}
+    assert com_tutor == {"Estruturas de Dados"}
+
+
+@pytest.mark.requisito("ACE-RF-04")
+def test_a_rota_de_uma_disciplina_traz_os_mesmos_dados_da_lista(
+    cliente_aluna, aluna_matriculada_nas_seis
+):
+    estruturas = Disciplina.objects.get(codigo="SINF201")
+    _com_material_pronto(estruturas)
+    cliente_aluna.put(f"/api/disciplinas/{estruturas.id}/favorito")
+
+    resposta = cliente_aluna.get(f"/api/disciplinas/{estruturas.id}")
+
+    assert resposta.status_code == 200
+    assert resposta.json() == {
+        "id": estruturas.id,
+        "codigo": "SINF201",
+        "nome": "Estruturas de Dados",
+        "turma": "SINF2NA",
+        "semestre": "2026/2",
+        "professor_nome": "Carlos Mendes",
+        "favorita": True,
+        "tem_tutor": True,
+    }
+
+
+@pytest.mark.requisito("ACE-RF-05")
+def test_a_rota_de_uma_disciplina_nega_quem_nao_tem_acesso(cliente_aluna, aluna, professor):
+    de_outra_turma = criar_disciplina("SINF301", "Compiladores", professor)
+
+    assert cliente_aluna.get(f"/api/disciplinas/{de_outra_turma.id}").status_code == 403
+    assert cliente_aluna.get("/api/disciplinas/999999").status_code == 403
+
+
+def test_o_professor_ve_a_disciplina_que_leciona(cliente_professor, professor):
+    disciplina = criar_disciplina("SINF201", "Estruturas de Dados", professor)
+
+    resposta = cliente_professor.get(f"/api/disciplinas/{disciplina.id}")
+
+    assert resposta.status_code == 200
+    assert resposta.json()["tem_tutor"] is False

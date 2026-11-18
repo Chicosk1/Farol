@@ -15,6 +15,7 @@ export type AvisoDePrivacidade = components['schemas']['AvisoDePrivacidade'];
 export type FiltroDeDisciplinas = 'todas' | 'favoritas' | 'com-tutor';
 export type MaterialDoProfessor = components['schemas']['MaterialDoProfessor'];
 export type Notificacoes = components['schemas']['Notificacoes'];
+export type Notificacao = components['schemas']['Notificacao'];
 export type EstadoDoTutor = components['schemas']['EstadoDoTutor'];
 export type MensagemDoTutor = components['schemas']['Mensagem'];
 export type CitacaoDoTutor = components['schemas']['Citacao'];
@@ -129,6 +130,11 @@ export function entrarEmDesenvolvimento(email: string): Promise<Eu> {
 /** POST /api/eu/perfil-ativo: troca o perfil em uso, sem sair. */
 export function trocarPerfilAtivo(perfil: Perfil): Promise<Eu> {
   return enviar<Eu>('/api/eu/perfil-ativo', { perfil });
+}
+
+/** GET /api/disciplinas/{id}: uma disciplina da pessoa, com os mesmos dados da lista. */
+export function obterDisciplina(id: number | string): Promise<Disciplina> {
+  return requisitar<Disciplina>(`/api/disciplinas/${id}`);
 }
 
 /** GET /api/disciplinas: as disciplinas da pessoa no perfil em uso, com busca e filtro. */

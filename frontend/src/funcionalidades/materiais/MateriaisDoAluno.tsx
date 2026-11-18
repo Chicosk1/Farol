@@ -1,12 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { listarMateriaisDoAluno } from '../../api/cliente';
+import { Icone } from '../../componentes/Icone';
 
 function paginas(quantidade: number): string {
   return `${quantidade} ${quantidade === 1 ? 'página' : 'páginas'}`;
 }
 
-/** Os materiais prontos da disciplina, por aula, para a aluna abrir o PDF (MAT-RF-08, MAT-RF-09). */
+/**
+ * Os materiais prontos da disciplina, por aula, como na lista do protótipo: cada linha abre o PDF
+ * na primeira página (MAT-RF-08, MAT-RF-09).
+ */
 export function MateriaisDoAluno({ disciplinaId }: { disciplinaId: number }) {
   const materiais = useQuery({
     queryKey: ['materiais-do-aluno', disciplinaId],
@@ -15,47 +19,55 @@ export function MateriaisDoAluno({ disciplinaId }: { disciplinaId: number }) {
 
   if (materiais.isPending) {
     return (
-      <p role="status" className="text-ink-muted">
+      <p role="status" className="panel muted">
         Carregando os materiais…
       </p>
     );
   }
   if (materiais.isError) {
     return (
-      <p role="alert" className="text-danger-text">
+      <p role="alert" className="notice notice--danger">
+        <Icone nome="alert-triangle" />
         Não foi possível carregar os materiais. Tente de novo em instantes.
       </p>
     );
   }
   if (materiais.data.length === 0) {
     return (
-      <p className="text-ink-muted">O professor ainda não publicou material nesta disciplina.</p>
+      <ul className="panel list">
+        <li className="list-row muted">
+          O professor ainda não publicou material nesta disciplina.
+        </li>
+      </ul>
     );
   }
   return (
-    <ul aria-label="Materiais da disciplina" className="flex flex-col gap-2">
-      {materiais.data.map((material) => (
-        <li
-          key={material.id}
-          className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-line bg-surface p-4"
-        >
-          <div>
-            <p className="font-bold">
-              Aula {material.aula_numero}: {material.aula_titulo}
-            </p>
-            <p className="text-sm text-ink-muted">{paginas(material.paginas)}</p>
-          </div>
-          <a
-            href={`/api/materiais/${material.id}/arquivo?pagina=1#page=1`}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`Abrir a aula ${material.aula_numero} (PDF em nova aba)`}
-            className="inline-flex min-h-12 items-center rounded-lg border border-line-control px-4 font-bold text-ink underline"
-          >
-            Abrir PDF
-          </a>
-        </li>
-      ))}
+    <ul aria-label="Materiais da disciplina" className="panel list">
+      {/* Da aula mais recente para a mais antiga, como no protótipo. */}
+      {[...materiais.data]
+        .sort((a, b) => b.aula_numero - a.aula_numero)
+        .map((material) => (
+          <li key={material.id}>
+            <a
+              className="list-row list-row--action"
+              href={`/api/materiais/${material.id}/arquivo?pagina=1#page=1`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Abrir a aula ${material.aula_numero} (PDF em nova aba)`}
+            >
+              <span className="file-icon">
+                <Icone nome="file-type-pdf" />
+              </span>
+              <span className="list-row-main">
+                <span className="strong">
+                  Aula {material.aula_numero} · {material.aula_titulo}
+                </span>
+                <span className="small muted">{paginas(material.paginas)}</span>
+              </span>
+              <Icone nome="eye" />
+            </a>
+          </li>
+        ))}
     </ul>
   );
 }
