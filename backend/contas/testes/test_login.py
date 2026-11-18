@@ -1,4 +1,4 @@
-"""Login institucional com o Google (ACE-T20, ACE-T21).
+"""Login com o Google (ACE-T20, ACE-T21, ACE-T28).
 
 O teste percorre o fluxo de verdade do django-allauth: a ida ao Google e a volta pela rota de
 retorno. Só a troca do código pelo token, que iria à internet, é simulada: o "Google" devolve um
@@ -16,6 +16,7 @@ from django.conf import settings
 from rest_framework.test import APIClient
 
 from contas.models import Perfil, Pessoa
+from farol.configuracoes.base import login_do_google
 
 DOMINIO = "exemplo.edu.br"
 
@@ -59,13 +60,23 @@ def _entrar_pelo_google(cliente: APIClient, conta: dict | None, erro: str | None
         return cliente.get("/contas/google/login/callback/", {"code": "codigo", "state": estado})
 
 
-def test_a_ida_ao_google_sugere_o_dominio_institucional(db):
+@pytest.fixture
+def com_dominio(settings):
+    """Liga a restrição opcional ao domínio de um Google Workspace."""
+    settings.FAROL_DOMINIO_INSTITUCIONAL = DOMINIO
+    settings.SOCIALACCOUNT_PROVIDERS = login_do_google(
+        DOMINIO, settings.FAROL_GOOGLE_CLIENT_ID, settings.FAROL_GOOGLE_SECRET
+    )
+
+
+def test_a_ida_ao_google_deixa_escolher_qualquer_conta(db):
     ida = APIClient().post("/contas/google/login/")
 
     destino = urlparse(ida["Location"])
     parametros = parse_qs(destino.query)
     assert destino.netloc == "accounts.google.com"
-    assert parametros["hd"] == [DOMINIO]
+    assert "hd" not in parametros
+    assert parametros["prompt"] == ["select_account"]
     assert set(parametros["scope"][0].split()) == {"openid", "email", "profile"}
     assert parametros["redirect_uri"] == ["http://testserver/contas/google/login/callback/"]
 
@@ -87,6 +98,39 @@ def test_cenario_1_aluno_com_matricula_entra_e_chega_a_tela_inicial(aluna):
 
 
 @pytest.mark.requisito("ACE-RF-01")
+def test_cenario_2_conta_com_email_nao_verificado_nao_acessa_nada(aluna):
+    cliente = APIClient()
+
+    volta = _entrar_pelo_google(cliente, _conta_do_google(aluna.email, verificado=False))
+
+    assert volta.status_code == 302
+    assert volta["Location"] == "/entrar?erro=conta_nao_verificada"
+    assert cliente.get("/api/eu").status_code == 401
+    assert not SocialAccount.objects.exists()
+
+
+@pytest.mark.requisito("ACE-RF-01")
+@pytest.mark.parametrize(
+    "email", ["fulano.tal@gmail.com", "fulano@outra-faculdade.edu.br"], ids=["gmail", "outra"]
+)
+def test_qualquer_conta_google_verificada_entra_como_aluno_sem_disciplinas(db, email):
+    cliente = APIClient()
+
+    volta = _entrar_pelo_google(cliente, _conta_do_google(email, hd=None, nome="Fulano Tal"))
+
+    assert volta["Location"] == "/"
+    assert cliente.get("/api/eu").json()["email"] == email
+    assert Pessoa.objects.get(email=email).perfis == [Perfil.ALUNO]
+    assert cliente.get("/api/disciplinas").json() == []
+
+
+def test_com_a_restricao_de_dominio_a_ida_sugere_o_dominio(db, com_dominio):
+    ida = APIClient().post("/contas/google/login/")
+
+    assert parse_qs(urlparse(ida["Location"]).query)["hd"] == [DOMINIO]
+
+
+@pytest.mark.requisito("ACE-RF-01")
 @pytest.mark.parametrize(
     "conta",
     [
@@ -94,11 +138,10 @@ def test_cenario_1_aluno_com_matricula_entra_e_chega_a_tela_inicial(aluna):
         {"email": "fulano@outra-faculdade.edu.br", "hd": "outra-faculdade.edu.br"},
         # Conta pessoal do Google criada com o e-mail da instituição: não é do Workspace.
         {"email": "ana.souza@exemplo.edu.br", "hd": None},
-        {"email": "ana.souza@exemplo.edu.br", "verificado": False},
     ],
-    ids=["gmail", "outro-dominio", "conta-pessoal-com-email-institucional", "nao-verificado"],
+    ids=["gmail", "outro-dominio", "conta-pessoal-com-email-institucional"],
 )
-def test_cenario_2_conta_de_fora_da_instituicao_nao_acessa_nada(aluna, conta):
+def test_com_a_restricao_de_dominio_conta_de_fora_nao_acessa_nada(aluna, com_dominio, conta):
     cliente = APIClient()
     dados = dict(conta)
     email = dados.pop("email")
@@ -113,7 +156,7 @@ def test_cenario_2_conta_de_fora_da_instituicao_nao_acessa_nada(aluna, conta):
 
 
 @pytest.mark.requisito("ACE-RF-01", "ACE-RF-02")
-def test_cenario_3_conta_institucional_nova_entra_como_aluno_sem_disciplinas(db):
+def test_cenario_3_conta_nova_entra_como_aluno_sem_disciplinas(db):
     cliente = APIClient()
 
     volta = _entrar_pelo_google(

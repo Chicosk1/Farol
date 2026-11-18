@@ -107,20 +107,25 @@ FAROL_IA_COMPATIVEL_OPENAI = {
     "TEMPO_LIMITE_DA_GERACAO": int(ambiente.opcional("FAROL_IA_TEMPO_LIMITE_DA_GERACAO", "600")),
 }
 
-# Login institucional com o Google Workspace, pelo django-allauth (ACE-RF-01, specs/001 plan.md).
-# Só entra um e-mail verificado do domínio da instituição. Sem a credencial OAuth, o botão do
-# Google não aparece (GET /api/entrada). Os padrões só servem ao desenvolvimento.
-FAROL_DOMINIO_INSTITUCIONAL = ambiente.opcional("FAROL_DOMINIO_INSTITUCIONAL", "exemplo.edu.br")
+# Login com o Google, pelo django-allauth (ACE-RF-01, specs/001 plan.md). Entra qualquer conta
+# Google de e-mail verificado. FAROL_DOMINIO_INSTITUCIONAL, se definido, restringe a entrada ao
+# domínio de um Google Workspace; vazio (o padrão), não há restrição. Sem a credencial OAuth, o
+# botão do Google não aparece (GET /api/entrada).
+FAROL_DOMINIO_INSTITUCIONAL = ambiente.opcional("FAROL_DOMINIO_INSTITUCIONAL", "")
 FAROL_GOOGLE_CLIENT_ID = ambiente.opcional("FAROL_GOOGLE_CLIENT_ID", "")
 FAROL_GOOGLE_SECRET = ambiente.opcional("FAROL_GOOGLE_SECRET", "")
 
 
 def login_do_google(dominio: str, client_id: str, secret: str) -> dict:
-    """A configuração do provedor Google do allauth, com o domínio sugerido ao escolher a conta."""
+    """A configuração do provedor Google do allauth. Com a restrição de domínio, o parâmetro `hd`
+    sugere ao Google a conta desse domínio na hora de escolher a conta."""
+    parametros = {"prompt": "select_account"}
+    if dominio.strip():
+        parametros["hd"] = dominio.strip()
     return {
         "google": {
             "SCOPE": ["openid", "email", "profile"],
-            "AUTH_PARAMS": {"hd": dominio, "prompt": "select_account"},
+            "AUTH_PARAMS": parametros,
             "OAUTH_PKCE_ENABLED": True,
             "APPS": [{"client_id": client_id, "secret": secret, "key": ""}] if client_id else [],
         }

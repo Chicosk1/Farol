@@ -27,13 +27,15 @@ class AdaptadorDeContas(DefaultAccountAdapter):
 
 class AdaptadorDoGoogle(DefaultSocialAccountAdapter):
     def pre_social_login(self, request, sociallogin) -> None:
-        """Antes de abrir a sessão: só a conta institucional, de pessoa ativa, entra."""
+        """Antes de abrir a sessão: só a conta de e-mail verificado, de pessoa ativa, entra."""
         dados = sociallogin.account.extra_data
         email = dados.get("email") or ""
         try:
-            servicos.conferir_conta_institucional(
+            servicos.conferir_conta_do_google(
                 email, dados.get("email_verified") in (True, "true"), dados.get("hd")
             )
+        except servicos.ContaNaoVerificada:
+            raise ImmediateHttpResponse(_voltar_para_a_entrada("conta_nao_verificada")) from None
         except servicos.ContaExterna:
             raise ImmediateHttpResponse(_voltar_para_a_entrada("conta_externa")) from None
         if servicos.pessoa_desativada(email):
