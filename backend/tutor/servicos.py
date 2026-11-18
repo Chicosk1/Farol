@@ -101,7 +101,9 @@ def gerar_resposta(
     Se nenhuma frase tiver citação, a resposta vira "Não encontrei isso no material da disciplina."
     """
     numerados = {numero: trecho for numero, trecho in enumerate(trechos, start=1)}
-    conversor = ConversorDeCitacoes(set(numerados))
+    conversor = ConversorDeCitacoes(
+        set(numerados), {numero: trecho.texto for numero, trecho in numerados.items()}
+    )
     mostradas: list[str] = []
     pistas = False
     inicio = True

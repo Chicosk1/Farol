@@ -148,3 +148,12 @@ def test_com_o_provedor_falso_e_modo_pistas_o_pedido_de_exercicio_vira_pista():
 
     assert resultado[-1].tipo == "pistas"
     assert "LIFO" not in resultado[-1].texto
+
+
+@pytest.mark.requisito("TUT-RF-02")
+def test_a_citacao_trocada_pelo_modelo_e_corrigida_para_o_trecho_de_onde_a_frase_veio():
+    """O modelo escreveu a frase do trecho da pilha, mas marcou o da lista (TUT-T19)."""
+    resultado = eventos("Uma pilha segue a ordem LIFO dos elementos. [1]")
+
+    citacoes = [e for e in resultado if isinstance(e, Citacao)]
+    assert [(c.aula_numero, c.pagina) for c in citacoes] == [(PILHA.aula_numero, PILHA.pagina)]
