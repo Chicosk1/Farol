@@ -16,7 +16,7 @@ RAG (geração aumentada por recuperação) com o PostgreSQL e o pgvector: a per
 | Item | Valor |
 | --- | --- |
 | Linguagens | Python 3.13, TypeScript 5 |
-| Dependências principais | Django REST Framework, pgvector, Redis (contador do limite), SDK oficial do provedor de IA |
+| Dependências principais | Django REST Framework, pgvector, Redis (contador do limite), Ollama com modelos abertos, pela API compatível com a da OpenAI e sem SDK ([ADR 0009](../../docs/adr/0009-ia-com-modelos-abertos-no-ollama.md)) |
 | Armazenamento | PostgreSQL com pgvector; Redis para contadores diários |
 | Testes | pytest; conjunto de 100 perguntas por disciplina (avaliação automática); Vitest no front-end |
 | Metas de desempenho | Primeira palavra em até 3 s no p95 (TUT-RNF-01) |
