@@ -2,6 +2,8 @@
 
 from pathlib import Path
 
+from celery.schedules import crontab
+
 from . import ambiente
 
 # Pasta backend/
@@ -31,6 +33,7 @@ INSTALLED_APPS = [
     "notificacoes",
     "tutor",
     "questoes",
+    "revisao",
     "ia",
     "demonstracao",
 ]
@@ -234,6 +237,15 @@ CELERY_BEAT_SCHEDULE = {
         "task": "tutor.verificar_orcamento",
         "schedule": 24 * 3600,  # uma vez por dia
     },
+    # A sessão da revisão do dia fica pronta às 6h (REV-RF-08).
+    "revisao-do-dia": {
+        "task": "revisao.montar_sessoes",
+        "schedule": crontab(hour=6, minute=0),
+    },
+    "lembretes-da-revisao": {
+        "task": "revisao.enviar_lembretes",
+        "schedule": 15 * 60,
+    },
 }
 
 # E-mail: no desenvolvimento, o Mailpit captura tudo (ADR 0008).
@@ -265,5 +277,10 @@ SPECTACULAR_SETTINGS = {
         "StatusDoMaterialEnum": "materiais.models.StatusDoMaterial",
         "StatusDaQuestaoEnum": "questoes.models.StatusDaQuestao",
         "StatusDaGeracaoEnum": "questoes.models.StatusDaGeracao",
+        "AvaliacaoDoCartaoEnum": "revisao.models.AvaliacaoDoCartao",
+        "AvaliacaoEnum": "tutor.models.AvaliacaoDaMensagem",
     },
 }
+
+# Endereço do Farol nos e-mails (lembrete da revisão, resumo do radar).
+FAROL_ENDERECO_PUBLICO = ambiente.opcional("FAROL_ENDERECO_PUBLICO", "http://localhost:5173")

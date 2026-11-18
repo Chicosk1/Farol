@@ -155,6 +155,9 @@ class Citacao(models.Model):
         return f"Aula {self.trecho.material.aula_numero}, p. {self.trecho.pagina}"
 
 
+AvaliacaoDaMensagem = Mensagem.Avaliacao  # nome do enum no contrato (ENUM_NAME_OVERRIDES)
+
+
 class RegistroUso(models.Model):
     """Uma pergunta ao tutor, sem identificação do aluno (TUT-RF-12).
 

@@ -427,3 +427,14 @@ def quizzes_da_disciplina(pessoa, disciplina_id: int) -> list[dict]:
             }
         )
     return resultado
+
+
+def ids_publicadas(disciplina_ids: set[int]) -> set[int]:
+    """As questões publicadas de aulas prontas nas disciplinas: a base da revisão (REV-RF-01)."""
+    return set(
+        Questao.objects.filter(
+            material__disciplina_id__in=disciplina_ids,
+            material__status="pronto",
+            status=StatusDaQuestao.PUBLICADA,
+        ).values_list("id", flat=True)
+    )

@@ -22,28 +22,28 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Produto: fundação
 
-- [ ] REV-T10 Modelos `Cartao`, `SessaoRevisao` e `PreferenciaLembrete`
-- [ ] REV-T11 [P] Função `agendar(cartao, acerto, avaliacao)` com o SM-2 e testes de tabela (REV-RF-04)
+- [x] REV-T10 Modelos `Cartao`, `SessaoRevisao` e `PreferenciaLembrete`
+- [x] REV-T11 [P] Função `agendar(cartao, acerto, avaliacao)` com o SM-2 e testes de tabela (REV-RF-04)
 
 ## Produto: História 1, fazer a revisão do dia (P1)
 
-- [ ] REV-T20 [P] [H1] Testes de montagem da sessão, resposta e retomada (REV-RF-01, REV-RF-02, REV-RF-03)
-- [ ] REV-T21 [H1] Criação de cartões quando uma questão é publicada e remoção quando é despublicada (REV-RF-01)
-- [ ] REV-T22 [H1] Tarefa `revisao.montar_sessoes` às 6h (REV-RF-02, REV-RF-08)
+- [x] REV-T20 [P] [H1] Testes de montagem da sessão, resposta e retomada (REV-RF-01, REV-RF-02, REV-RF-03)
+- [x] REV-T21 [H1] Criação de cartões quando uma questão é publicada e remoção quando é despublicada (REV-RF-01)
+- [x] REV-T22 [H1] Tarefa `revisao.montar_sessoes` às 6h (REV-RF-02, REV-RF-08)
 - [ ] REV-T23 [H1] Rotas da sessão e tela da revisão no React (REV-RF-03, REV-RF-05, REV-RF-10, REV-RNF-01)
 - [ ] REV-T24 [H1] Cartão da revisão na tela inicial (REV-RF-06)
 
 ## Produto: História 2, cartões no momento certo (P2)
 
-- [ ] REV-T30 [H2] Priorização dos cartões atrasados e difíceis na montagem da sessão (REV-RF-02, REV-RF-04)
+- [x] REV-T30 [H2] Priorização dos cartões atrasados e difíceis na montagem da sessão (REV-RF-02, REV-RF-04)
 
 ## Produto: História 3, manter a sequência (P2)
 
-- [ ] REV-T40 [H3] Rota e cartão da sequência de 7 dias (REV-RF-07)
+- [x] REV-T40 [H3] Rota e cartão da sequência de 7 dias (REV-RF-07)
 
 ## Produto: História 4, lembrete diário (P3)
 
-- [ ] REV-T50 [H4] Preferência de lembrete e tarefa de envio por Web Push e e-mail (REV-RF-09)
+- [x] REV-T50 [H4] Preferência de lembrete e tarefa de envio por Web Push e e-mail (REV-RF-09)
 
 ## Produto: acabamento
 

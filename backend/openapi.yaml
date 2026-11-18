@@ -641,6 +641,47 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/eu/lembrete:
+    get:
+      operationId: eu_lembrete_retrieve
+      summary: O lembrete diário da revisão
+      tags:
+      - revisao
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lembrete'
+          description: ''
+    put:
+      operationId: eu_lembrete_update
+      summary: Liga ou desliga o lembrete diário, por e-mail
+      tags:
+      - revisao
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LembreteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LembreteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LembreteRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lembrete'
+          description: ''
   /api/eu/perfil-ativo:
     post:
       operationId: eu_perfil_ativo_create
@@ -1069,6 +1110,87 @@ paths:
               schema:
                 $ref: '#/components/schemas/RetornoDaQuestao'
           description: ''
+  /api/revisao/cartoes/{cartao_id}/avaliacao:
+    post:
+      operationId: revisao_cartoes_avaliacao_create
+      summary: Avalia um cartão como Difícil, Bom ou Fácil e diz quando ele volta
+      parameters:
+      - in: path
+        name: cartao_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - revisao
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvaliacaoDoCartaoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AvaliacaoDoCartaoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AvaliacaoDoCartaoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgendaDoCartao'
+          description: ''
+  /api/revisao/cartoes/{cartao_id}/resposta:
+    post:
+      operationId: revisao_cartoes_resposta_create
+      summary: Responde a um cartão da revisão
+      parameters:
+      - in: path
+        name: cartao_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - revisao
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RespostaAoCartaoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RespostaAoCartaoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RespostaAoCartaoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetornoDoCartao'
+          description: ''
+  /api/revisao/hoje:
+    get:
+      operationId: revisao_hoje_retrieve
+      summary: A revisão do dia do aluno, com a sequência dos últimos 7 dias
+      tags:
+      - revisao
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevisaoDeHoje'
+          description: ''
   /api/sair:
     post:
       operationId: sair_create
@@ -1122,6 +1244,17 @@ paths:
           description: ''
 components:
   schemas:
+    AgendaDoCartao:
+      type: object
+      properties:
+        proxima_data:
+          type: string
+          format: date
+        texto:
+          type: string
+      required:
+      - proxima_data
+      - texto
     AutorEnum:
       enum:
       - aluno
@@ -1130,6 +1263,23 @@ components:
       description: |-
         * `aluno` - Aluno
         * `tutor` - Tutor
+    AvaliacaoDoCartaoEnum:
+      enum:
+      - dificil
+      - bom
+      - facil
+      type: string
+      description: |-
+        * `dificil` - Difícil
+        * `bom` - Bom
+        * `facil` - Fácil
+    AvaliacaoDoCartaoRequest:
+      type: object
+      properties:
+        avaliacao:
+          $ref: '#/components/schemas/AvaliacaoDoCartaoEnum'
+      required:
+      - avaliacao
     AvaliacaoEnum:
       enum:
       - util
@@ -1169,6 +1319,31 @@ components:
     BlankEnum:
       enum:
       - ''
+    CartaoDaSessao:
+      type: object
+      description: 'O cartão antes da resposta: sem o gabarito (como no quiz).'
+      properties:
+        id:
+          type: integer
+        disciplina:
+          type: integer
+        disciplina_nome:
+          type: string
+        enunciado:
+          type: string
+        alternativas:
+          type: array
+          items:
+            type: string
+        topico:
+          type: string
+      required:
+      - alternativas
+      - disciplina
+      - disciplina_nome
+      - enunciado
+      - id
+      - topico
     CienciaDoAvisoRequest:
       type: object
       properties:
@@ -1248,6 +1423,17 @@ components:
       - disciplina_nome
       - mensagens
       - ultima_em
+    DiaDaSequencia:
+      type: object
+      properties:
+        data:
+          type: string
+          format: date
+        feita:
+          type: boolean
+      required:
+      - data
+      - feita
     Disciplina:
       type: object
       properties:
@@ -1549,6 +1735,28 @@ components:
       required:
       - id
       - inicio
+    Lembrete:
+      type: object
+      properties:
+        ligado:
+          type: boolean
+        horario:
+          type: string
+          format: time
+      required:
+      - horario
+      - ligado
+    LembreteRequest:
+      type: object
+      properties:
+        ligado:
+          type: boolean
+        horario:
+          type: string
+          format: time
+      required:
+      - horario
+      - ligado
     LimiteDiarioEnum:
       enum:
       - 20
@@ -2002,6 +2210,49 @@ components:
       - material
       - questoes
       - respondidas
+    RespostaAoCartaoRequest:
+      type: object
+      properties:
+        alternativa:
+          type: integer
+          maximum: 3
+          minimum: 0
+      required:
+      - alternativa
+    RespostaDaSessao:
+      type: object
+      properties:
+        questao:
+          type: integer
+        alternativa:
+          type: integer
+        acerto:
+          type: boolean
+        correta:
+          type: integer
+        justificativa:
+          type: string
+        topico:
+          type: string
+        trecho:
+          $ref: '#/components/schemas/TrechoDaRevisao'
+        cartao:
+          type: integer
+        avaliacao:
+          type: string
+        volta:
+          type: string
+      required:
+      - acerto
+      - alternativa
+      - avaliacao
+      - cartao
+      - correta
+      - justificativa
+      - questao
+      - topico
+      - trecho
+      - volta
     RespostaDoAlunoRequest:
       type: object
       properties:
@@ -2038,6 +2289,74 @@ components:
       - questao
       - topico
       - trecho
+    RetornoDoCartao:
+      type: object
+      properties:
+        questao:
+          type: integer
+        alternativa:
+          type: integer
+        acerto:
+          type: boolean
+        correta:
+          type: integer
+        justificativa:
+          type: string
+        topico:
+          type: string
+        trecho:
+          $ref: '#/components/schemas/TrechoDaRevisao'
+        cartao:
+          type: integer
+      required:
+      - acerto
+      - alternativa
+      - cartao
+      - correta
+      - justificativa
+      - questao
+      - topico
+      - trecho
+    RevisaoDeHoje:
+      type: object
+      properties:
+        data:
+          type: string
+          format: date
+        cartoes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartaoDaSessao'
+        respostas:
+          type: array
+          items:
+            $ref: '#/components/schemas/RespostaDaSessao'
+        concluida:
+          type: boolean
+        disciplinas:
+          type: array
+          items:
+            type: string
+        minutos:
+          type: integer
+        tem_questoes:
+          type: boolean
+        sequencia:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiaDaSequencia'
+        dias_seguidos:
+          type: integer
+      required:
+      - cartoes
+      - concluida
+      - data
+      - dias_seguidos
+      - disciplinas
+      - minutos
+      - respostas
+      - sequencia
+      - tem_questoes
     Saude:
       type: object
       properties:
@@ -2114,6 +2433,16 @@ components:
       required:
       - id
       - pagina
+    TrechoDaRevisao:
+      type: object
+      properties:
+        id:
+          type: integer
+        rotulo:
+          type: string
+      required:
+      - id
+      - rotulo
     TrechoParaAbrir:
       type: object
       properties:

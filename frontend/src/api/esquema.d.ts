@@ -387,6 +387,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/eu/lembrete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** O lembrete diário da revisão */
+        get: operations["eu_lembrete_retrieve"];
+        /** Liga ou desliga o lembrete diário, por e-mail */
+        put: operations["eu_lembrete_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/eu/perfil-ativo": {
         parameters: {
             query?: never;
@@ -700,6 +718,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/revisao/cartoes/{cartao_id}/avaliacao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Avalia um cartão como Difícil, Bom ou Fácil e diz quando ele volta */
+        post: operations["revisao_cartoes_avaliacao_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/revisao/cartoes/{cartao_id}/resposta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Responde a um cartão da revisão */
+        post: operations["revisao_cartoes_resposta_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/revisao/hoje": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A revisão do dia do aluno, com a sequência dos últimos 7 dias */
+        get: operations["revisao_hoje_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sair": {
         parameters: {
             query?: never;
@@ -758,12 +827,27 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AgendaDoCartao: {
+            /** Format: date */
+            proxima_data: string;
+            texto: string;
+        };
         /**
          * @description * `aluno` - Aluno
          *     * `tutor` - Tutor
          * @enum {string}
          */
         AutorEnum: "aluno" | "tutor";
+        /**
+         * @description * `dificil` - Difícil
+         *     * `bom` - Bom
+         *     * `facil` - Fácil
+         * @enum {string}
+         */
+        AvaliacaoDoCartaoEnum: "dificil" | "bom" | "facil";
+        AvaliacaoDoCartaoRequest: {
+            avaliacao: components["schemas"]["AvaliacaoDoCartaoEnum"];
+        };
         /**
          * @description * `` - Sem avaliação
          *     * `util` - Útil
@@ -783,6 +867,15 @@ export interface components {
         };
         /** @enum {unknown} */
         BlankEnum: "";
+        /** @description O cartão antes da resposta: sem o gabarito (como no quiz). */
+        CartaoDaSessao: {
+            id: number;
+            disciplina: number;
+            disciplina_nome: string;
+            enunciado: string;
+            alternativas: string[];
+            topico: string;
+        };
         CienciaDoAvisoRequest: {
             /** @description A versão do aviso que a pessoa leu. */
             versao: string;
@@ -813,6 +906,11 @@ export interface components {
             mensagens: number;
             /** Format: date-time */
             ultima_em: string;
+        };
+        DiaDaSequencia: {
+            /** Format: date */
+            data: string;
+            feita: boolean;
         };
         Disciplina: {
             id: number;
@@ -942,6 +1040,16 @@ export interface components {
             inicio: string;
             /** Format: date-time */
             fim?: string | null;
+        };
+        Lembrete: {
+            ligado: boolean;
+            /** Format: time */
+            horario: string;
+        };
+        LembreteRequest: {
+            ligado: boolean;
+            /** Format: time */
+            horario: string;
         };
         /**
          * @description * `20` - 20 perguntas por dia
@@ -1138,6 +1246,21 @@ export interface components {
             respondidas: number;
             acertos: number;
         };
+        RespostaAoCartaoRequest: {
+            alternativa: number;
+        };
+        RespostaDaSessao: {
+            questao: number;
+            alternativa: number;
+            acerto: boolean;
+            correta: number;
+            justificativa: string;
+            topico: string;
+            trecho: components["schemas"]["TrechoDaRevisao"];
+            cartao: number;
+            avaliacao: string;
+            volta: string;
+        };
         RespostaDoAlunoRequest: {
             alternativa: number;
         };
@@ -1150,6 +1273,28 @@ export interface components {
             justificativa: string;
             topico: string;
             trecho: components["schemas"]["TrechoCitado"];
+        };
+        RetornoDoCartao: {
+            questao: number;
+            alternativa: number;
+            acerto: boolean;
+            correta: number;
+            justificativa: string;
+            topico: string;
+            trecho: components["schemas"]["TrechoDaRevisao"];
+            cartao: number;
+        };
+        RevisaoDeHoje: {
+            /** Format: date */
+            data: string;
+            cartoes: components["schemas"]["CartaoDaSessao"][];
+            respostas: components["schemas"]["RespostaDaSessao"][];
+            concluida: boolean;
+            disciplinas: string[];
+            minutos: number;
+            tem_questoes: boolean;
+            sequencia: components["schemas"]["DiaDaSequencia"][];
+            dias_seguidos: number;
         };
         Saude: {
             /** @description Sempre "ok" quando a API está no ar. */
@@ -1194,6 +1339,10 @@ export interface components {
         TrechoDaQuestao: {
             id: number;
             pagina: number;
+        };
+        TrechoDaRevisao: {
+            id: number;
+            rotulo: string;
         };
         TrechoParaAbrir: {
             material_id: number;
@@ -1810,6 +1959,50 @@ export interface operations {
             };
         };
     };
+    eu_lembrete_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Lembrete"];
+                };
+            };
+        };
+    };
+    eu_lembrete_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LembreteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["LembreteRequest"];
+                "multipart/form-data": components["schemas"]["LembreteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Lembrete"];
+                };
+            };
+        };
+    };
     eu_perfil_ativo_create: {
         parameters: {
             query?: never;
@@ -2229,6 +2422,79 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RetornoDaQuestao"];
+                };
+            };
+        };
+    };
+    revisao_cartoes_avaliacao_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cartao_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AvaliacaoDoCartaoRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AvaliacaoDoCartaoRequest"];
+                "multipart/form-data": components["schemas"]["AvaliacaoDoCartaoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaDoCartao"];
+                };
+            };
+        };
+    };
+    revisao_cartoes_resposta_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cartao_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RespostaAoCartaoRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RespostaAoCartaoRequest"];
+                "multipart/form-data": components["schemas"]["RespostaAoCartaoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RetornoDoCartao"];
+                };
+            };
+        };
+    };
+    revisao_hoje_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RevisaoDeHoje"];
                 };
             };
         };

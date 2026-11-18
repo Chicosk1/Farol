@@ -15,7 +15,7 @@ A coluna Testes mostra os testes do produto que citam o requisito com `@pytest.m
 | [003 Tutor da disciplina](../specs/003-tutor-da-disciplina/spec.md) | 14 | 14 de 14 | 6 | 5 | 2 | 1 | 49 de 50 | 0 |
 | [004 Dúvidas ao professor](../specs/004-duvidas-ao-professor/spec.md) | 9 | 8 de 9 | 5 | 0 | 1 | 3 | 15 de 16 | 0 |
 | [005 Questões e quizzes](../specs/005-questoes-e-quizzes/spec.md) | 11 | 9 de 11 | 5 | 1 | 3 | 2 | 19 de 22 | 0 |
-| [006 Revisão do dia](../specs/006-revisao-do-dia/spec.md) | 10 | 0 de 10 | 5 | 3 | 1 | 1 | 5 de 17 | 0 |
+| [006 Revisão do dia](../specs/006-revisao-do-dia/spec.md) | 10 | 8 de 10 | 5 | 3 | 1 | 1 | 13 de 17 | 0 |
 | [007 Radar da turma](../specs/007-radar-da-turma/spec.md) | 11 | 0 de 11 | 6 | 3 | 1 | 1 | 5 de 18 | 0 |
 
 ## Pendências do protótipo
@@ -110,15 +110,15 @@ Tarefas já especificadas que aproximam o protótipo do comportamento descrito n
 
 | Requisito | Descrição | Protótipo | Código do protótipo | Testes | Tarefas feitas | Tarefas pendentes |
 | --- | --- | --- | --- | --- | --- | --- |
-| `REV-RF-01` | O sistema DEVE criar um cartão de revisão para cada questão publicada nas disciplinas do aluno. | Simulado | [data.js](../prototipo/js/data.js), [aluno-pratica.js](../prototipo/js/screens/aluno-pratica.js) |  | REV-T01 | REV-T06, REV-T20, REV-T21 |
-| `REV-RF-02` | A sessão diária DEVE ter no máximo 10 cartões, priorizando os mais atrasados e os avaliados como difíceis. | Simulado | [aluno-pratica.js](../prototipo/js/screens/aluno-pratica.js) |  | REV-T01 | REV-T20, REV-T22, REV-T30 |
-| `REV-RF-03` | Depois de cada resposta, o sistema DEVE mostrar se o aluno acertou, a justificativa e o link para o trecho de origem. | Coberto | [aluno-pratica.js](../prototipo/js/screens/aluno-pratica.js) |  | REV-T01 | REV-T20, REV-T23 |
-| `REV-RF-04` | O aluno DEVE avaliar cada cartão como Difícil, Bom ou Fácil, e o próximo intervalo DEVE ser calculado pelo algoritmo SM-2; uma resposta errada faz o cartão voltar no dia seguinte. | Parcial | [aluno-pratica.js](../prototipo/js/screens/aluno-pratica.js) |  | REV-T02 | REV-T11, REV-T30 |
-| `REV-RF-05` | O sistema DEVE informar quando cada cartão volta. | Coberto | [aluno-pratica.js](../prototipo/js/screens/aluno-pratica.js) |  | REV-T02 | REV-T23 |
-| `REV-RF-06` | A tela inicial DEVE mostrar o cartão da revisão do dia com o número de cartões, as disciplinas, o tempo estimado e o progresso de uma sessão em andamento. | Coberto | [aluno-inicio.js](../prototipo/js/screens/aluno-inicio.js) |  | REV-T03 | REV-T24 |
-| `REV-RF-07` | A tela inicial DEVE mostrar a sequência de revisões dos últimos 7 dias. | Coberto | [aluno-inicio.js](../prototipo/js/screens/aluno-inicio.js) |  | REV-T04 | REV-T40 |
-| `REV-RF-08` | Uma nova sessão DEVE ficar disponível todo dia às 6h, horário de Brasília. | Simulado | [aluno-pratica.js](../prototipo/js/screens/aluno-pratica.js) |  | REV-T05 | REV-T22 |
-| `REV-RF-09` | O aluno PODE ligar um lembrete diário, por notificação ou e-mail, no horário que escolher; o padrão é desligado. | Não coberto |  |  |  | REV-T50 |
+| `REV-RF-01` | O sistema DEVE criar um cartão de revisão para cada questão publicada nas disciplinas do aluno. | Simulado | [data.js](../prototipo/js/data.js), [aluno-pratica.js](../prototipo/js/screens/aluno-pratica.js) | [revisao/testes/test_revisao.py](../backend/revisao/testes/test_revisao.py) (1) | REV-T01, REV-T20, REV-T21 | REV-T06 |
+| `REV-RF-02` | A sessão diária DEVE ter no máximo 10 cartões, priorizando os mais atrasados e os avaliados como difíceis. | Simulado | [aluno-pratica.js](../prototipo/js/screens/aluno-pratica.js) | [revisao/testes/test_revisao.py](../backend/revisao/testes/test_revisao.py) (1) | REV-T01, REV-T20, REV-T22, REV-T30 |  |
+| `REV-RF-03` | Depois de cada resposta, o sistema DEVE mostrar se o aluno acertou, a justificativa e o link para o trecho de origem. | Coberto | [aluno-pratica.js](../prototipo/js/screens/aluno-pratica.js) | [revisao/testes/test_revisao.py](../backend/revisao/testes/test_revisao.py) (1) | REV-T01, REV-T20 | REV-T23 |
+| `REV-RF-04` | O aluno DEVE avaliar cada cartão como Difícil, Bom ou Fácil, e o próximo intervalo DEVE ser calculado pelo algoritmo SM-2; uma resposta errada faz o cartão voltar no dia seguinte. | Parcial | [aluno-pratica.js](../prototipo/js/screens/aluno-pratica.js) | [revisao/testes/test_agenda.py](../backend/revisao/testes/test_agenda.py) (3), [revisao/testes/test_revisao.py](../backend/revisao/testes/test_revisao.py) (1) | REV-T02, REV-T11, REV-T30 |  |
+| `REV-RF-05` | O sistema DEVE informar quando cada cartão volta. | Coberto | [aluno-pratica.js](../prototipo/js/screens/aluno-pratica.js) | [revisao/testes/test_agenda.py](../backend/revisao/testes/test_agenda.py) (1), [revisao/testes/test_revisao.py](../backend/revisao/testes/test_revisao.py) (1) | REV-T02 | REV-T23 |
+| `REV-RF-06` | A tela inicial DEVE mostrar o cartão da revisão do dia com o número de cartões, as disciplinas, o tempo estimado e o progresso de uma sessão em andamento. | Coberto | [aluno-inicio.js](../prototipo/js/screens/aluno-inicio.js) | [revisao/testes/test_revisao.py](../backend/revisao/testes/test_revisao.py) (2) | REV-T03 | REV-T24 |
+| `REV-RF-07` | A tela inicial DEVE mostrar a sequência de revisões dos últimos 7 dias. | Coberto | [aluno-inicio.js](../prototipo/js/screens/aluno-inicio.js) | [revisao/testes/test_revisao.py](../backend/revisao/testes/test_revisao.py) (1) | REV-T04, REV-T40 |  |
+| `REV-RF-08` | Uma nova sessão DEVE ficar disponível todo dia às 6h, horário de Brasília. | Simulado | [aluno-pratica.js](../prototipo/js/screens/aluno-pratica.js) |  | REV-T05, REV-T22 |  |
+| `REV-RF-09` | O aluno PODE ligar um lembrete diário, por notificação ou e-mail, no horário que escolher; o padrão é desligado. | Não coberto |  | [revisao/testes/test_revisao.py](../backend/revisao/testes/test_revisao.py) (2) | REV-T50 |  |
 | `REV-RF-10` | Ao final da sessão, o sistema DEVE mostrar o número de acertos e atalhos para o tutor nos tópicos errados. | Coberto | [aluno-pratica.js](../prototipo/js/screens/aluno-pratica.js) |  | REV-T05 | REV-T23 |
 
 ## 007 Radar da turma
