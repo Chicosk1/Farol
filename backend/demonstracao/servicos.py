@@ -8,6 +8,9 @@ from dataclasses import dataclass
 from contas import servicos as contas
 from contas.servicos import Perfil
 from disciplinas import servicos as disciplinas
+from materiais import servicos as materiais
+from nucleo.pdf_de_texto import pdf_com_texto
+from tutor import servicos as tutor
 
 DOMINIO = "exemplo.edu.br"  # reservado para dados fictícios
 TURMA = "SINF2NA"
@@ -22,6 +25,9 @@ EQUIPE_DE_TI = {
     "perfis": [Perfil.ADMIN],
     "equipe": True,
 }
+
+# A disciplina que já vem com as aulas publicadas, para testar o tutor (MAT-T63).
+CODIGO_COM_MATERIAL = "SINF201"
 
 # As seis disciplinas do 2º período de Sistemas de Informação, cada uma com o seu professor.
 DISCIPLINAS = [
@@ -64,4 +70,28 @@ def popular() -> Relatorio:
         relatorio.contar(criada)
         _, criada = disciplinas.garantir_matricula(aluna, disciplina)
         relatorio.contar(criada)
+        if codigo == CODIGO_COM_MATERIAL:
+            _publicar_aulas_de_demonstracao(disciplina, professor, relatorio)
     return relatorio
+
+
+def _publicar_aulas_de_demonstracao(disciplina, professor, relatorio: Relatorio) -> None:
+    """As aulas fictícias do conjunto de avaliação, processadas com o provedor de IA configurado.
+
+    Só publica numa disciplina ainda sem nenhum material: rodar de novo não duplica nada, e o que o
+    professor publicou não é tocado.
+    """
+    if materiais.listar_materiais(Perfil.PROFESSOR, disciplina.id).exists():
+        relatorio.contar(False)
+        return
+    for aula in tutor.conjunto_de_avaliacao().aulas:
+        material = materiais.criar_material(
+            disciplina.id,
+            pdf_com_texto(aula.paginas),
+            f"aula-{aula.numero:02d}.pdf",
+            aula.numero,
+            aula.titulo,
+            professor,
+        )
+        materiais.processar_material(material.id)
+        relatorio.contar(True)

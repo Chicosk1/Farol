@@ -20,6 +20,7 @@ from nucleo.privacidade import remover_dados_pessoais, sem_marcas
 from nucleo.pseudonimo import pseudonimo_do_aluno
 
 from . import contador
+from .avaliacao import Conjunto, carregar
 from .citacoes import ConversorDeCitacoes, diz_que_nao_encontrou
 from .models import Citacao as CitacaoGuardada
 from .models import (
@@ -571,3 +572,12 @@ def verificar_orcamento(hoje=None) -> int:
             notificacoes.notificar(pessoa, notificacoes.Tipo.ORCAMENTO_IA, texto, link=link)
             novos += 1
     return novos
+
+
+def conjunto_de_avaliacao() -> Conjunto:
+    """O conjunto de avaliação (TUT-T12): as aulas fictícias de Estruturas de Dados e as perguntas.
+
+    As mesmas aulas servem de material de demonstração, para o tutor responder logo depois do
+    popular_demo.
+    """
+    return carregar()

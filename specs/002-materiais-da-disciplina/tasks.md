@@ -57,6 +57,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 - [ ] MAT-T60 Página da disciplina do aluno, como no protótipo: cabeçalho da disciplina, acesso ao tutor e os materiais prontos (MAT-RF-07, MAT-RF-08)
 - [ ] MAT-T61 Materiais do professor no formato do protótipo: área de arrastar, lista com a etapa e o status de cada PDF (MAT-RF-01, MAT-RF-03, MAT-RF-10, MAT-RF-11)
+- [x] MAT-T63 Dados de demonstração com as 13 aulas fictícias de Estruturas de Dados, processadas e prontas para o tutor, para testar logo depois do `popular_demo` (MAT-RF-08)
 - [ ] MAT-T62 Trecho citado no formato de página do protótipo, com o trecho destacado (MAT-RF-09)
 
 ## Dependências
