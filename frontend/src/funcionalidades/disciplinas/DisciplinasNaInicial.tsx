@@ -57,7 +57,11 @@ export function DisciplinasNaInicial() {
             <li key={disciplina.id}>
               <CartaoDeDisciplina
                 disciplina={disciplina}
-                destino={`/disciplinas/${disciplina.id}/materiais`}
+                destino={
+                  professor
+                    ? `/disciplinas/${disciplina.id}/materiais`
+                    : `/disciplinas/${disciplina.id}`
+                }
                 nivel={3}
                 atalhos={<AtalhosDaDisciplina disciplina={disciplina} professor={professor} />}
                 favoritando={favoritar.isPending}

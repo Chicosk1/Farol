@@ -185,7 +185,7 @@ describe('tela de disciplinas (ACE-T33)', () => {
     expect(screen.queryByRole('link', { name: 'Tutor de Estruturas de Dados' })).toBeNull();
   });
 
-  it('no modo lista, cada disciplina é uma linha que leva aos materiais', async () => {
+  it('no modo lista, cada disciplina é uma linha que leva à página dela', async () => {
     simularApi({ 'GET /api/eu': { corpo: ANA }, 'GET /api/disciplinas': { corpo: DISCIPLINAS } });
     const { container } = renderizarApp('/disciplinas');
     await screen.findByRole('list', { name: 'Disciplinas' });
@@ -194,7 +194,7 @@ describe('tela de disciplinas (ACE-T33)', () => {
 
     const linha = screen.getByRole('link', { name: /Estruturas de Dados \(SINF201\)/ });
     expect(linha).toHaveClass('course-row');
-    expect(linha).toHaveAttribute('href', `/disciplinas/${DISCIPLINAS[3]!.id}/materiais`);
+    expect(linha).toHaveAttribute('href', `/disciplinas/${DISCIPLINAS[3]!.id}`);
     expect(await violacoesDeAcessibilidade(container)).toEqual([]);
   });
 });

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type DragEvent, type FormEvent } from 'react';
-import { useParams } from 'react-router';
+import { Navigate, useParams } from 'react-router';
 
 import {
   enviarMaterial,
@@ -13,7 +13,6 @@ import {
 import { Botao } from '../../componentes/Botao';
 import { useEu } from '../contas/sessao';
 import { useDisciplinas } from '../disciplinas/consultas';
-import { MateriaisDoAluno } from './MateriaisDoAluno';
 
 const NAO_E_PDF = 'Envie um arquivo PDF. Slides podem ser exportados como PDF.';
 /** Enquanto algum material processa, a lista se atualiza sozinha nesse intervalo. */
@@ -101,17 +100,10 @@ function ItemDeMaterial({
 /** A tela de materiais: a aluna vê e abre os prontos; o professor envia e acompanha. */
 export function PaginaMateriais() {
   const disciplinaId = Number(useParams().id);
-  const disciplina = useDisciplinas('').data?.find((d) => d.id === disciplinaId);
   const perfil = useEu().data?.perfil_ativo;
   if (perfil === 'aluno') {
-    return (
-      <div className="page">
-        <h1 className="text-2xl font-extrabold">
-          {disciplina ? `Materiais de ${disciplina.nome}` : 'Materiais da disciplina'}
-        </h1>
-        <MateriaisDoAluno disciplinaId={disciplinaId} />
-      </div>
-    );
+    // Os materiais da aluna ficam na página da disciplina, como no protótipo.
+    return <Navigate to={`/disciplinas/${disciplinaId}`} replace />;
   }
   return <MateriaisDoProfessor />;
 }

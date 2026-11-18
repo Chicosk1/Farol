@@ -123,9 +123,13 @@ export function AtalhosDaDisciplina({
   const base = `/disciplinas/${disciplina.id}`;
   return (
     <>
-      <Atalho para={`${base}/materiais`} icone="files" rotulo={`Materiais de ${disciplina.nome}`} />
       {professor && (
         <>
+          <Atalho
+            para={`${base}/materiais`}
+            icone="files"
+            rotulo={`Materiais de ${disciplina.nome}`}
+          />
           <Atalho
             para={`${base}/duvidas`}
             icone="message-question"

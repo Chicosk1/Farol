@@ -5,6 +5,7 @@ import { PaginaEntrar } from '../funcionalidades/contas/PaginaEntrar';
 import { PaginaMeusDados } from '../funcionalidades/contas/PaginaMeusDados';
 import { PaginaDisciplinas } from '../funcionalidades/disciplinas/PaginaDisciplinas';
 import { PaginaDuvidas } from '../funcionalidades/duvidas/PaginaDuvidas';
+import { PaginaDaDisciplina } from '../funcionalidades/materiais/PaginaDaDisciplina';
 import { PaginaMateriais } from '../funcionalidades/materiais/PaginaMateriais';
 import { PaginaTrecho } from '../funcionalidades/materiais/PaginaTrecho';
 import { PaginaConfiguracaoDoTutor } from '../funcionalidades/tutor/PaginaConfiguracaoDoTutor';
@@ -26,6 +27,7 @@ export const rotas: RouteObject[] = [
           { path: '/', element: <PaginaInicial /> },
           { path: '/disciplinas', element: <PaginaDisciplinas /> },
           { path: '/meus-dados', element: <PaginaMeusDados /> },
+          { path: '/disciplinas/:id', element: <PaginaDaDisciplina /> },
           { path: '/disciplinas/:id/materiais', element: <PaginaMateriais /> },
           { path: '/disciplinas/:id/duvidas', element: <PaginaDuvidas /> },
           { path: '/trechos/:id', element: <PaginaTrecho /> },

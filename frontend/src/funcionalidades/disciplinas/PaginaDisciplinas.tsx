@@ -73,7 +73,8 @@ export function PaginaDisciplinas() {
   const professor = useEu().data?.perfil_ativo === 'professor';
   const base = useId();
   const idDoPainel = `${base}-painel`;
-  const destino = (disciplina: Disciplina) => `/disciplinas/${disciplina.id}/materiais`;
+  const destino = (disciplina: Disciplina) =>
+    professor ? `/disciplinas/${disciplina.id}/materiais` : `/disciplinas/${disciplina.id}`;
 
   return (
     <div className="page">
