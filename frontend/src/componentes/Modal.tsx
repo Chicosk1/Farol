@@ -25,8 +25,12 @@ export function Modal({ titulo, subtitulo, largo = false, aoFechar, children }: 
 
   useEffect(() => {
     const quemAbriu = document.activeElement as HTMLElement | null;
-    const primeiro = caixa.current?.querySelector<HTMLElement>(FOCAVEIS);
-    (primeiro ?? caixa.current)?.focus();
+    // O conteúdo pode escolher onde o foco começa (data-foco-inicial), como o "Cancelar" de uma
+    // confirmação; sem isso, vale o primeiro elemento focável.
+    const inicial =
+      caixa.current?.querySelector<HTMLElement>('[data-foco-inicial]') ??
+      caixa.current?.querySelector<HTMLElement>(FOCAVEIS);
+    (inicial ?? caixa.current)?.focus();
     return () => {
       if (quemAbriu && document.contains(quemAbriu)) quemAbriu.focus();
     };
