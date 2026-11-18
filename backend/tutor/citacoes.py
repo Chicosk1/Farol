@@ -23,10 +23,27 @@ VANTAGEM_MINIMA = 0.3  # quanto a mais que no trecho que o modelo citou
 TAMANHO_DO_RADICAL = 5  # "balanceada" e "balanceados" contam como a mesma palavra
 
 
+def _sem_acentos(texto: str) -> str:
+    return unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode().lower()
+
+
 def _radicais(texto: str) -> set[str]:
     """As palavras que dizem do que o texto trata, sem acento e reduzidas ao começo."""
-    sem_acentos = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode().lower()
-    return {p[:TAMANHO_DO_RADICAL] for p in re.findall(r"[a-z0-9]+", sem_acentos) if len(p) >= 4}
+    palavras = re.findall(r"[a-z0-9]+", _sem_acentos(texto))
+    return {p[:TAMANHO_DO_RADICAL] for p in palavras if len(p) >= 4}
+
+
+# Começos de frase com que o modelo diz que o material não responde à pergunta (TUT-T27).
+NAO_ENCONTROU = re.compile(
+    r"^(?:nao (?:encontrei|achei|ha|existe|consta|tenho|foi possivel)"
+    r"|(?:o|no) material(?: fornecido| da disciplina)? nao"
+    r"|(?:os|nos) trechos(?: do material)? nao)"
+)
+
+
+def diz_que_nao_encontrou(frase: str) -> bool:
+    """Se a frase só diz que o material não responde à pergunta, como "Não encontrei..."."""
+    return bool(NAO_ENCONTROU.match(_sem_acentos(MARCACAO.sub("", frase)).strip()))
 
 
 class ConversorDeCitacoes:

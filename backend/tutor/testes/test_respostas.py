@@ -157,3 +157,48 @@ def test_a_citacao_trocada_pelo_modelo_e_corrigida_para_o_trecho_de_onde_a_frase
 
     citacoes = [e for e in resultado if isinstance(e, Citacao)]
     assert [(c.aula_numero, c.pagina) for c in citacoes] == [(PILHA.aula_numero, PILHA.pagina)]
+
+
+@pytest.mark.requisito("TUT-RF-04", "TUT-CS-04")
+def test_resposta_so_de_nao_encontrei_vira_a_resposta_padrao_mesmo_com_citacao():
+    """O modelo diz que não achou e ainda cita um trecho (TUT-T27)."""
+    resultado = eventos("Não encontrei informação sobre árvores rubro-negras no material. [1]")
+
+    fim = resultado[-1]
+    assert isinstance(fim, Fim)
+    assert fim.tipo == "nao_encontrado"
+    assert fim.texto == servicos.NAO_ENCONTREI
+    assert texto_de(resultado) == servicos.NAO_ENCONTREI
+    assert not [e for e in resultado if isinstance(e, Citacao)]
+
+
+@pytest.mark.parametrize(
+    "frase",
+    [
+        "O material não traz a definição de árvore rubro-negra. [2]",
+        "Não há nos trechos nada sobre árvores rubro-negras. [1]",
+        "Os trechos não falam de árvores rubro-negras. [1]",
+    ],
+)
+def test_outras_formas_de_dizer_que_nao_encontrou(frase):
+    assert eventos(frase)[-1].tipo == "nao_encontrado"
+
+
+def test_nao_encontrei_seguido_de_conteudo_continua_sendo_resposta():
+    resultado = eventos(
+        "Não encontrei a data da prova no material. [1] Uma pilha segue a ordem LIFO. [2]"
+    )
+
+    assert resultado[-1].tipo == "resposta"
+    assert texto_de(resultado) == (
+        "Não encontrei a data da prova no material. [1] Uma pilha segue a ordem LIFO. [2]"
+    )
+
+
+def test_nao_encontrei_depois_do_conteudo_aparece_normalmente():
+    resultado = eventos(
+        "Uma pilha segue a ordem LIFO. [2] Não encontrei a complexidade no material. [2]"
+    )
+
+    assert resultado[-1].tipo == "resposta"
+    assert "Não encontrei a complexidade" in texto_de(resultado)
