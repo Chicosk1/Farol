@@ -10,10 +10,11 @@ ADRs não são apagados. Quando uma decisão muda, um ADR novo substitui o antig
 | [0002](0002-prototipo-sem-framework.md) | Fazer o protótipo em HTML, CSS e JavaScript puros, sem etapa de build | Aceita |
 | [0003](0003-django-no-back-end.md) | Usar Python com Django e Django REST Framework no back-end | Proposta |
 | [0004](0004-postgresql-com-pgvector.md) | Guardar dados e vetores no PostgreSQL com pgvector | Proposta |
-| [0005](0005-ia-via-api-com-modulo-proprio.md) | Usar IA via API de provedor, com módulo próprio e sem framework de orquestração | Proposta |
+| [0005](0005-ia-via-api-com-modulo-proprio.md) | Usar IA via API de provedor, com módulo próprio e sem framework de orquestração | Substituída em parte por 0009 |
 | [0006](0006-docker-compose-em-um-servidor.md) | Rodar tudo com Docker Compose em um servidor em São Paulo | Proposta |
 | [0007](0007-monolito-modular-em-camadas.md) | Organizar o sistema como monólito modular em camadas, com adaptadores nas fronteiras externas | Proposta |
 | [0008](0008-ambiente-local-em-docker.md) | Rodar todos os serviços em Docker, sem plataforma gerenciada como o Supabase | Proposta |
+| [0009](0009-ia-com-modelos-abertos-no-ollama.md) | Usar modelos abertos no Ollama, por uma API compatível com a da OpenAI | Aceita |
 
 "Proposta" significa que a decisão vem da idealização e será confirmada no fim da fase 0, com a TI e o professor orientador.
 

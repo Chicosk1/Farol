@@ -8,6 +8,7 @@ import type { components } from './esquema';
 
 export type Saude = components['schemas']['Saude'];
 export type Eu = components['schemas']['Eu'];
+export type FormasDeEntrar = components['schemas']['FormasDeEntrar'];
 export type Perfil = components['schemas']['PerfilEnum'];
 export type Disciplina = components['schemas']['Disciplina'];
 export type AvisoDePrivacidade = components['schemas']['AvisoDePrivacidade'];
@@ -57,7 +58,7 @@ async function lerCorpo(resposta: Response): Promise<unknown> {
 }
 
 /** Token CSRF que o Django entrega no cookie `csrftoken` (por exemplo, em GET /api/eu). */
-function tokenCsrf(): string | undefined {
+export function tokenCsrf(): string | undefined {
   const cookie = document.cookie.split('; ').find((parte) => parte.startsWith('csrftoken='));
   return cookie ? decodeURIComponent(cookie.slice('csrftoken='.length)) : undefined;
 }
@@ -107,6 +108,17 @@ export async function obterEu(): Promise<Eu | null> {
     }
     throw erro;
   }
+}
+
+/**
+ * Ida ao Google pelo django-allauth (ACE-RF-01). Não é uma chamada da API: a tela envia um
+ * formulário para este endereço, e o navegador segue até o Google e volta ao Farol.
+ */
+export const ENDERECO_DO_LOGIN_GOOGLE = '/contas/google/login/';
+
+/** GET /api/entrada: as formas de entrar neste ambiente. Também entrega o cookie CSRF. */
+export function obterFormasDeEntrar(): Promise<FormasDeEntrar> {
+  return requisitar<FormasDeEntrar>('/api/entrada');
 }
 
 /** POST /api/dev/entrar: só existe em desenvolvimento e em teste (ACE-RNF-03). */

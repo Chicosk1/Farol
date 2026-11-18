@@ -66,6 +66,31 @@ def test_o_adaptador_vem_da_configuracao_e_pode_ser_trocado():
         assert servicos.gerar_embedding("qualquer coisa")[0] == 1.0
 
 
+@pytest.mark.requisito("TUT-RF-01")
+def test_o_vetor_da_pergunta_e_pedido_com_a_finalidade_pergunta_e_o_do_trecho_com_trecho():
+    """Modelos como o embeddinggemma buscam melhor quando sabem o que é cada texto (TUT-T17)."""
+    from ia.testes import adaptador_de_exemplo
+
+    adaptador_de_exemplo.Constante.finalidades.clear()
+    with override_settings(FAROL_IA={"ADAPTADOR": "ia.testes.adaptador_de_exemplo.Constante"}):
+        servicos.gerar_embedding_da_pergunta("O que é uma pilha?")
+        servicos.gerar_embeddings(["Uma pilha segue a ordem LIFO."])
+        servicos.gerar_embedding("Uma fila segue a ordem FIFO.")
+
+    assert adaptador_de_exemplo.Constante.finalidades == ["pergunta", "trecho", "trecho"]
+
+
+def test_com_o_adaptador_falso_a_finalidade_nao_muda_o_vetor():
+    texto = "lista encadeada de nós"
+
+    assert servicos.gerar_embedding_da_pergunta(texto) == servicos.gerar_embedding(texto)
+
+
+def test_pergunta_sem_palavras_uteis_tambem_e_recusada():
+    with pytest.raises(ValueError):
+        servicos.gerar_embedding_da_pergunta("   ")
+
+
 def test_adaptador_que_nao_existe_e_erro_de_configuracao():
     with (
         override_settings(FAROL_IA={"ADAPTADOR": "ia.adaptadores.nao_existe.Provedor"}),

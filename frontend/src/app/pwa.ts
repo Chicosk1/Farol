@@ -30,6 +30,6 @@ export const MANIFESTO = {
 export const OPCOES_DO_WORKBOX = {
   globPatterns: ['**/*.{js,css,html,svg,png,woff,woff2}'],
   navigateFallback: '/index.html',
-  navigateFallbackDenylist: [/^\/api\//, /^\/admin\//, /^\/static\//, /^\/media\//],
+  navigateFallbackDenylist: [/^\/api\//, /^\/admin\//, /^\/static\//, /^\/media\//, /^\/contas\//],
   runtimeCaching: [],
 };

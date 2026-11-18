@@ -20,15 +20,22 @@ def _provedor() -> ProvedorDeIA:
 
 
 def gerar_embeddings(textos: list[str]) -> list[list[float]]:
-    """Os vetores de busca de vários textos, na mesma ordem."""
+    """Os vetores de busca de vários trechos do material, na mesma ordem (MAT-RF-04)."""
     if any(not texto.strip() for texto in textos):
         raise ValueError("Não dá para gerar o vetor de um texto vazio.")
-    return _provedor().embeddings(textos)
+    return _provedor().embeddings(textos, finalidade="trecho")
 
 
 def gerar_embedding(texto: str) -> list[float]:
-    """O vetor de busca de um texto (MAT-RF-04, TUT-RF-01)."""
+    """O vetor de busca de um trecho do material (MAT-RF-04)."""
     return gerar_embeddings([texto])[0]
+
+
+def gerar_embedding_da_pergunta(texto: str) -> list[float]:
+    """O vetor da pergunta do aluno, para achar os trechos mais próximos (TUT-RF-01)."""
+    if not texto.strip():
+        raise ValueError("Não dá para gerar o vetor de um texto vazio.")
+    return _provedor().embeddings([texto], finalidade="pergunta")[0]
 
 
 def responder(

@@ -20,6 +20,7 @@ O Farol é desenvolvido de forma orientada por especificação (Spec-Driven Deve
 | [Qualidade e testes](docs/qualidade-e-testes.md) | Níveis de teste, verificações automáticas e quando uma tarefa está pronta |
 | [Guia de desenvolvimento](docs/desenvolvimento.md) | Como subir o produto em Docker, rodar os testes, criar migrações e atualizar o contrato da API |
 | [docs/acessibilidade.md](docs/acessibilidade.md) | Auditoria de acessibilidade das telas |
+| [Guia de produção](docs/producao.md) | O que o servidor do piloto precisa: variáveis, proxy HTTPS, banco e medições |
 | [Matriz de rastreabilidade](docs/rastreabilidade.md) | Cada requisito, o que o protótipo já cobre, onde está no código e as tarefas |
 | [Glossário](docs/glossario.md) | O sentido exato de cada termo usado nas specs |
 | [Como contribuir](CONTRIBUTING.md) | O fluxo issue, spec, plano, tarefas, código e pull request |

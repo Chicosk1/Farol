@@ -16,9 +16,15 @@ describe('PWA (ACE-T60)', () => {
     expect(MANIFESTO.icons.some((icone) => icone.purpose === 'maskable')).toBe(true);
   });
 
-  it('o service worker não guarda nem intercepta a API e o painel administrativo', () => {
+  it('o service worker não guarda nem intercepta a API, o login e o painel administrativo', () => {
     const fora = OPCOES_DO_WORKBOX.navigateFallbackDenylist;
-    for (const caminho of ['/api/eu', '/api/disciplinas/4/tutor', '/admin/', '/media/x.pdf']) {
+    for (const caminho of [
+      '/api/eu',
+      '/api/disciplinas/4/tutor',
+      '/admin/',
+      '/media/x.pdf',
+      '/contas/google/login/callback/',
+    ]) {
       expect(fora.some((regra) => regra.test(caminho))).toBe(true);
     }
     expect(fora.some((regra) => regra.test('/disciplinas/4/tutor'))).toBe(false);

@@ -1,6 +1,6 @@
 # 0005. Usar IA via API de provedor, com módulo próprio e sem framework de orquestração
 
-- **Status:** Proposta
+- **Status:** Substituída em parte pela [ADR 0009](0009-ia-com-modelos-abertos-no-ollama.md) (provedor e SDK). O módulo próprio e a ausência de framework continuam valendo
 - **Data:** 12/11/2026
 
 ## Contexto

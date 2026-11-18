@@ -1,7 +1,9 @@
 """Configurações por ambiente, lidas de variáveis (ACE-T11)."""
 
 import importlib
+import importlib.util
 import sys
+from pathlib import Path
 
 import pytest
 from django.core.exceptions import ImproperlyConfigured
@@ -19,6 +21,9 @@ VARIAVEIS_DE_PRODUCAO = {
     "FAROL_ARQUIVOS": "/arquivos",
     "FAROL_SEGREDO_PSEUDONIMO": "segredo-de-teste-do-pseudonimo",
     "FAROL_IA_ADAPTADOR": "ia.adaptadores.falso.ProvedorFalso",
+    "FAROL_DOMINIO_INSTITUCIONAL": "exemplo.edu.br",
+    "FAROL_GOOGLE_CLIENT_ID": "cliente-de-teste.apps.googleusercontent.com",
+    "FAROL_GOOGLE_SECRET": "segredo-de-teste",
 }
 
 
@@ -107,3 +112,39 @@ def test_o_cookie_de_sessao_sai_com_o_prazo_de_expiracao(db, client):
 
     assert resposta.status_code == 200
     assert resposta.cookies["sessionid"]["max-age"] == 12 * 3600
+
+
+def _base_do_zero():
+    """Carrega as configurações comuns de novo, lendo as variáveis de ambiente de agora."""
+    caminho = Path(__file__).resolve().parent.parent / "configuracoes" / "base.py"
+    especificacao = importlib.util.spec_from_file_location(
+        "farol.configuracoes._base_recarregada", caminho
+    )
+    modulo = importlib.util.module_from_spec(especificacao)
+    especificacao.loader.exec_module(modulo)
+    return modulo
+
+
+@pytest.mark.requisito("TUT-RF-04")
+def test_a_similaridade_minima_do_tutor_vem_da_variavel_de_ambiente(monkeypatch):
+    monkeypatch.setenv("FAROL_TUTOR_SIMILARIDADE_MINIMA", "0,42")
+
+    assert _base_do_zero().FAROL_TUTOR_SIMILARIDADE_MINIMA == 0.42
+
+
+def test_sem_a_variavel_vale_a_similaridade_do_adaptador_falso(monkeypatch):
+    monkeypatch.delenv("FAROL_TUTOR_SIMILARIDADE_MINIMA", raising=False)
+
+    assert _base_do_zero().FAROL_TUTOR_SIMILARIDADE_MINIMA == 0.3
+
+
+@pytest.mark.parametrize("valor", ["1.5", "-0.1", "alta"])
+def test_similaridade_fora_de_0_a_1_impede_o_django_de_subir(monkeypatch, valor):
+    monkeypatch.setenv("FAROL_TUTOR_SIMILARIDADE_MINIMA", valor)
+
+    with pytest.raises(ImproperlyConfigured, match="FAROL_TUTOR_SIMILARIDADE_MINIMA"):
+        _base_do_zero()
+
+
+def test_os_testes_usam_sempre_a_similaridade_do_adaptador_falso(settings):
+    assert settings.FAROL_TUTOR_SIMILARIDADE_MINIMA == 0.3

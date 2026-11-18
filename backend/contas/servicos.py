@@ -2,6 +2,8 @@
 
 from collections.abc import MutableMapping
 
+from django.conf import settings
+
 from . import aviso
 from .models import CienciaPrivacidade, Pessoa, normalizar_email
 from .models import Perfil as Perfil  # reexportado: os outros módulos usam o perfil pelo servicos
@@ -19,6 +21,52 @@ def pessoa_ativa_por_email(email: str) -> Pessoa:
         return Pessoa.objects.get(email=normalizar_email(email), is_active=True)
     except Pessoa.DoesNotExist:
         raise PessoaNaoEncontrada(email) from None
+
+
+class ContaExterna(PermissionError):
+    """A conta do Google não é da instituição (ACE-RF-01)."""
+
+
+def conferir_conta_institucional(
+    email: str, email_verificado: bool, dominio_do_google: str | None
+) -> None:
+    """Só aceita um e-mail verificado do domínio institucional, de uma conta do Workspace.
+
+    O `hd` que o Google informa é o domínio do Workspace da conta. Sem ele, a conta é pessoal,
+    mesmo que tenha sido criada com o e-mail da instituição.
+    """
+    dominio = settings.FAROL_DOMINIO_INSTITUCIONAL.lower()
+    institucional = (
+        email_verificado
+        and normalizar_email(email).endswith(f"@{dominio}")
+        and (dominio_do_google or "").lower() == dominio
+    )
+    if not institucional:
+        raise ContaExterna(email)
+
+
+def pessoa_desativada(email: str) -> bool:
+    """Se existe uma pessoa com este e-mail que foi desativada e não pode entrar."""
+    return Pessoa.objects.filter(email=normalizar_email(email), is_active=False).exists()
+
+
+def preparar_pessoa_nova(pessoa: Pessoa, nome: str) -> None:
+    """Completa a pessoa que entra pela primeira vez sem ter sido importada: vira aluno.
+
+    Sem nome no Google, usa o do e-mail ("maria.clara" vira "Maria Clara"). Os perfis de
+    professor e coordenação vêm da importação de turmas, nunca do login.
+    """
+    pessoa.nome = nome.strip() or _nome_pelo_email(pessoa.email)
+    pessoa.perfis = [Perfil.ALUNO]
+
+
+def login_google_configurado() -> bool:
+    """Se a credencial OAuth do Google existe, e o botão de entrar com o Google pode aparecer."""
+    return bool(settings.FAROL_GOOGLE_CLIENT_ID)
+
+
+def _nome_pelo_email(email: str) -> str:
+    return normalizar_email(email).split("@")[0].replace(".", " ").replace("_", " ").title()
 
 
 class PerfilInvalido(ValueError):
@@ -76,7 +124,7 @@ def garantir_pessoa_com_perfil(
     try:
         pessoa = Pessoa.objects.get(email=email)
     except Pessoa.DoesNotExist:
-        nome = nome or email.split("@")[0].replace(".", " ").replace("_", " ").title()
+        nome = nome or _nome_pelo_email(email)
         return Pessoa.objects.create_user(email=email, nome=nome, perfis=[perfil]), True
     if perfil not in pessoa.perfis or (nome and nome != pessoa.nome):
         if perfil not in pessoa.perfis:

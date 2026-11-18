@@ -79,3 +79,81 @@ def test_sem_nenhuma_frase_marcada_nada_e_apresentado():
     texto, citados = converter("Acho que cai na prova. Estude bastante!")
 
     assert (texto, citados) == ("", [])
+
+
+# Conferência da citação (TUT-T19): a frase que claramente vem de outro trecho passa a citá-lo.
+TRECHOS = {
+    1: "A busca binária só funciona em vetores ordenados. Ela compara o valor procurado com o "
+    "elemento do meio.",
+    2: "Para verificar se os parênteses de uma expressão estão balanceados, empilha-se cada "
+    "abertura e desempilha-se a cada fechamento; a expressão está balanceada se a pilha terminar "
+    "vazia.",
+    3: "Uma fila segue a política FIFO.",
+}
+
+
+def conferir(texto: str, pedacos: int | None = None) -> tuple[str, list[int]]:
+    conversor = ConversorDeCitacoes(set(TRECHOS), TRECHOS)
+    frases: list[str] = []
+    passo = pedacos or len(texto)
+    for i in range(0, len(texto), passo):
+        frases += conversor.receber(texto[i : i + passo])
+    frases += conversor.terminar()
+    return " ".join(frases), conversor.citados
+
+
+@pytest.mark.requisito("TUT-RF-02")
+def test_frase_que_claramente_vem_de_outro_trecho_passa_a_cita_lo():
+    texto, citados = conferir(
+        "Empilha-se cada abertura e desempilha-se a cada fechamento; a expressão está "
+        "balanceada se a pilha terminar vazia. [1]"
+    )
+
+    assert citados == [2]
+    assert texto.endswith("vazia. [1]")  # a citação é renumerada como sempre
+
+
+def test_a_conferencia_vale_tambem_com_a_resposta_em_pedacos():
+    _, citados = conferir(
+        "A busca binária só funciona em vetores ordenados. [1] Empilha-se cada abertura e "
+        "desempilha-se a cada fechamento, até a pilha terminar vazia. [3]",
+        pedacos=7,
+    )
+
+    assert citados == [1, 2]
+
+
+def test_citacao_certa_nao_muda():
+    _, citados = conferir("A busca binária só funciona em vetores ordenados. [1]")
+
+    assert citados == [1]
+
+
+def test_frase_curta_fica_com_a_citacao_do_modelo():
+    _, citados = conferir("Isso vale sempre. [3]")
+
+    assert citados == [3]
+
+
+def test_frase_que_nao_vem_de_nenhum_trecho_fica_com_a_citacao_do_modelo():
+    _, citados = conferir("O quicksort escolhe um pivô e particiona o vetor recursivamente. [1]")
+
+    assert citados == [1]
+
+
+def test_frase_que_ja_cita_o_trecho_certo_junto_com_outro_nao_muda():
+    _, citados = conferir(
+        "Empilha-se cada abertura e desempilha-se a cada fechamento, até a pilha terminar "
+        "vazia. [1][2]"
+    )
+
+    assert citados == [1, 2]
+
+
+def test_sem_os_textos_dos_trechos_nao_ha_conferencia():
+    texto, citados = converter(
+        "Empilha-se cada abertura e desempilha-se a cada fechamento, até a pilha terminar "
+        "vazia. [1]"
+    )
+
+    assert citados == [1]

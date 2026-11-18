@@ -24,6 +24,7 @@ export type ChamadaSimulada = {
 /** Rotas que o cabeçalho chama em toda tela; um teste pode trocar a resposta pela sua. */
 const PADROES: Record<string, RespostaSimulada> = {
   'GET /api/notificacoes': { corpo: { notificacoes: [], nao_lidas: 0 } },
+  'GET /api/entrada': { corpo: { google: true, desenvolvimento: true } },
 };
 
 export function simularApi(rotas: Record<string, Rota>) {

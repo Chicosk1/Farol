@@ -27,8 +27,14 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 - [x] TUT-T10 Acrescentar ao módulo `ia` a função `responder` (regras, trechos numerados e pergunta, em streaming) e o provedor falso para os testes; o `gerar_embedding` já veio com a MAT-T13
 - [x] TUT-T11 [P] Modelos `Conversa`, `Mensagem`, `Citacao`, `ConfiguracaoTutor`, `JanelaProva`, `RegistroUso` e `RevisaoResposta`
-- [ ] TUT-T12 [P] Montar o conjunto de 100 perguntas de Estruturas de Dados com resposta e trecho esperados em `backend/tutor/avaliacao/`
-- [ ] TUT-T13 Script de avaliação que roda o conjunto e calcula a taxa de citação correta, ligado ao GitHub Actions (TUT-CS-01, TUT-CS-03, TUT-CS-04)
+- [x] TUT-T14 Adaptador `ia/adaptadores/compativel_openai.py`: respostas em streaming e vetores de 256 dimensões pela API compatível com a da OpenAI, com testes contra um servidor HTTP falso (ADR 0009)
+- [x] TUT-T15 Serviço `ollama` no Docker Compose, no perfil `ia`, com o comando que baixa os modelos e o passo a passo em `docs/desenvolvimento.md` (ADR 0009)
+- [x] TUT-T12 [P] Montar o conjunto de 100 perguntas de Estruturas de Dados com resposta e trecho esperados em `backend/tutor/avaliacao/`
+- [x] TUT-T13 Comando `avaliar_tutor`, que roda o conjunto e calcula a taxa de citação correta, as afirmações sem citação e o "não encontrei" das perguntas sem base, e sugere o limite de similaridade (TUT-CS-01, TUT-CS-03, TUT-CS-04)
+- [ ] TUT-T16 Workflow do GitHub Actions que roda o `avaliar_tutor` com o Ollama toda semana e nos pull requests que mudam o módulo `ia` ou o conjunto (TUT-CS-01)
+- [x] TUT-T19 Conferência da citação: a frase que claramente vem de outro trecho enviado passa a citá-lo (TUT-RF-02)
+- [x] TUT-T17 Vetores com a finalidade (pergunta ou trecho do material), para o adaptador usar as instruções de busca do `embeddinggemma` (TUT-RF-01)
+- [x] TUT-T18 Similaridade mínima do tutor configurável por variável de ambiente e calibrada para o `embeddinggemma` com o `avaliar_tutor` (TUT-RF-04)
 
 ## Produto: História 1, perguntar e receber resposta com a fonte (P1)
 
@@ -37,6 +43,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 - [x] TUT-T22 [H1] Regras fixas do prompt e conversão das marcações de trecho em citações, descartando frases sem marcação (TUT-RF-02, TUT-RF-03, TUT-RNF-02)
 - [x] TUT-T23 [H1] Rota de perguntas com streaming por SSE (TUT-RF-13)
 - [x] TUT-T26 [H1] Rota `GET /api/disciplinas/{id}/tutor` para a tela do aluno: modo pistas, política, pausa, uso do dia e a conversa guardada com as citações, antes da TUT-T24 (TUT-RF-07, TUT-RF-08, TUT-RF-10, TUT-RF-12)
+- [x] TUT-T27 [H1] Resposta do modelo feita só de frases de "não encontrei", mesmo com citação, vira a resposta padrão de não encontrado (TUT-RF-04, TUT-CS-04)
 - [x] TUT-T24 [H1] Tela do tutor no React com citações clicáveis e região `aria-live` (TUT-RF-02, TUT-RNF-03, TUT-RNF-04)
 - [x] TUT-T25 [H1] Sugestões de pergunta geradas a partir dos títulos das aulas (TUT-RF-14)
 
@@ -78,6 +85,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 - [x] TUT-T91 [P] Registro de uso com identificador pseudônimo por disciplina (TUT-RF-12)
 - [x] TUT-T92 Teste de carga para a meta de 3 segundos (TUT-RNF-01)
 - [x] TUT-T93 Painel de custo por aluno e alerta de orçamento (TUT-RNF-05)
+- [x] TUT-T94 Tirar do `RegistroUso` o campo `avaliacao`, que nunca é preenchido: o registro não tem ligação com a mensagem (TUT-RF-12)
 
 ## Dependências
 

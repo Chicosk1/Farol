@@ -17,6 +17,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "drf_spectacular",
+    # Login institucional com o Google (ACE-RF-01), só com contas sociais
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
     # Módulos do Farol (ADR 0007)
     "nucleo",
     "contas",
@@ -37,6 +42,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 # Funções dos módulos que o núcleo usa na permissão por disciplina (nucleo/permissoes.py).
@@ -46,14 +52,15 @@ FAROL_ACESSO = {
     "ACESSO_A_DISCIPLINA": "disciplinas.servicos.tem_acesso",
 }
 
-# Limites do PDF de uma aula (spec 002, decisão provisória a confirmar com o dono do produto).
+# Limites do PDF de uma aula (spec 002, confirmados pelo dono do produto em 2026-11-18).
 FAROL_PDF_MAX_BYTES = 50 * 1024 * 1024
 FAROL_PDF_MAX_PAGINAS = 300
 
 # Similaridade mínima (0 a 1) para um trecho valer como base da resposta do tutor. Abaixo dela, o
-# tutor responde "não encontrei" sem chamar o modelo (TUT-RF-04). O valor foi calibrado com o
-# adaptador falso e precisa ser recalibrado com o provedor real, pelo conjunto de avaliação.
-FAROL_TUTOR_SIMILARIDADE_MINIMA = 0.3
+# tutor responde "não encontrei" sem chamar o modelo (TUT-RF-04). Cada modelo de vetores tem a sua
+# escala: o padrão 0,3 é o do adaptador falso, e o comando avaliar_tutor sugere o valor de outro
+# modelo (o do embeddinggemma está no .env.exemplo e em docs/desenvolvimento.md).
+FAROL_TUTOR_SIMILARIDADE_MINIMA = ambiente.fracao("FAROL_TUTOR_SIMILARIDADE_MINIMA", "0.3")
 
 # Preço do provedor de IA por mil tokens, em reais, para o custo de cada pergunta (TUT-RNF-05).
 # Fica em zero até a escolha do provedor (ADR 0005).
@@ -72,9 +79,72 @@ FAROL_SEGREDO_DO_PSEUDONIMO = ambiente.opcional(
 # um de outro tamanho exige uma migração (docs/arquitetura.md).
 FAROL_DIMENSAO_DO_VETOR = 256
 
-# Provedor de IA, atrás do módulo ia. Por padrão (desenvolvimento e testes) é o adaptador falso;
-# a produção precisa indicar o adaptador do provedor escolhido (ADR 0005).
-FAROL_IA = {"ADAPTADOR": "ia.adaptadores.falso.ProvedorFalso"}
+# Provedor de IA, atrás do módulo ia. Por padrão é o adaptador falso, sem internet e sem custo. Com
+# o Ollama no ar (perfil ia do Docker Compose), FAROL_IA_ADAPTADOR liga o adaptador real (ADR 0009):
+#   ia.adaptadores.compativel_openai.ProvedorCompativelOpenAI
+# Os testes usam sempre o falso (teste.py), e a produção exige a variável (producao.py).
+FAROL_IA = {
+    "ADAPTADOR": ambiente.opcional("FAROL_IA_ADAPTADOR", "ia.adaptadores.falso.ProvedorFalso")
+}
+
+# Adaptador da API compatível com a da OpenAI: o Ollama do Docker Compose por padrão. Para um
+# provedor de mercado compatível, basta trocar o endereço, os modelos e pôr a chave.
+FAROL_IA_COMPATIVEL_OPENAI = {
+    "ENDERECO": ambiente.opcional("FAROL_IA_ENDERECO", "http://ollama:11434/v1"),
+    "CHAVE": ambiente.opcional("FAROL_IA_CHAVE", ""),
+    "MODELO_DE_RESPOSTAS": ambiente.opcional("FAROL_IA_MODELO_DE_RESPOSTAS", "gemma3:4b"),
+    "MODELO_DE_VETORES": ambiente.opcional("FAROL_IA_MODELO_DE_VETORES", "embeddinggemma"),
+    # Instruções de busca do embeddinggemma, que melhoram a busca. Outro modelo de vetores pode
+    # pedir outras, ou nenhuma: defina as variáveis vazias.
+    "PREFIXO_DA_PERGUNTA": ambiente.definida_ou(
+        "FAROL_IA_PREFIXO_DA_PERGUNTA", "task: search result | query: "
+    ),
+    "PREFIXO_DO_TRECHO": ambiente.definida_ou("FAROL_IA_PREFIXO_DO_TRECHO", "title: none | text: "),
+    # Segundos de espera por uma resposta. Em CPU, o modelo leva um tempo para carregar.
+    "TEMPO_LIMITE": int(ambiente.opcional("FAROL_IA_TEMPO_LIMITE", "120")),
+}
+
+# Login institucional com o Google Workspace, pelo django-allauth (ACE-RF-01, specs/001 plan.md).
+# Só entra um e-mail verificado do domínio da instituição. Sem a credencial OAuth, o botão do
+# Google não aparece (GET /api/entrada). Os padrões só servem ao desenvolvimento.
+FAROL_DOMINIO_INSTITUCIONAL = ambiente.opcional("FAROL_DOMINIO_INSTITUCIONAL", "exemplo.edu.br")
+FAROL_GOOGLE_CLIENT_ID = ambiente.opcional("FAROL_GOOGLE_CLIENT_ID", "")
+FAROL_GOOGLE_SECRET = ambiente.opcional("FAROL_GOOGLE_SECRET", "")
+
+
+def login_do_google(dominio: str, client_id: str, secret: str) -> dict:
+    """A configuração do provedor Google do allauth, com o domínio sugerido ao escolher a conta."""
+    return {
+        "google": {
+            "SCOPE": ["openid", "email", "profile"],
+            "AUTH_PARAMS": {"hd": dominio, "prompt": "select_account"},
+            "OAUTH_PKCE_ENABLED": True,
+            "APPS": [{"client_id": client_id, "secret": secret, "key": ""}] if client_id else [],
+        }
+    }
+
+
+SOCIALACCOUNT_PROVIDERS = login_do_google(
+    FAROL_DOMINIO_INSTITUCIONAL, FAROL_GOOGLE_CLIENT_ID, FAROL_GOOGLE_SECRET
+)
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+# Só contas sociais: sem cadastro, senha nem recuperação de senha próprios (ACE-RF-02).
+SOCIALACCOUNT_ONLY = True
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_STORE_TOKENS = False
+# A conta do Google se liga à pessoa que já existe com o mesmo e-mail (importação de turmas).
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+SOCIALACCOUNT_ADAPTER = "contas.api.login_google.AdaptadorDoGoogle"
+ACCOUNT_ADAPTER = "contas.api.login_google.AdaptadorDeContas"
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*"]
+ACCOUNT_EMAIL_VERIFICATION = "none"
+LOGIN_REDIRECT_URL = "/"
 
 # Atalho para entrar sem o login institucional (POST /api/dev/entrar). Desligado por padrão:
 # só as configurações de desenvolvimento e de teste ligam (ACE-RNF-03).
@@ -112,7 +182,7 @@ DATABASES = {
 }
 
 # Sessão: expira depois de um período sem uso (ACE-RNF-02). Cada requisição renova o prazo; o
-# padrão de 12 horas é a sugestão da spec, a confirmar com a TI.
+# padrão de 12 horas foi confirmado pelo dono do produto (ACE-RNF-02).
 FAROL_SESSAO_HORAS = int(ambiente.opcional("FAROL_SESSAO_HORAS", "12"))
 SESSION_COOKIE_AGE = FAROL_SESSAO_HORAS * 3600
 SESSION_SAVE_EVERY_REQUEST = True

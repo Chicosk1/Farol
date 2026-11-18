@@ -1,0 +1,11 @@
+# Fim de linha LF em todo arquivo de texto, em qualquer sistema: o Farol roda no Linux do Docker,
+# e um editor do Windows não deve trocar o fim de linha de um arquivo inteiro.
+* text=auto eol=lf
+
+# Binários: o Git nunca mexe no conteúdo.
+*.png binary
+*.jpg binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary

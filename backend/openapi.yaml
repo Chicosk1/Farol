@@ -463,6 +463,25 @@ paths:
           description: O aluno chegou ao limite de perguntas de hoje.
         '503':
           description: O provedor de IA está indisponível.
+  /api/entrada:
+    get:
+      operationId: entrada_retrieve
+      description: |-
+        Diz se há o login com o Google e o atalho de desenvolvimento. Entrega também o cookie
+        CSRF que o formulário "Entrar com o Google" envia (ACE-RF-01).
+      summary: Formas de entrar disponíveis neste ambiente
+      tags:
+      - contas
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormasDeEntrar'
+          description: ''
   /api/eu:
     get:
       operationId: eu_retrieve
@@ -1127,6 +1146,20 @@ components:
       - perfil_ativo
       - perfis
       - precisa_ver_aviso
+    FormasDeEntrar:
+      type: object
+      description: Como se pode entrar neste ambiente, para a tela de entrada mostrar
+        só os botões que valem.
+      properties:
+        google:
+          type: boolean
+          description: Se o login com o Google está configurado.
+        desenvolvimento:
+          type: boolean
+          description: Se o atalho de desenvolvimento existe (nunca em produção).
+      required:
+      - desenvolvimento
+      - google
     Importacao:
       type: object
       properties:

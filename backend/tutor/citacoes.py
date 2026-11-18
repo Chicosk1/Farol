@@ -3,18 +3,55 @@
 O modelo marca cada afirmação com o número do trecho em que ela se apoia, como [2]. Aqui, a
 resposta que chega em pedaços (streaming) é separada em frases; só passam as frases com pelo menos
 uma marcação válida, e as marcações são renumeradas na ordem em que as citações aparecem.
+
+Com os textos dos trechos, cada frase também passa pela conferência da citação (plan.md): modelos
+pequenos às vezes escrevem a frase de um trecho e marcam o número de outro. Se a frase claramente
+vem de outro trecho enviado, a citação passa para ele.
 """
 
 import re
+import unicodedata
 
 MARCACAO = re.compile(r"\[(\d+)\]")
 # Fim de frase: pontuação final, as marcações que vierem logo depois, e o começo da próxima frase.
 FRONTEIRA = re.compile(r"[.!?](?:\s*\[\d+\])*(?=\s+[^\s\[])")
 
+# Conferência da citação: só troca quando não há dúvida.
+PALAVRAS_MINIMAS = 3  # frase curta demais não diz de onde veio
+PARTE_MINIMA_NO_TRECHO = 0.6  # das palavras da frase, quantas estão no trecho de onde ela veio
+VANTAGEM_MINIMA = 0.3  # quanto a mais que no trecho que o modelo citou
+TAMANHO_DO_RADICAL = 5  # "balanceada" e "balanceados" contam como a mesma palavra
+
+
+def _sem_acentos(texto: str) -> str:
+    return unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode().lower()
+
+
+def _radicais(texto: str) -> set[str]:
+    """As palavras que dizem do que o texto trata, sem acento e reduzidas ao começo."""
+    palavras = re.findall(r"[a-z0-9]+", _sem_acentos(texto))
+    return {p[:TAMANHO_DO_RADICAL] for p in palavras if len(p) >= 4}
+
+
+# Começos de frase com que o modelo diz que o material não responde à pergunta (TUT-T27).
+NAO_ENCONTROU = re.compile(
+    r"^(?:nao (?:encontrei|achei|ha|existe|consta|tenho|foi possivel)"
+    r"|(?:o|no) material(?: fornecido| da disciplina)? nao"
+    r"|(?:os|nos) trechos(?: do material)? nao)"
+)
+
+
+def diz_que_nao_encontrou(frase: str) -> bool:
+    """Se a frase só diz que o material não responde à pergunta, como "Não encontrei..."."""
+    return bool(NAO_ENCONTROU.match(_sem_acentos(MARCACAO.sub("", frase)).strip()))
+
 
 class ConversorDeCitacoes:
-    def __init__(self, trechos_validos: set[int]):
+    def __init__(self, trechos_validos: set[int], textos: dict[int, str] | None = None):
         self._validos = trechos_validos
+        self._radicais = {
+            n: _radicais(t) for n, t in (textos or {}).items() if n in trechos_validos
+        }
         self._pendente = ""
         self._ordem: dict[int, int] = {}  # número do trecho no prompt -> número da citação
 
@@ -40,15 +77,34 @@ class ConversorDeCitacoes:
         convertida = self._converter(frase)
         return [convertida] if convertida else []
 
+    def _conferir(self, frase: str, numeros: list[int]) -> dict[int, int]:
+        """As trocas de citação da frase: número que o modelo marcou -> trecho de onde ela veio."""
+        palavras = _radicais(MARCACAO.sub(" ", frase))
+        if not self._radicais or len(palavras) < PALAVRAS_MINIMAS:
+            return {}
+
+        def parte(numero: int) -> float:
+            return len(palavras & self._radicais[numero]) / len(palavras)
+
+        melhor = max(self._radicais, key=parte)
+        if melhor in numeros or parte(melhor) < PARTE_MINIMA_NO_TRECHO:
+            return {}
+        return {
+            numero: melhor for numero in numeros if parte(melhor) - parte(numero) >= VANTAGEM_MINIMA
+        }
+
     def _converter(self, frase: str) -> str | None:
         numeros = [int(n) for n in MARCACAO.findall(frase) if int(n) in self._validos]
         if not numeros:
             return None  # afirmação sem citação não é apresentada (TUT-RF-03)
+        trocas = self._conferir(frase, numeros)
         for numero in numeros:
-            self._ordem.setdefault(numero, len(self._ordem) + 1)
+            self._ordem.setdefault(trocas.get(numero, numero), len(self._ordem) + 1)
 
         def renumerar(marcacao: re.Match) -> str:
             numero = int(marcacao.group(1))
-            return f"[{self._ordem[numero]}]" if numero in self._validos else ""
+            if numero not in self._validos:
+                return ""
+            return f"[{self._ordem[trocas.get(numero, numero)]}]"
 
         return re.sub(r"\s{2,}", " ", MARCACAO.sub(renumerar, frase)).strip()

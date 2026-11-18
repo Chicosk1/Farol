@@ -117,7 +117,6 @@ Como professor, quero retirar um material ou trocar por uma versão corrigida, e
 
 | Questão | Dono | Prazo |
 | --- | --- | --- |
-| Confirmar com o dono do produto os limites de 50 MB e 300 páginas e a regra da citação antiga (decisões provisórias tomadas ao aprovar a spec) | Dono do produto | Fim da fase 0 |
 
 ## Histórico
 
@@ -125,3 +124,4 @@ Como professor, quero retirar um material ou trocar por uma versão corrigida, e
 | --- | --- |
 | 2026-11-13 | Criação da spec a partir da idealização e do protótipo |
 | 2026-11-16 | Aprovada. Decisões provisórias: limite de 50 MB e 300 páginas; citação antiga abre a versão nova do material |
+| 2026-11-18 | O dono do produto confirmou as decisões provisórias e o trecho citado mostrado como texto da página |

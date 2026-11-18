@@ -2,13 +2,22 @@ import { Link, Outlet, useNavigate } from 'react-router';
 
 import { Botao } from '../componentes/Botao';
 import { AvisoDePrivacidade } from '../funcionalidades/contas/AvisoDePrivacidade';
-import { useEu, useSair } from '../funcionalidades/contas/sessao';
+import type { Perfil } from '../api/cliente';
+import { useEu, useSair, useTrocarPerfil } from '../funcionalidades/contas/sessao';
 import { SinoDeNotificacoes } from '../funcionalidades/notificacoes/SinoDeNotificacoes';
 
-/** Cabeçalho comum às telas de quem entrou: navegação principal e o botão Sair. */
+const NOMES_DOS_PERFIS: Record<Perfil, string> = {
+  aluno: 'Aluno',
+  professor: 'Professor',
+  coordenacao: 'Coordenação',
+  admin: 'Administrador',
+};
+
+/** Cabeçalho comum às telas de quem entrou: navegação, troca de perfil e o botão Sair. */
 export function Layout() {
   const eu = useEu();
   const sair = useSair();
+  const trocarPerfil = useTrocarPerfil();
   const navegar = useNavigate();
   const precisaVerAviso = eu.data?.precisa_ver_aviso === true;
 
@@ -32,6 +41,28 @@ export function Layout() {
             {eu.data?.perfil_ativo === 'aluno' && <Link to="/meus-dados">Meus dados</Link>}
           </nav>
           <div className="flex items-center gap-2">
+            {/* Quem tem mais de um perfil troca o perfil em uso sem sair (ACE-RF-03). */}
+            {eu.data && eu.data.perfis.length > 1 && (
+              <label className="flex items-center gap-2 text-sm font-bold">
+                Perfil em uso
+                <select
+                  className="min-h-12 rounded-lg border border-line-control bg-surface px-2 text-ink"
+                  value={eu.data.perfil_ativo ?? ''}
+                  disabled={trocarPerfil.isPending}
+                  onChange={(evento) => {
+                    trocarPerfil.mutate(evento.target.value as Perfil, {
+                      onSuccess: () => navegar('/'),
+                    });
+                  }}
+                >
+                  {eu.data.perfis.map((perfil) => (
+                    <option key={perfil} value={perfil}>
+                      {NOMES_DOS_PERFIS[perfil]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <SinoDeNotificacoes />
             <Botao
               variante="secundario"

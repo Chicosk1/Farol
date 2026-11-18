@@ -24,6 +24,8 @@ x-backend: &backend
     EMAIL_PORT: "1025"
     # Pasta dos arquivos enviados, compartilhada pelo backend e pelo worker.
     FAROL_ARQUIVOS: /arquivos
+    # Adaptador de IA: o falso por padrão; o do Ollama vem do .env ou do terminal (ADR 0009).
+    FAROL_IA_ADAPTADOR: ${FAROL_IA_ADAPTADOR:-ia.adaptadores.falso.ProvedorFalso}
   volumes:
     - ./backend:/app
     - arquivos:/arquivos
@@ -116,6 +118,44 @@ services:
       timeout: 5s
       retries: 20
 
+  # IA de verdade, de graça e sem dados saindo do computador (ADR 0009). Só sobe com o perfil ia:
+  #   docker compose --profile ia up -d
+  # e com FAROL_IA_ADAPTADOR no .env (docs/desenvolvimento.md). Sem isso, vale o adaptador falso.
+  ollama:
+    image: ollama/ollama:0.40.13
+    profiles: [ia]
+    environment:
+      # Mantém os modelos carregados na memória: carregar de novo atrasa a primeira palavra.
+      OLLAMA_KEEP_ALIVE: 24h
+    volumes:
+      - modelos-ia:/root/.ollama
+    ports:
+      - "11434:11434"
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  # Baixa os modelos uma vez (cerca de 4 GB) e termina. Nas próximas vezes, só confere.
+  ollama-modelos:
+    image: ollama/ollama:0.40.13
+    profiles: [ia]
+    environment:
+      OLLAMA_HOST: ollama:11434
+    entrypoint:
+      - sh
+      - -c
+      - ollama pull $${FAROL_IA_MODELO_DE_VETORES:-embeddinggemma} && ollama pull $${FAROL_IA_MODELO_DE_RESPOSTAS:-gemma3:4b}
+    env_file:
+      - path: .env
+        required: false
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: "no"
+
 volumes:
   dados-db:
   arquivos:
+  modelos-ia:

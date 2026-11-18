@@ -28,6 +28,8 @@ export default defineConfig({
     proxy: {
       // changeOrigin desligado: o Django vê o mesmo endereço que o navegador, e a proteção CSRF confere a origem.
       '/api': { target: alvoDaApi, changeOrigin: false },
+      // Login com o Google pelo allauth: a ida e a volta passam pelo mesmo endereço do front-end.
+      '/contas': { target: alvoDaApi, changeOrigin: false },
     },
   },
   test: {

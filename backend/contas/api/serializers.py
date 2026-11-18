@@ -3,6 +3,15 @@ from rest_framework import serializers
 from contas.models import Perfil
 
 
+class FormasDeEntrarSerializer(serializers.Serializer):
+    """Como se pode entrar neste ambiente, para a tela de entrada mostrar só os botões que valem."""
+
+    google = serializers.BooleanField(help_text="Se o login com o Google está configurado.")
+    desenvolvimento = serializers.BooleanField(
+        help_text="Se o atalho de desenvolvimento existe (nunca em produção)."
+    )
+
+
 class EuSerializer(serializers.Serializer):
     """A pessoa que está usando o Farol, com os perfis dela e o perfil em uso."""
 

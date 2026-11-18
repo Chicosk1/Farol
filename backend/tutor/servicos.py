@@ -20,7 +20,7 @@ from nucleo.privacidade import remover_dados_pessoais, sem_marcas
 from nucleo.pseudonimo import pseudonimo_do_aluno
 
 from . import contador
-from .citacoes import ConversorDeCitacoes
+from .citacoes import ConversorDeCitacoes, diz_que_nao_encontrou
 from .models import Citacao as CitacaoGuardada
 from .models import (
     ConfiguracaoTutor,
@@ -98,19 +98,29 @@ def gerar_resposta(
     """Chama o modelo com as regras fixas, os trechos numerados e a pergunta, e devolve só as
     frases com citação, à medida que chegam (TUT-RF-02, 03 e 13).
 
-    Se nenhuma frase tiver citação, a resposta vira "Não encontrei isso no material da disciplina."
+    Se nenhuma frase tiver citação, ou se todas só disserem que o material não responde, a
+    resposta vira "Não encontrei isso no material da disciplina." (TUT-RF-04).
     """
     numerados = {numero: trecho for numero, trecho in enumerate(trechos, start=1)}
-    conversor = ConversorDeCitacoes(set(numerados))
+    conversor = ConversorDeCitacoes(
+        set(numerados), {numero: trecho.texto for numero, trecho in numerados.items()}
+    )
     mostradas: list[str] = []
+    # Frases de "não encontrei" do começo esperam: só aparecem se vier conteúdo depois (TUT-T27).
+    retidas: list[str] = []
     pistas = False
     inicio = True
     tokens = EventoFim(0, 0)
 
     def mostrar(frases: list[str]) -> Iterator[Texto]:
         for frase in frases:
-            yield Texto(frase if not mostradas else " " + frase)
-            mostradas.append(frase)
+            if not mostradas and diz_que_nao_encontrou(frase):
+                retidas.append(frase)
+                continue
+            for liberada in [*retidas, frase]:
+                yield Texto(liberada if not mostradas else " " + liberada)
+                mostradas.append(liberada)
+            retidas.clear()
 
     eventos_do_modelo = ia.responder(
         regras(modo_pistas),
@@ -163,7 +173,7 @@ def responder_pergunta(
     chegar sem dados pessoais.
     """
     try:
-        vetor = ia.gerar_embedding(sem_marcas(pergunta))
+        vetor = ia.gerar_embedding_da_pergunta(sem_marcas(pergunta))
     except ValueError:  # pergunta sem nenhuma palavra útil
         yield from _nao_encontrei()
         return

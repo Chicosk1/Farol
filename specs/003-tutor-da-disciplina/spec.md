@@ -145,7 +145,7 @@ Como aluno, quero ver a política de uso de IA que o professor definiu, para sab
 - **Citação**: trecho, aula, página.
 - **Configuração do tutor na disciplina**: modo pistas, limite diário, política de uso de IA.
 - **Janela de prova**: disciplina, início, fim.
-- **Registro de uso**: identificador pseudônimo do aluno, disciplina, pergunta filtrada, trechos usados, tipo de resposta, avaliação, tokens e custo.
+- **Registro de uso**: identificador pseudônimo do aluno, disciplina, pergunta filtrada, trechos usados, tipo de resposta, tokens e custo. Não tem ligação com a conversa: a avaliação do aluno fica só na mensagem, porque uma ligação entre os dois permitiria descobrir quem está por trás do pseudônimo.
 
 ## Critérios de sucesso
 
@@ -174,3 +174,4 @@ Como aluno, quero ver a política de uso de IA que o professor definiu, para sab
 | --- | --- |
 | 2026-11-13 | Criação da spec a partir da idealização e do protótipo |
 | 2026-11-16 | Aprovada pelo dono do produto |
+| 2026-11-18 | O registro de uso deixa de guardar a avaliação, que fica só na mensagem, para não ligar o pseudônimo ao aluno (decisão do dono do produto) |

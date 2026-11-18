@@ -49,6 +49,7 @@ Serviços do `docker-compose.yml`:
 | `worker` e `beat` | Celery: tarefas em segundo plano e tarefas agendadas |
 | `frontend` | Servidor de desenvolvimento do Vite na porta 5173 |
 | `mailpit` | Captura os e-mails |
+| `ollama` e `ollama-modelos` | Só com o perfil `ia`: os modelos de IA de verdade e o download deles ([veja abaixo](#usar-a-ia-de-verdade-com-o-ollama)) |
 
 O código do `backend/` e do `frontend/` é montado nos containers: as mudanças aparecem sem reconstruir as imagens. Para rodar em segundo plano, use `docker compose up -d --build --wait`, e veja os logs com `docker compose logs -f backend`.
 
@@ -149,6 +150,39 @@ docker compose run --rm backend python manage.py popular_demo
 
 Os dados de teste e de demonstração são sempre fictícios. Nenhum dado real de aluno entra no repositório.
 
+### Usar a IA de verdade com o Ollama
+
+Por padrão, o tutor e o processamento dos PDFs usam o adaptador falso, que não chama modelo nenhum. Para usar modelos de verdade, de graça e sem dados saindo do computador ([ADR 0009](adr/0009-ia-com-modelos-abertos-no-ollama.md)):
+
+1. No `.env`, descomente `FAROL_IA_ADAPTADOR=ia.adaptadores.compativel_openai.ProvedorCompativelOpenAI` e `FAROL_TUTOR_SIMILARIDADE_MINIMA=0.35`, o limite calibrado para o `embeddinggemma` com o comando `avaliar_tutor`.
+2. Suba o ambiente com o perfil `ia`:
+
+   ```bash
+   docker compose --profile ia up -d
+   ```
+
+   Na primeira vez, o serviço `ollama-modelos` baixa o `embeddinggemma` e o `gemma3:4b`, cerca de 4 GB. Acompanhe com `docker compose logs -f ollama-modelos`. Os modelos ficam no volume `modelos-ia`.
+3. Envie de novo os PDFs que já estavam no Farol: os vetores do adaptador falso não servem para o modelo real.
+
+O Ollama precisa de cerca de 6 GB de memória livre. Em CPU, a primeira resposta depois de subir demora mais, porque o modelo é carregado na memória.
+
+Para voltar ao adaptador falso, comente a linha no `.env` e rode `docker compose up -d`. Para usar um provedor de mercado compatível com a API da OpenAI, mude no `.env` `FAROL_IA_ENDERECO`, os dois modelos e `FAROL_IA_CHAVE`. As instruções de busca do `embeddinggemma`, que vão antes da pergunta e de cada trecho, ficam em `FAROL_IA_PREFIXO_DA_PERGUNTA` e `FAROL_IA_PREFIXO_DO_TRECHO`; outro modelo de vetores pode pedir outras, ou nenhuma (variáveis vazias). Trocar de modelo de vetores exige enviar de novo os PDFs.
+
+### Configurar o login com o Google
+
+O login institucional é o Google Workspace (ACE-RF-01), pelo django-allauth. No desenvolvimento ele é opcional: sem a credencial, a tela de entrada mostra só os atalhos de desenvolvimento. Para testar com uma conta de verdade, sem custo:
+
+1. No [Google Cloud Console](https://console.cloud.google.com/), crie um projeto e configure a tela de consentimento OAuth. Para uso só dentro da instituição, escolha o tipo "Interno".
+2. Em "Credenciais", crie um "ID do cliente OAuth" do tipo "Aplicativo da Web", com:
+   - origem JavaScript autorizada `http://localhost:5173`;
+   - URI de redirecionamento autorizado `http://localhost:5173/contas/google/login/callback/`.
+3. No `.env`, preencha:
+   - `FAROL_GOOGLE_CLIENT_ID` e `FAROL_GOOGLE_SECRET` com a credencial criada;
+   - `FAROL_DOMINIO_INSTITUCIONAL` com o domínio do Workspace, por exemplo `unimater.edu.br`.
+4. Rode `docker compose up -d` para recriar os containers. A tela de entrada passa a mostrar "Entrar com o Google".
+
+Só entra um e-mail verificado do domínio, de conta do Workspace. Contas pessoais, inclusive as criadas com o e-mail da instituição, voltam para a entrada com "Use a sua conta institucional". Quem entra pela primeira vez sem ter sido importado vira aluno, sem disciplinas. Em produção, as três variáveis são obrigatórias, e o endereço de redirecionamento é o do servidor (`https://<endereço>/contas/google/login/callback/`).
+
 ## Problemas comuns
 
 | Sintoma | Solução |
@@ -177,5 +211,5 @@ ano; use um valor pequeno no primeiro deploy).
   primeira palavra do tutor, com perguntas simultâneas (meta de 3 segundos no p95, TUT-RNF-01).
   Usa o material da disciplina e não guarda conversas.
 
-Com o provedor falso, as medições cobrem só a parte do Farol. Os números que valem para as metas
+Os números medidos com o Ollama em CPU estão na [ADR 0009](adr/0009-ia-com-modelos-abertos-no-ollama.md#medições-18112026). Com o provedor falso, as medições cobrem só a parte do Farol. Os números que valem para as metas
 saem no servidor, com o provedor de IA real.
