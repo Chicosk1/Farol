@@ -32,6 +32,7 @@ function simular(listas: unknown[][], extras: Parameters<typeof simularApi>[0] =
   return simularApi({
     'GET /api/eu': { corpo: CARLOS },
     'GET /api/disciplinas': { corpo: DISCIPLINAS },
+    [`GET /api/disciplinas/${ESTRUTURAS.id}`]: { corpo: ESTRUTURAS },
     [`GET ${URL_DOS_MATERIAIS}`]: () => ({ corpo: listas[Math.min(vez++, listas.length - 1)] }),
     ...extras,
   });
@@ -64,14 +65,17 @@ describe('materiais da disciplina para o professor (MAT-T24)', () => {
     const { container } = renderizarApp(PAGINA);
 
     const lista = await screen.findByRole('list', { name: 'Materiais da disciplina' });
-    const itens = within(lista).getAllByRole('listitem');
-    expect(itens[0]).toHaveTextContent('Aula 4: Listas encadeadas');
-    expect(itens[0]).toHaveTextContent('Pronto para o tutor');
-    expect(itens[1]).toHaveTextContent('Precisa de atenção');
-    expect(itens[1]).toHaveTextContent('Páginas sem texto: 1, 2, 3');
+    // Da aula mais recente para a mais antiga, como no protótipo.
+    const [aula5, aula4] = within(lista).getAllByRole('listitem');
+    expect(aula4).toHaveTextContent('Aula 4 · Listas encadeadas');
+    expect(aula4).toHaveTextContent('Pronto para o tutor');
+    expect(aula5).toHaveTextContent('Precisa de atenção');
+    expect(aula5).toHaveTextContent('Páginas sem texto: 1, 2, 3');
+    expect(screen.getByRole('heading', { level: 1, name: 'Materiais' })).toBeInTheDocument();
     expect(
-      screen.getByRole('heading', { name: 'Materiais de Estruturas de Dados' }),
+      await within(screen.getByRole('main')).findByText(/Estruturas de Dados · SINF2NA/),
     ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Publicados (2)' })).toBeInTheDocument();
     expect(await violacoesDeAcessibilidade(container)).toEqual([]);
   });
 
@@ -106,7 +110,7 @@ describe('materiais da disciplina para o professor (MAT-T24)', () => {
     });
     fireEvent.change(screen.getByLabelText('Número da aula'), { target: { value: '5' } });
     fireEvent.change(screen.getByLabelText('Título da aula'), { target: { value: 'Pilhas' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Enviar PDF' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Publicar aula' }));
 
     expect(await screen.findByText('Lendo as páginas')).toBeInTheDocument();
     const envio = chamadas.find((c) => c.metodo === 'POST');
@@ -129,7 +133,7 @@ describe('materiais da disciplina para o professor (MAT-T24)', () => {
     });
     fireEvent.change(screen.getByLabelText('Número da aula'), { target: { value: '5' } });
     fireEvent.change(screen.getByLabelText('Título da aula'), { target: { value: 'Pilhas' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Enviar PDF' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Publicar aula' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Envie um arquivo PDF. Slides podem ser exportados como PDF.',
@@ -161,7 +165,7 @@ describe('materiais da disciplina para o professor (MAT-T24)', () => {
     });
     fireEvent.change(screen.getByLabelText('Número da aula'), { target: { value: '5' } });
     fireEvent.change(screen.getByLabelText('Título da aula'), { target: { value: 'Pilhas' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Enviar PDF' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Publicar aula' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('O PDF passa de 50 MB.');
   });
@@ -216,12 +220,44 @@ describe('materiais da disciplina para o professor (MAT-T24)', () => {
       target: { files: [pdf('aula-4-corrigida.pdf')] },
     });
 
-    expect(await screen.findByText('versão 2')).toBeInTheDocument();
+    expect(await screen.findByText(/versão 2/)).toBeInTheDocument();
     expect(screen.getByText('Substituído pela versão nova')).toBeInTheDocument();
     expect(chamadas.find((c) => c.caminho === '/api/materiais/7/versoes')?.formulario).toEqual({
       arquivo: 'aula-4-corrigida.pdf',
     });
     // Só a versão em uso oferece nova versão e retirada.
     expect(screen.getAllByRole('button', { name: /Retirar a aula 4/ })).toHaveLength(1);
+  });
+
+  it('escolher o PDF preenche a próxima aula e o título a partir do nome do arquivo (MAT-T61)', async () => {
+    simular([[material()]]);
+    renderizarApp(PAGINA);
+    await screen.findByRole('list', { name: 'Materiais da disciplina' });
+
+    fireEvent.change(screen.getByLabelText('Arquivo PDF da aula'), {
+      target: { files: [pdf('aula_05-pilhas.pdf')] },
+    });
+
+    expect(screen.getByLabelText('Número da aula')).toHaveValue(5);
+    expect(screen.getByLabelText('Título da aula')).toHaveValue('Aula 05 pilhas');
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }));
+    expect(screen.queryByLabelText('Número da aula')).toBeNull();
+  });
+
+  it('o processamento aparece numa barra com a etapa atual (MAT-RF-03)', async () => {
+    simular([
+      [
+        material({
+          status: 'processando',
+          etapa: 'vetorizando',
+          etapa_rotulo: 'Gerando os vetores',
+        }),
+      ],
+    ]);
+    renderizarApp(PAGINA);
+
+    const barra = await screen.findByRole('progressbar', { name: 'Processando a aula 4' });
+    expect(barra).toHaveAttribute('aria-valuenow', '4');
+    expect(screen.getByText('Gerando os vetores')).toBeInTheDocument();
   });
 });

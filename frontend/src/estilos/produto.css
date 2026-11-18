@@ -24,6 +24,15 @@ a.popover-action {
   justify-content: flex-end;
 }
 
+/* Botão que é o rótulo de um campo de arquivo escondido: o foco do campo aparece no botão. */
+.campo-de-arquivo {
+  cursor: pointer;
+}
+.campo-de-arquivo:focus-within {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
 /* Notificação ainda não lida, no sino. */
 .popover-item.is-unread {
   background: var(--accent-soft);
