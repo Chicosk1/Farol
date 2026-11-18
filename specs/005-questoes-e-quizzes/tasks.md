@@ -4,7 +4,7 @@
 | --- | --- |
 | Spec | [spec.md](./spec.md) |
 | Plano | [plan.md](./plan.md) |
-| Atualizado em | 2026-11-13 |
+| Atualizado em | 2026-11-18 |
 
 Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a tarefa pode ser feita em paralelo com outras `[P]` do mesmo bloco.
 
@@ -24,7 +24,8 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 ## Produto: fundação
 
 - [x] QUE-T10 Modelos `PedidoGeracao`, `Questao`, `RespostaQuiz` e `ProgressoQuiz`
-- [ ] QUE-T11 [P] Esquema Pydantic da questão e provedor falso com respostas válidas e inválidas
+- [ ] QUE-T11 [P] Esquema Pydantic da questão, porta de geração no módulo `ia` e provedor falso com respostas válidas e inválidas (QUE-RF-02, QUE-RF-03)
+- [ ] QUE-T12 Geração de questões no adaptador compatível com a OpenAI (Ollama), com resposta em JSON (QUE-RF-02)
 
 ## Produto: História 1, gerar rascunhos (P1)
 
