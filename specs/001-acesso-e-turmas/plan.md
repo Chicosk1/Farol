@@ -88,8 +88,8 @@ Para desenvolver e demonstrar sem depender do Google:
 
 O provedor institucional é o Google Workspace (decisão de 2026-11-18). O fluxo usa o django-allauth, só com contas sociais: o Farol não tem cadastro, senha nem recuperação de senha próprios (ACE-RF-02).
 
-1. A tela de entrada envia um formulário `POST /contas/google/login/`, com o token CSRF. O allauth redireciona ao Google com o parâmetro `hd`, que sugere a conta do domínio institucional.
-2. O Google devolve a pessoa a `/contas/google/login/callback/`. Só entra um e-mail verificado do domínio `FAROL_DOMINIO_INSTITUCIONAL`. Qualquer outra conta volta para `/entrar?erro=conta_externa`, que mostra "Use a sua conta institucional" (ACE-RF-01).
+1. A tela de entrada envia um formulário `POST /contas/google/login/`, com o token CSRF. O allauth redireciona ao Google. Só com a restrição de domínio ligada vai o parâmetro `hd`, que sugere a conta do domínio.
+2. O Google devolve a pessoa a `/contas/google/login/callback/`. Entra qualquer conta com e-mail verificado; sem a verificação, volta para `/entrar?erro=conta_nao_verificada`. Com `FAROL_DOMINIO_INSTITUCIONAL` definido (vazio por padrão), só entra um e-mail verificado desse domínio, de conta do Workspace, e as outras voltam para `/entrar?erro=conta_externa`, que mostra "Use a sua conta institucional" (ACE-RF-01).
 3. Se já existe uma `Pessoa` com o e-mail, por exemplo vinda da importação de turmas, a conta do Google é ligada a ela. Se não existe, a pessoa é criada com o perfil aluno e cai na tela inicial sem disciplinas (cenário 3).
 4. Uma pessoa desativada volta para `/entrar?erro=conta_desativada`, e um erro ou cancelamento no Google volta para `/entrar?erro=falha`.
 5. Depois de entrar, a pessoa vai para `/`. A sessão é a mesma do resto da API.

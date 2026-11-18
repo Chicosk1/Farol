@@ -14,19 +14,19 @@ Antes de qualquer funcionalidade de estudo, cada pessoa precisa entrar com a con
 
 ## Histórias de usuário e testes de aceite
 
-### História 1: Entrar com a conta institucional (Prioridade: P1)
+### História 1: Entrar com a conta Google (Prioridade: P1)
 
 Como aluno ou professor, quero entrar com a minha conta da instituição, sem criar uma senha nova, para começar a usar o Farol em segundos.
 
 **Por que esta prioridade:** sem login não há como saber quais disciplinas mostrar nem aplicar as regras de privacidade.
 
-**Teste independente:** uma conta institucional de teste entra e chega à tela inicial do seu perfil.
+**Teste independente:** uma conta Google de teste entra e chega à tela inicial do seu perfil.
 
 **Cenários de aceite:**
 
-1. **Dado** um aluno com conta institucional ativa e matrícula importada, **quando** ele escolhe "Entrar com a conta institucional" e autoriza, **então** chega à tela inicial do aluno.
-2. **Dado** uma pessoa com conta de fora da instituição, **quando** tenta entrar, **então** vê a mensagem "Use a sua conta institucional" e não acessa nada.
-3. **Dado** uma conta institucional sem nenhuma matrícula ou disciplina, **quando** entra, **então** vê uma tela explicando que ainda não há disciplinas e como pedir ajuda.
+1. **Dado** um aluno com matrícula importada pelo e-mail da sua conta Google, **quando** ele escolhe "Entrar com o Google" e autoriza, **então** chega à tela inicial do aluno.
+2. **Dado** uma conta Google com o e-mail ainda não verificado, **quando** a pessoa tenta entrar, **então** vê a mensagem "Confirme o seu e-mail no Google" e não acessa nada. Com a restrição de domínio ligada (opcional), uma conta de fora do domínio vê "Use a sua conta institucional" e também não acessa nada.
+3. **Dado** uma conta Google sem nenhuma matrícula ou disciplina, **quando** entra, **então** vê uma tela explicando que ainda não há disciplinas e como pedir ajuda.
 
 ### História 2: Ver só as minhas disciplinas (Prioridade: P1)
 
@@ -93,7 +93,7 @@ Como aluno, quero instalar o Farol na tela inicial do celular, para abrir como u
 
 ### Requisitos funcionais
 
-- **ACE-RF-01**: O sistema DEVE permitir a entrada somente com conta institucional, via OpenID Connect com o Google Workspace da instituição.
+- **ACE-RF-01**: O sistema DEVE permitir a entrada com qualquer conta Google de e-mail verificado, via OpenID Connect. A entrada PODE ser restrita ao domínio de um Google Workspace, por configuração; por padrão, não é.
 - **ACE-RF-02**: O sistema NÃO DEVE criar nem guardar senhas próprias.
 - **ACE-RF-03**: O sistema DEVE atribuir a cada pessoa um ou mais perfis entre aluno, professor, coordenação e administrador, e permitir trocar de perfil sem sair.
 - **ACE-RF-04**: O sistema DEVE mostrar ao aluno só as disciplinas em que está matriculado e ao professor só as que leciona.
@@ -113,7 +113,7 @@ Como aluno, quero instalar o Farol na tela inicial do celular, para abrir como u
 
 ### Entidades principais
 
-- **Pessoa**: quem usa o Farol. Nome, e-mail institucional, perfis.
+- **Pessoa**: quem usa o Farol. Nome, e-mail da conta Google, perfis.
 - **Disciplina**: código, nome, turma, semestre, professor responsável.
 - **Matrícula**: liga um aluno a uma disciplina, com situação ativa ou encerrada.
 - **Favorito**: disciplina marcada por um aluno.
@@ -147,3 +147,4 @@ Como aluno, quero instalar o Farol na tela inicial do celular, para abrir como u
 | 2026-11-16 | Inclusão de ACE-RNF-03, por causa do login de desenvolvimento usado enquanto o provedor institucional não é definido |
 | 2026-11-16 | Aprovada pelo dono do produto, com as questões em aberto mantidas na tabela acima, cada uma com dono e prazo |
 | 2026-11-18 | Login institucional definido pelo dono do produto: Google Workspace. Sessão de 12 horas sem uso confirmada |
+| 2026-11-18 | Entrada com qualquer conta Google de e-mail verificado; a restrição ao domínio institucional vira opcional (decisão do dono do produto) |
