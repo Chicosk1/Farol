@@ -1,6 +1,10 @@
 @import 'tailwindcss';
 @import './fontes.css';
 @import './tokens.css';
+/* Componentes e layout do protótipo (ACE-T70). Ficam fora das camadas do Tailwind, então valem
+   sobre os utilitários: as telas usam as classes do protótipo, e o Tailwind só ajusta detalhes. */
+@import './componentes.css';
+@import './layout.css';
 
 /*
  * Liga os tokens do design system Farol às classes do Tailwind: bg-surface, text-ink, border-line etc.

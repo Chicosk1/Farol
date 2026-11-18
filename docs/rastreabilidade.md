@@ -10,7 +10,7 @@ A coluna Testes mostra os testes do produto que citam o requisito com `@pytest.m
 
 | Spec | Requisitos funcionais | Com teste | Coberto | Simulado | Parcial | Não coberto | Tarefas feitas | Pontos a esclarecer |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [001 Acesso e turmas](../specs/001-acesso-e-turmas/spec.md) | 11 | 10 de 11 | 2 | 3 | 1 | 5 | 42 de 50 | 2 |
+| [001 Acesso e turmas](../specs/001-acesso-e-turmas/spec.md) | 11 | 10 de 11 | 2 | 3 | 1 | 5 | 43 de 50 | 2 |
 | [002 Materiais da disciplina](../specs/002-materiais-da-disciplina/spec.md) | 11 | 11 de 11 | 2 | 5 | 1 | 3 | 24 de 27 | 0 |
 | [003 Tutor da disciplina](../specs/003-tutor-da-disciplina/spec.md) | 14 | 14 de 14 | 6 | 5 | 2 | 1 | 45 de 48 | 0 |
 | [004 Dúvidas ao professor](../specs/004-duvidas-ao-professor/spec.md) | 9 | 8 de 9 | 5 | 0 | 1 | 3 | 14 de 16 | 0 |

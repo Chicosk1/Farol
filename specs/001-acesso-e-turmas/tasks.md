@@ -85,7 +85,7 @@ A primeira entrega do produto prova a arquitetura em todas as camadas com uma fu
 
 As telas do produto passam a ter o mesmo visual e a mesma organização do protótipo navegável. O CSS de componentes do protótipo é reaproveitado no front-end, com as mesmas classes `fr-`.
 
-- [ ] ACE-T70 Design system do protótipo no React: CSS de componentes e de layout, ícones do Tabler e os componentes `Icone`, `Botao`, `Selo`, `Avatar`, `Progresso`, `Modal`, `EstadoVazio` e `Avisos` (ACE-RNF-01)
+- [x] ACE-T70 Design system do protótipo no React: CSS de componentes e de layout, ícones do Tabler e os componentes `Icone`, `Botao`, `Selo`, `Avatar`, `Progresso`, `Modal`, `EstadoVazio` e `Avisos` (ACE-RNF-01)
 - [ ] ACE-T71 Casca do protótipo: cabeçalho com a marca, o sino e o menu da conta (trocar de perfil e sair), menu lateral por perfil e barra inferior no celular (ACE-RF-03)
 - [ ] ACE-T72 Tela de entrada no formato do protótipo (ACE-RF-01)
 - [ ] ACE-T73 Rota `GET /api/disciplinas/{id}` e campo `tem_tutor` na lista de disciplinas, para os cartões e a página da disciplina (ACE-RF-04, ACE-RF-10)

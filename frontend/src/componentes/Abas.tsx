@@ -43,8 +43,8 @@ export function Abas<T extends string>({ rotulo, abas, ativa, aoMudar, children 
   };
 
   return (
-    <div>
-      <div role="tablist" aria-label={rotulo} className="flex gap-1 border-b border-line">
+    <div className="stack">
+      <div role="tablist" aria-label={rotulo} className="fr-tabs">
         {abas.map((aba, indice) => {
           const selecionada = aba.id === ativa;
           return (
@@ -61,12 +61,7 @@ export function Abas<T extends string>({ rotulo, abas, ativa, aoMudar, children 
               tabIndex={selecionada ? 0 : -1}
               onClick={() => aoMudar(aba.id)}
               onKeyDown={(evento) => aoTeclar(evento, indice)}
-              className={
-                'min-h-12 px-4 font-bold ' +
-                (selecionada
-                  ? 'border-b-4 border-accent text-accent'
-                  : 'border-b-4 border-transparent text-ink-muted')
-              }
+              className="fr-tab"
             >
               {aba.rotulo}
             </button>

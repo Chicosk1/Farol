@@ -33,7 +33,7 @@ describe('tela de disciplinas (ACE-T33)', () => {
     expect(within(itens[3]!).getByText(/SINF201/)).toBeInTheDocument();
     expect(within(itens[3]!).getByText(/SINF2NA/)).toBeInTheDocument();
     expect(within(itens[3]!).getByText(/Carlos Mendes/)).toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveTextContent('6 disciplinas');
+    expect(screen.getByText('6 disciplinas')).toHaveAttribute('role', 'status');
   });
 
   it('busca pelo nome: envia o texto digitado e mostra só o que a API devolve', async () => {
@@ -51,7 +51,7 @@ describe('tela de disciplinas (ACE-T33)', () => {
 
     await waitFor(() => expect(screen.getAllByRole('listitem')).toHaveLength(1));
     expect(screen.getByText('Estruturas de Dados')).toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveTextContent('1 disciplina');
+    expect(await screen.findByText('1 disciplina')).toHaveAttribute('role', 'status');
     expect(chamadas.some((c) => c.caminho === '/api/disciplinas?busca=estruturas')).toBe(true);
   });
 
