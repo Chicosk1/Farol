@@ -1,6 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { definirFavorito, listarDisciplinas, type FiltroDeDisciplinas } from '../../api/cliente';
+import {
+  definirFavorito,
+  listarDisciplinas,
+  obterDisciplina,
+  type FiltroDeDisciplinas,
+} from '../../api/cliente';
+
+/** Uma disciplina da pessoa, para o cabeçalho das telas da disciplina. */
+export function useDisciplina(id: number | string | undefined) {
+  return useQuery({
+    queryKey: ['disciplinas', 'uma', String(id)],
+    queryFn: () => obterDisciplina(id as number | string),
+    enabled: id !== undefined,
+  });
+}
 
 export function useDisciplinas(busca: string, filtro: FiltroDeDisciplinas = 'todas') {
   return useQuery({

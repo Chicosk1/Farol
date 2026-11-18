@@ -88,6 +88,27 @@ paths:
                 items:
                   $ref: '#/components/schemas/Disciplina'
           description: ''
+  /api/disciplinas/{disciplina_id}:
+    get:
+      operationId: disciplinas_retrieve
+      summary: Uma disciplina da pessoa, com os mesmos dados da lista
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - disciplinas
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Disciplina'
+          description: ''
   /api/disciplinas/{disciplina_id}/duvidas:
     get:
       operationId: disciplinas_duvidas_list
@@ -995,6 +1016,11 @@ components:
         favorita:
           type: boolean
           description: Se a pessoa marcou a disciplina como favorita.
+        tem_tutor:
+          type: boolean
+          readOnly: true
+          description: Se a disciplina tem material pronto, e o tutor já responde
+            (ACE-RF-10).
       required:
       - codigo
       - favorita
@@ -1002,6 +1028,7 @@ components:
       - nome
       - professor_nome
       - semestre
+      - tem_tutor
       - turma
     DuvidaDoProfessor:
       type: object

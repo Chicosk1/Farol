@@ -131,6 +131,11 @@ export function trocarPerfilAtivo(perfil: Perfil): Promise<Eu> {
   return enviar<Eu>('/api/eu/perfil-ativo', { perfil });
 }
 
+/** GET /api/disciplinas/{id}: uma disciplina da pessoa, com os mesmos dados da lista. */
+export function obterDisciplina(id: number | string): Promise<Disciplina> {
+  return requisitar<Disciplina>(`/api/disciplinas/${id}`);
+}
+
 /** GET /api/disciplinas: as disciplinas da pessoa no perfil em uso, com busca e filtro. */
 export function listarDisciplinas(
   opcoes: { busca?: string; filtro?: FiltroDeDisciplinas } = {},

@@ -59,6 +59,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/disciplinas/{disciplina_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Uma disciplina da pessoa, com os mesmos dados da lista */
+        get: operations["disciplinas_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/disciplinas/{disciplina_id}/duvidas": {
         parameters: {
             query?: never;
@@ -650,6 +667,8 @@ export interface components {
             professor_nome: string;
             /** @description Se a pessoa marcou a disciplina como favorita. */
             favorita: boolean;
+            /** @description Se a disciplina tem material pronto, e o tutor já responde (ACE-RF-10). */
+            readonly tem_tutor: boolean;
         };
         /** @description O que o professor vê: nunca o aluno, nem a hora do envio (DUV-RF-03). */
         DuvidaDoProfessor: {
@@ -1008,6 +1027,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Disciplina"][];
+                };
+            };
+        };
+    };
+    disciplinas_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Disciplina"];
                 };
             };
         };

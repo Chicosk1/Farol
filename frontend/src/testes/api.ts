@@ -114,6 +114,7 @@ export const DISCIPLINAS = [
   semestre: '2026/2',
   professor_nome,
   favorita: false,
+  tem_tutor: false,
 }));
 
 /** Estruturas de Dados, a disciplina do Carlos, que aparece na maioria dos testes. */
