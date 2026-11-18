@@ -92,7 +92,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 ## Produto: telas iguais ao protótipo
 
 - [x] TUT-T95 Tela do tutor no formato do protótipo: bolhas, citações, avaliação, sugestões, política e tutor pausado (TUT-RF-02, TUT-RF-09, TUT-RF-10, TUT-RF-13, TUT-RF-14)
-- [ ] TUT-T96 Configuração da disciplina no formato do protótipo: modo pistas, limite diário, provas e política de uso de IA (TUT-RF-06, TUT-RF-07, TUT-RF-08, TUT-RF-10)
+- [x] TUT-T96 Configuração da disciplina no formato do protótipo: modo pistas, limite diário, provas e política de uso de IA (TUT-RF-06, TUT-RF-07, TUT-RF-08, TUT-RF-10)
 
 ## Dependências
 
