@@ -63,7 +63,7 @@ Como aluno, quero saber quando o professor marcou a minha dúvida como respondid
 
 - Turma muito pequena: mesmo sem nome, o estilo do texto pode identificar o aluno. O aviso da pré-visualização deixa isso claro.
 - O aluno apaga o histórico (ACE-RF-09) depois de enviar: a dúvida continua para o professor, porque já não tem ligação com o aluno.
-- Envio em massa: cada aluno envia no máximo 5 dúvidas por disciplina por dia; a sexta recebe "Você já enviou 5 dúvidas hoje nesta disciplina. Tente de novo amanhã." (decisão provisória)
+- Envio em massa: cada aluno envia no máximo 5 dúvidas por disciplina por dia; a sexta recebe "Você já enviou 5 dúvidas hoje nesta disciplina. Tente de novo amanhã."
 - Texto ofensivo: o professor pode ocultar a dúvida; a ocultação fica registrada.
 
 ## Requisitos
@@ -111,3 +111,4 @@ Como aluno, quero saber quando o professor marcou a minha dúvida como respondid
 | --- | --- |
 | 2026-11-13 | Criação da spec a partir da idealização e do protótipo |
 | 2026-11-17 | Aprovada. Decisão provisória: no máximo 5 dúvidas por aluno, por disciplina e por dia, a confirmar com o dono do produto |
+| 2026-11-18 | O dono do produto confirmou o limite de 5 dúvidas por dia |

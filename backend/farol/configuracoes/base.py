@@ -46,7 +46,7 @@ FAROL_ACESSO = {
     "ACESSO_A_DISCIPLINA": "disciplinas.servicos.tem_acesso",
 }
 
-# Limites do PDF de uma aula (spec 002, decisão provisória a confirmar com o dono do produto).
+# Limites do PDF de uma aula (spec 002, confirmados pelo dono do produto em 2026-11-18).
 FAROL_PDF_MAX_BYTES = 50 * 1024 * 1024
 FAROL_PDF_MAX_PAGINAS = 300
 
@@ -112,7 +112,7 @@ DATABASES = {
 }
 
 # Sessão: expira depois de um período sem uso (ACE-RNF-02). Cada requisição renova o prazo; o
-# padrão de 12 horas é a sugestão da spec, a confirmar com a TI.
+# padrão de 12 horas foi confirmado pelo dono do produto (ACE-RNF-02).
 FAROL_SESSAO_HORAS = int(ambiente.opcional("FAROL_SESSAO_HORAS", "12"))
 SESSION_COOKIE_AGE = FAROL_SESSAO_HORAS * 3600
 SESSION_SAVE_EVERY_REQUEST = True

@@ -51,7 +51,7 @@ O front-end envia o PDF ao Django (upload multipart), que grava o arquivo pela A
 | `GET /api/materiais/{id}/arquivo?pagina=N` | | O PDF, servido pelo Django só para quem tem acesso à disciplina, e a posição do trecho a destacar | 403, 404 |
 | `GET /api/trechos/{id}` | | Texto da página citada, com o início e o fim do trecho para destacar, e se o material foi substituído | 403, 404 |
 
-Visualizador do trecho (MAT-RF-09): a página citada é mostrada como texto, extraído do PDF, com o trecho destacado, e um link abre o PDF original na mesma página. Destacar dentro do próprio PDF (pdf.js, dependência nova) fica como evolução, a confirmar com o dono do produto.
+Visualizador do trecho (MAT-RF-09): a página citada é mostrada como texto, extraído do PDF, com o trecho destacado, e um link abre o PDF original na mesma página. Destacar dentro do próprio PDF (pdf.js, dependência nova) fica como evolução futura: o dono do produto confirmou a página de texto em 2026-11-18.
 | `DELETE /api/materiais/{id}` | | 204; status passa a retirado | 403 |
 
 Tarefa assíncrona `materiais.processar(material_id)`: atualiza `etapa` ao fim de cada passo, grava `Trecho`s numa transação e, no fim, cria a notificação para o professor.

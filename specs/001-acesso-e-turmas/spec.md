@@ -93,7 +93,7 @@ Como aluno, quero instalar o Farol na tela inicial do celular, para abrir como u
 
 ### Requisitos funcionais
 
-- **ACE-RF-01**: O sistema DEVE permitir a entrada somente com conta institucional, via OpenID Connect. [PRECISA ESCLARECER: Google Workspace ou Microsoft 365]
+- **ACE-RF-01**: O sistema DEVE permitir a entrada somente com conta institucional, via OpenID Connect com o Google Workspace da instituição.
 - **ACE-RF-02**: O sistema NÃO DEVE criar nem guardar senhas próprias.
 - **ACE-RF-03**: O sistema DEVE atribuir a cada pessoa um ou mais perfis entre aluno, professor, coordenação e administrador, e permitir trocar de perfil sem sair.
 - **ACE-RF-04**: O sistema DEVE mostrar ao aluno só as disciplinas em que está matriculado e ao professor só as que leciona.
@@ -108,7 +108,7 @@ Como aluno, quero instalar o Farol na tela inicial do celular, para abrir como u
 ### Requisitos não funcionais
 
 - **ACE-RNF-01**: Todas as telas desta spec atendem à WCAG 2.1 nível AA.
-- **ACE-RNF-02**: Toda comunicação usa HTTPS, e a sessão expira após um período sem uso definido com a TI (sugestão inicial: 12 horas).
+- **ACE-RNF-02**: Toda comunicação usa HTTPS, e a sessão expira após um período sem uso de 12 horas, configurável pela TI.
 - **ACE-RNF-03**: Em produção, a única forma de entrar é o login institucional. Atalhos de entrada usados para desenvolver e demonstrar só existem nos ambientes de desenvolvimento e de teste.
 
 ### Entidades principais
@@ -135,7 +135,6 @@ Como aluno, quero instalar o Farol na tela inicial do celular, para abrir como u
 
 | Questão | Dono | Prazo |
 | --- | --- | --- |
-| Google Workspace ou Microsoft 365 | TI da UNIMATER | Fim da fase 0 |
 | Plano B para quem não tem conta institucional ativa | TI da UNIMATER | Fim da fase 0 |
 | Quem faz a importação de turmas | Coordenação | Fim da fase 0 |
 | Formato exato do CSV exportado pelo sistema acadêmico | TI da UNIMATER | Fim da fase 0 |
@@ -147,3 +146,4 @@ Como aluno, quero instalar o Farol na tela inicial do celular, para abrir como u
 | 2026-11-13 | Criação da spec a partir da idealização e do protótipo |
 | 2026-11-16 | Inclusão de ACE-RNF-03, por causa do login de desenvolvimento usado enquanto o provedor institucional não é definido |
 | 2026-11-16 | Aprovada pelo dono do produto, com as questões em aberto mantidas na tabela acima, cada uma com dono e prazo |
+| 2026-11-18 | Login institucional definido pelo dono do produto: Google Workspace. Sessão de 12 horas sem uso confirmada |

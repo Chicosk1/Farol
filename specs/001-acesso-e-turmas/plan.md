@@ -77,12 +77,24 @@ O workflow do GitHub Actions ganha os jobs Back-end, Contrato e Front-end descri
 
 ### Login de desenvolvimento
 
-O provedor do login institucional ainda não foi escolhido (Google ou Microsoft). Para desenvolver e demonstrar sem depender disso:
+Para desenvolver e demonstrar sem depender do Google:
 
 - O comando `python manage.py popular_demo` cria as pessoas, disciplinas e matrículas fictícias do protótipo: a aluna Ana Souza, o professor Carlos Mendes e as seis disciplinas do 2º período de Sistemas de Informação.
 - A rota `POST /api/dev/entrar` abre a sessão de uma pessoa fictícia pelo e-mail. Ela só existe quando a configuração `FAROL_LOGIN_DESENVOLVIMENTO` está ligada, o que acontece apenas nas configurações de desenvolvimento e de teste.
 - Um teste garante que, com as configurações de produção, a rota não existe (ACE-RNF-03).
-- A tela de entrada mostra os botões "Entrar como aluna" e "Entrar como professor" só nesse modo, como no protótipo. O botão do login institucional entra quando o provedor for definido (tarefas ACE-T20 e ACE-T21).
+- A tela de entrada mostra os botões "Entrar como aluna" e "Entrar como professor" só nesse modo, como no protótipo. O botão "Entrar com o Google" aparece em todos os modos, desde que o login com o Google esteja configurado.
+
+### Login com o Google
+
+O provedor institucional é o Google Workspace (decisão de 2026-11-18). O fluxo usa o django-allauth, só com contas sociais: o Farol não tem cadastro, senha nem recuperação de senha próprios (ACE-RF-02).
+
+1. A tela de entrada envia um formulário `POST /contas/google/login/`, com o token CSRF. O allauth redireciona ao Google com o parâmetro `hd`, que sugere a conta do domínio institucional.
+2. O Google devolve a pessoa a `/contas/google/login/callback/`. Só entra um e-mail verificado do domínio `FAROL_DOMINIO_INSTITUCIONAL`. Qualquer outra conta volta para `/entrar?erro=conta_externa`, que mostra "Use a sua conta institucional" (ACE-RF-01).
+3. Se já existe uma `Pessoa` com o e-mail, por exemplo vinda da importação de turmas, a conta do Google é ligada a ela. Se não existe, a pessoa é criada com o perfil aluno e cai na tela inicial sem disciplinas (cenário 3).
+4. Uma pessoa desativada volta para `/entrar?erro=conta_desativada`, e um erro ou cancelamento no Google volta para `/entrar?erro=falha`.
+5. Depois de entrar, a pessoa vai para `/`. A sessão é a mesma do resto da API.
+
+O Vite encaminha `/contas` ao Django, como já faz com `/api`. Em produção, o proxy faz o mesmo. A credencial OAuth (`FAROL_GOOGLE_CLIENT_ID` e `FAROL_GOOGLE_SECRET`) fica em variáveis de ambiente. Sem ela, o botão do Google não aparece, e `GET /api/entrada` diz quais formas de entrar existem.
 
 ## Modelo de dados
 
