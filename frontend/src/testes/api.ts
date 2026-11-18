@@ -29,6 +29,21 @@ const PADROES: Record<string, RespostaSimulada> = {
   'GET /api/disciplinas': { corpo: [] },
   // O cartão do tutor, na tela inicial, procura uma disciplina com material pronto.
   'GET /api/disciplinas?filtro=com-tutor': { corpo: [] },
+  // A tela inicial do aluno mostra a revisão do dia e a sequência (REV-RF-06, REV-RF-07).
+  'GET /api/revisao/hoje': {
+    corpo: {
+      data: '2026-11-18',
+      cartoes: [],
+      respostas: [],
+      concluida: false,
+      disciplinas: [],
+      minutos: 1,
+      tem_questoes: false,
+      sequencia: [],
+      dias_seguidos: 0,
+    },
+  },
+  'GET /api/eu/lembrete': { corpo: { ligado: false, horario: '19:00' } },
   // A página da disciplina lista os quizzes publicados (QUE-RF-07).
   ...Object.fromEntries(
     Array.from({ length: 10 }, (_, i) => [`GET /api/disciplinas/${i + 1}/quizzes`, { corpo: [] }]),

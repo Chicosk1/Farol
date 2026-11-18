@@ -5,6 +5,8 @@ import { apagarHistorico, obterHistorico } from '../../api/cliente';
 import { Botao } from '../../componentes/Botao';
 import { EstadoVazio } from '../../componentes/EstadoVazio';
 import { Icone } from '../../componentes/Icone';
+import { LembreteDaRevisao } from '../revisao/Lembrete';
+import { useEu } from './sessao';
 
 const DATA = new Intl.DateTimeFormat('pt-BR', {
   day: '2-digit',
@@ -15,6 +17,7 @@ const DATA = new Intl.DateTimeFormat('pt-BR', {
 /** O que o Farol guarda da aluna e o botão para apagar o histórico do tutor (ACE-RF-09). */
 export function PaginaMeusDados() {
   const clienteDeDados = useQueryClient();
+  const aluno = useEu().data?.perfil_ativo === 'aluno';
   const historico = useQuery({ queryKey: ['historico'], queryFn: obterHistorico });
   const [confirmando, setConfirmando] = useState(false);
   const apagar = useMutation({
@@ -119,6 +122,7 @@ export function PaginaMeusDados() {
           </p>
         )}
       </section>
+      {aluno && <LembreteDaRevisao />}
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useEu } from '../funcionalidades/contas/sessao';
 import { DisciplinasNaInicial } from '../funcionalidades/disciplinas/DisciplinasNaInicial';
 import { TurmasDoProfessor } from '../funcionalidades/disciplinas/TurmasDoProfessor';
 import { Novidades } from '../funcionalidades/notificacoes/Novidades';
+import { CartaoDaRevisao, CartaoDaSequencia } from '../funcionalidades/revisao/CartoesDaInicial';
 import { CartaoDoTutor } from '../funcionalidades/tutor/CartaoDoTutor';
 import { hojePorExtenso } from './datas';
 
@@ -30,7 +31,9 @@ export function PaginaInicial() {
       ) : (
         <>
           <div className="home-grid">
+            <CartaoDaRevisao />
             <CartaoDoTutor />
+            <CartaoDaSequencia />
           </div>
           <Novidades />
           <DisciplinasNaInicial />

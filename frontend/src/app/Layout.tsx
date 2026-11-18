@@ -26,6 +26,13 @@ function itensDoAluno(): Item[] {
   return [
     { rotulo: 'Início', curto: 'Início', icone: 'home', para: '/', atual: (c) => c === '/' },
     {
+      rotulo: 'Revisão do dia',
+      curto: 'Revisão',
+      icone: 'cards',
+      para: '/revisao',
+      atual: (c) => c === '/revisao',
+    },
+    {
       rotulo: 'Disciplinas',
       curto: 'Disciplinas',
       icone: 'school',

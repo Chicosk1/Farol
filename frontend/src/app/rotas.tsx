@@ -10,6 +10,7 @@ import { PaginaMateriais } from '../funcionalidades/materiais/PaginaMateriais';
 import { PaginaTrecho } from '../funcionalidades/materiais/PaginaTrecho';
 import { PaginaQuestoes } from '../funcionalidades/questoes/PaginaQuestoes';
 import { PaginaQuiz } from '../funcionalidades/questoes/PaginaQuiz';
+import { PaginaRevisao } from '../funcionalidades/revisao/PaginaRevisao';
 import { PaginaConfiguracaoDoTutor } from '../funcionalidades/tutor/PaginaConfiguracaoDoTutor';
 import { PaginaTutor } from '../funcionalidades/tutor/PaginaTutor';
 import { PaginaTutorInicial } from '../funcionalidades/tutor/PaginaTutorInicial';
@@ -29,6 +30,7 @@ export const rotas: RouteObject[] = [
           { path: '/', element: <PaginaInicial /> },
           { path: '/disciplinas', element: <PaginaDisciplinas /> },
           { path: '/meus-dados', element: <PaginaMeusDados /> },
+          { path: '/revisao', element: <PaginaRevisao /> },
           { path: '/disciplinas/:id', element: <PaginaDaDisciplina /> },
           { path: '/disciplinas/:id/materiais', element: <PaginaMateriais /> },
           { path: '/disciplinas/:id/duvidas', element: <PaginaDuvidas /> },

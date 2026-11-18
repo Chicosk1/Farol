@@ -487,3 +487,37 @@ export async function reiniciarQuiz(materialId: number): Promise<void> {
 export function listarQuizzes(disciplinaId: number): Promise<QuizDaAula[]> {
   return requisitar<QuizDaAula[]>(`/api/disciplinas/${disciplinaId}/quizzes`);
 }
+
+export type RevisaoDeHoje = components['schemas']['RevisaoDeHoje'];
+export type RetornoDoCartao = components['schemas']['RetornoDoCartao'];
+export type AgendaDoCartao = components['schemas']['AgendaDoCartao'];
+export type AvaliacaoDoCartao = components['schemas']['AvaliacaoDoCartaoEnum'];
+export type Lembrete = components['schemas']['Lembrete'];
+
+/** GET /api/revisao/hoje: a sessão do dia, as respostas e a sequência (REV-RF-06, REV-RF-07). */
+export function obterRevisaoDeHoje(): Promise<RevisaoDeHoje> {
+  return requisitar<RevisaoDeHoje>('/api/revisao/hoje');
+}
+
+/** POST /api/revisao/cartoes/{id}/resposta: o retorno do cartão, como no quiz (REV-RF-03). */
+export function responderCartao(cartaoId: number, alternativa: number): Promise<RetornoDoCartao> {
+  return enviar<RetornoDoCartao>(`/api/revisao/cartoes/${cartaoId}/resposta`, { alternativa });
+}
+
+/** POST /api/revisao/cartoes/{id}/avaliacao: agenda o cartão e diz quando ele volta (REV-RF-05). */
+export function avaliarCartao(
+  cartaoId: number,
+  avaliacao: AvaliacaoDoCartao,
+): Promise<AgendaDoCartao> {
+  return enviar<AgendaDoCartao>(`/api/revisao/cartoes/${cartaoId}/avaliacao`, { avaliacao });
+}
+
+/** GET /api/eu/lembrete: o lembrete diário da revisão (REV-RF-09). */
+export function obterLembrete(): Promise<Lembrete> {
+  return requisitar<Lembrete>('/api/eu/lembrete');
+}
+
+/** PUT /api/eu/lembrete: liga ou desliga o lembrete por e-mail, no horário escolhido. */
+export function salvarLembrete(lembrete: Lembrete): Promise<Lembrete> {
+  return enviar<Lembrete>('/api/eu/lembrete', lembrete, 'PUT');
+}
