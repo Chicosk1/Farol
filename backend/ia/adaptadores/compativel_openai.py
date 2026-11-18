@@ -27,7 +27,7 @@ def _configuracao() -> dict:
     return settings.FAROL_IA_COMPATIVEL_OPENAI
 
 
-def _pedir(caminho: str, corpo: dict):
+def _pedir(caminho: str, corpo: dict, tempo_limite: int | None = None):
     """Envia o pedido e devolve a resposta aberta, ou ErroDoProvedor."""
     configuracao = _configuracao()
     cabecalhos = {"Content-Type": "application/json"}
@@ -40,7 +40,7 @@ def _pedir(caminho: str, corpo: dict):
         method="POST",
     )
     try:
-        return urllib.request.urlopen(pedido, timeout=configuracao["TEMPO_LIMITE"])
+        return urllib.request.urlopen(pedido, timeout=tempo_limite or configuracao["TEMPO_LIMITE"])
     except urllib.error.HTTPError as erro:
         detalhe = erro.read()[:300].decode(errors="replace")
         raise ErroDoProvedor(f"O provedor de IA respondeu {erro.code}: {detalhe}") from erro
@@ -74,6 +74,22 @@ def _mensagens(regras: str, trechos: list[TrechoNumerado], pergunta: str) -> lis
         {
             "role": "user",
             "content": f"Trechos do material:\n\n{material}\n\nPergunta do aluno: {pergunta}",
+        },
+    ]
+
+
+def _mensagens_de_questoes(
+    regras: str, trechos: list[TrechoNumerado], quantidade: int
+) -> list[dict]:
+    material = "\n\n".join(f"[{trecho.numero}] {trecho.texto}" for trecho in trechos)
+    return [
+        {"role": "system", "content": regras},
+        {
+            "role": "user",
+            "content": (
+                f"Trechos do material:\n\n{material}\n\n"
+                f"Gere {quantidade} questões de múltipla escolha. Responda só com o JSON."
+            ),
         },
     ]
 
@@ -139,3 +155,27 @@ class ProvedorCompativelOpenAI:
             yield EventoFim(
                 max(1, entrada // CARACTERES_POR_TOKEN), max(1, produzido // CARACTERES_POR_TOKEN)
             )
+
+    def gerar_questoes(self, regras: str, trechos: list[TrechoNumerado], quantidade: int) -> str:
+        """Uma resposta só, sem streaming, pedida em JSON (o Ollama aceita o response_format).
+
+        Roda no Celery, então pode esperar mais que o tutor: TEMPO_LIMITE_DA_GERACAO.
+        """
+        configuracao = _configuracao()
+        corpo = {
+            "model": configuracao["MODELO_DE_RESPOSTAS"],
+            "messages": _mensagens_de_questoes(regras, trechos, quantidade),
+            "stream": False,
+            "response_format": {"type": "json_object"},
+            "temperature": 0.4,  # alguma variação nas alternativas erradas, sem fugir do material
+        }
+        tempo_limite = configuracao.get("TEMPO_LIMITE_DA_GERACAO")
+        with _pedir("/chat/completions", corpo, tempo_limite) as resposta:
+            try:
+                dados = json.load(resposta)
+            except ValueError as erro:
+                raise ErroDoProvedor("O provedor devolveu uma resposta que não é JSON.") from erro
+        try:
+            return dados["choices"][0]["message"]["content"] or ""
+        except (KeyError, IndexError, TypeError) as erro:
+            raise ErroDoProvedor("O provedor devolveu uma resposta sem texto.") from erro

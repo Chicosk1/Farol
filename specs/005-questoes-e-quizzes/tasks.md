@@ -25,7 +25,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 - [x] QUE-T10 Modelos `PedidoGeracao`, `Questao`, `RespostaQuiz` e `ProgressoQuiz`
 - [x] QUE-T11 [P] Esquema Pydantic da questão, porta de geração no módulo `ia` e provedor falso com respostas válidas e inválidas (QUE-RF-02, QUE-RF-03)
-- [ ] QUE-T12 Geração de questões no adaptador compatível com a OpenAI (Ollama), com resposta em JSON (QUE-RF-02)
+- [x] QUE-T12 Geração de questões no adaptador compatível com a OpenAI (Ollama), com resposta em JSON (QUE-RF-02)
 
 ## Produto: História 1, gerar rascunhos (P1)
 

@@ -103,6 +103,8 @@ FAROL_IA_COMPATIVEL_OPENAI = {
     "PREFIXO_DO_TRECHO": ambiente.definida_ou("FAROL_IA_PREFIXO_DO_TRECHO", "title: none | text: "),
     # Segundos de espera por uma resposta. Em CPU, o modelo leva um tempo para carregar.
     "TEMPO_LIMITE": int(ambiente.opcional("FAROL_IA_TEMPO_LIMITE", "120")),
+    # A geração de questões roda em segundo plano e, em CPU, leva minutos (QUE-RNF-01).
+    "TEMPO_LIMITE_DA_GERACAO": int(ambiente.opcional("FAROL_IA_TEMPO_LIMITE_DA_GERACAO", "600")),
 }
 
 # Login institucional com o Google Workspace, pelo django-allauth (ACE-RF-01, specs/001 plan.md).
