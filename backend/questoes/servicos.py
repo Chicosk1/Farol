@@ -2,15 +2,18 @@
 
 import logging
 
+from celery import current_app
 from django.db import transaction
 from django.utils import timezone
 
+from contas.servicos import Perfil
+from disciplinas import servicos as disciplinas
 from ia import servicos as ia
 from ia.servicos import TrechoNumerado
 from materiais import servicos as materiais
 
 from .esquema import ler_questoes
-from .models import PedidoGeracao, Questao
+from .models import QUANTIDADE_MAXIMA, QUANTIDADE_MINIMA, PedidoGeracao, Questao
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +36,68 @@ curta e o tópico (de 2 a 5 palavras).
 Responda só com um JSON neste formato:
 {"questoes": [{"enunciado": "...", "alternativas": ["...", "...", "...", "..."], \
 "correta": 0, "justificativa": "...", "topico": "...", "trecho": 1}]}"""
+
+
+class NaoEncontrado(LookupError):
+    """A aula ou o pedido não existe."""
+
+
+class SemAcesso(PermissionError):
+    """Só o professor da disciplina cuida das questões dela."""
+
+
+class AulaNaoPronta(Exception):
+    """A aula ainda está em processamento, deu erro ou foi retirada (QUE-RF-01)."""
+
+
+class QuantidadeInvalida(ValueError):
+    """O professor pede de 5 a 20 questões por vez (QUE-RF-01)."""
+
+
+def _cuida_da_disciplina(pessoa, perfil: str | None, disciplina_id: int) -> bool:
+    return perfil == Perfil.PROFESSOR and disciplinas.tem_acesso(pessoa, perfil, disciplina_id)
+
+
+def enfileirar_geracao(pedido_id: int) -> None:
+    """Põe a geração na fila do Celery, pelo nome: a camada de serviços não importa a de tarefas."""
+    current_app.signature("questoes.gerar", args=(pedido_id,)).apply_async()
+
+
+def pedir_geracao(pessoa, perfil: str | None, material_id: int, quantidade: int) -> PedidoGeracao:
+    """Cria o pedido de rascunhos de uma aula pronta. Quem chama põe a geração na fila.
+
+    Se já há um pedido em andamento para a aula, devolve esse: tocar duas vezes em "Gerar
+    rascunhos" não gera o dobro.
+    """
+    try:
+        aula = materiais.resumo_do_material(material_id)
+    except materiais.MaterialNaoEncontrado:
+        raise NaoEncontrado(material_id) from None
+    if not _cuida_da_disciplina(pessoa, perfil, aula.disciplina_id):
+        raise SemAcesso(material_id)
+    if not QUANTIDADE_MINIMA <= quantidade <= QUANTIDADE_MAXIMA:
+        raise QuantidadeInvalida(quantidade)
+    if not aula.pronto:
+        raise AulaNaoPronta(material_id)
+    em_andamento = PedidoGeracao.objects.filter(
+        material_id=material_id, status=PedidoGeracao.Status.PROCESSANDO
+    ).first()
+    if em_andamento:
+        return em_andamento
+    return PedidoGeracao.objects.create(
+        material_id=material_id, quantidade=quantidade, pedido_por=pessoa
+    )
+
+
+def pedido_para_ver(pessoa, perfil: str | None, pedido_id: int) -> PedidoGeracao:
+    """O pedido, para o professor da disciplina acompanhar a geração."""
+    try:
+        pedido = PedidoGeracao.objects.select_related("material").get(pk=pedido_id)
+    except PedidoGeracao.DoesNotExist:
+        raise NaoEncontrado(pedido_id) from None
+    if not _cuida_da_disciplina(pessoa, perfil, pedido.material.disciplina_id):
+        raise SemAcesso(pedido_id)
+    return pedido
 
 
 def _terminar(pedido: PedidoGeracao, status: str, geradas: int = 0, descartadas: int = 0) -> None:

@@ -367,6 +367,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/geracoes/{pedido_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Andamento de um pedido de rascunhos */
+        get: operations["geracoes_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/importacoes": {
         parameters: {
             query?: never;
@@ -435,6 +452,26 @@ export interface paths {
         get: operations["materiais_arquivo_retrieve"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/materiais/{material_id}/geracoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Pede rascunhos de questões de uma aula
+         * @description Só o professor da disciplina. A geração roda em segundo plano: acompanhe pelo id do pedido. Se já há um pedido em andamento para a aula, devolve esse (QUE-RF-01).
+         */
+        post: operations["materiais_geracoes_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -739,6 +776,26 @@ export interface components {
             /** @description Se o atalho de desenvolvimento existe (nunca em produção). */
             desenvolvimento: boolean;
         };
+        /** @description O andamento de um pedido de rascunhos. */
+        Geracao: {
+            id: number;
+            material: number;
+            quantidade: number;
+            status: components["schemas"]["GeracaoStatusEnum"];
+            geradas: number;
+            descartadas: number;
+            /** Format: date-time */
+            criado_em: string;
+            /** Format: date-time */
+            terminado_em: string | null;
+        };
+        /**
+         * @description * `processando` - processando
+         *     * `pronto` - pronto
+         *     * `erro` - erro
+         * @enum {string}
+         */
+        GeracaoStatusEnum: "processando" | "pronto" | "erro";
         Importacao: {
             readonly id: number;
             readonly status: components["schemas"]["StatusDaImportacaoEnum"];
@@ -896,6 +953,9 @@ export interface components {
         };
         PatchedMudancaDeStatusRequest: {
             status?: components["schemas"]["MudancaDeStatusStatusEnum"];
+        };
+        PedidoDeGeracaoRequest: {
+            quantidade: number;
         };
         /**
          * @description * `aluno` - Aluno
@@ -1523,6 +1583,27 @@ export interface operations {
             };
         };
     };
+    geracoes_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pedido_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Geracao"];
+                };
+            };
+        };
+    };
     importacoes_create: {
         parameters: {
             query?: never;
@@ -1607,6 +1688,33 @@ export interface operations {
                 };
                 content: {
                     "application/pdf": string;
+                };
+            };
+        };
+    };
+    materiais_geracoes_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                material_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PedidoDeGeracaoRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PedidoDeGeracaoRequest"];
+                "multipart/form-data": components["schemas"]["PedidoDeGeracaoRequest"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Geracao"];
                 };
             };
         };

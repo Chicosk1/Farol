@@ -604,6 +604,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/Eu'
           description: ''
+  /api/geracoes/{pedido_id}:
+    get:
+      operationId: geracoes_retrieve
+      summary: Andamento de um pedido de rascunhos
+      parameters:
+      - in: path
+        name: pedido_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - questoes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Geracao'
+          description: ''
   /api/importacoes:
     post:
       operationId: importacoes_create
@@ -695,6 +716,42 @@ paths:
               schema:
                 type: string
                 format: binary
+          description: ''
+  /api/materiais/{material_id}/geracoes:
+    post:
+      operationId: materiais_geracoes_create
+      description: 'Só o professor da disciplina. A geração roda em segundo plano:
+        acompanhe pelo id do pedido. Se já há um pedido em andamento para a aula,
+        devolve esse (QUE-RF-01).'
+      summary: Pede rascunhos de questões de uma aula
+      parameters:
+      - in: path
+        name: material_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - questoes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PedidoDeGeracaoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PedidoDeGeracaoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PedidoDeGeracaoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Geracao'
           description: ''
   /api/materiais/{material_id}/versoes:
     post:
@@ -1194,6 +1251,48 @@ components:
       required:
       - desenvolvimento
       - google
+    Geracao:
+      type: object
+      description: O andamento de um pedido de rascunhos.
+      properties:
+        id:
+          type: integer
+        material:
+          type: integer
+        quantidade:
+          type: integer
+        status:
+          $ref: '#/components/schemas/GeracaoStatusEnum'
+        geradas:
+          type: integer
+        descartadas:
+          type: integer
+        criado_em:
+          type: string
+          format: date-time
+        terminado_em:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - criado_em
+      - descartadas
+      - geradas
+      - id
+      - material
+      - quantidade
+      - status
+      - terminado_em
+    GeracaoStatusEnum:
+      enum:
+      - processando
+      - pronto
+      - erro
+      type: string
+      description: |-
+        * `processando` - processando
+        * `pronto` - pronto
+        * `erro` - erro
     Importacao:
       type: object
       properties:
@@ -1535,6 +1634,15 @@ components:
       properties:
         status:
           $ref: '#/components/schemas/MudancaDeStatusStatusEnum'
+    PedidoDeGeracaoRequest:
+      type: object
+      properties:
+        quantidade:
+          type: integer
+          maximum: 20
+          minimum: 5
+      required:
+      - quantidade
     PerfilEnum:
       enum:
       - aluno

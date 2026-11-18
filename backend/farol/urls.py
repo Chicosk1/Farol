@@ -16,6 +16,7 @@ urlpatterns = [
     path("api/", include("notificacoes.api.urls")),
     path("api/", include("tutor.api.urls")),
     path("api/", include("duvidas.api.urls")),
+    path("api/", include("questoes.api.urls")),
     path("admin/", admin.site.urls),
     # Login com o Google pelo allauth (ACE-RF-01): ida em /contas/google/login/ e volta em
     # /contas/google/login/callback/. Cadastro e senha próprios ficam desligados (ACE-RF-02).

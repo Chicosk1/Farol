@@ -363,6 +363,30 @@ def buscar_trechos(
 
 
 @dataclass(frozen=True)
+class ResumoDoMaterial:
+    id: int
+    disciplina_id: int
+    aula_numero: int
+    aula_titulo: str
+    pronto: bool
+
+
+def resumo_do_material(material_id: int) -> ResumoDoMaterial:
+    """A aula e o status de um material, para os outros módulos. Levanta MaterialNaoEncontrado."""
+    try:
+        material = Material.objects.get(pk=material_id)
+    except Material.DoesNotExist:
+        raise MaterialNaoEncontrado(material_id) from None
+    return ResumoDoMaterial(
+        id=material.id,
+        disciplina_id=material.disciplina_id,
+        aula_numero=material.aula_numero,
+        aula_titulo=material.aula_titulo,
+        pronto=material.status == Material.Status.PRONTO,
+    )
+
+
+@dataclass(frozen=True)
 class TrechoDaAula:
     id: int
     pagina: int
