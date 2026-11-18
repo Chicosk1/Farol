@@ -52,6 +52,19 @@ a.popover-action {
   padding: 0;
 }
 
+/* Abas numa coluna (componente Abas): do tamanho do conteúdo, como no protótipo. */
+.stack > .fr-tabs {
+  align-self: flex-start;
+}
+
+/* Texto de aluno citado entre aspas, como as dúvidas do radar no protótipo. */
+.texto-entre-aspas::before {
+  content: '“';
+}
+.texto-entre-aspas::after {
+  content: '”';
+}
+
 /* Notificação ainda não lida, no sino. */
 .popover-item.is-unread {
   background: var(--accent-soft);

@@ -43,7 +43,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Produto: telas iguais ao protótipo
 
-- [ ] DUV-T50 Dúvidas do professor no formato do protótipo (DUV-RF-05, DUV-RF-07)
+- [x] DUV-T50 Dúvidas do professor no formato do protótipo (DUV-RF-05, DUV-RF-07)
 
 ## Dependências
 
