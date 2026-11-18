@@ -87,6 +87,11 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 - [x] TUT-T93 Painel de custo por aluno e alerta de orçamento (TUT-RNF-05)
 - [x] TUT-T94 Tirar do `RegistroUso` o campo `avaliacao`, que nunca é preenchido: o registro não tem ligação com a mensagem (TUT-RF-12)
 
+## Produto: telas iguais ao protótipo
+
+- [ ] TUT-T95 Tela do tutor no formato do protótipo: bolhas, citações, avaliação, sugestões, política e tutor pausado (TUT-RF-02, TUT-RF-09, TUT-RF-10, TUT-RF-13, TUT-RF-14)
+- [ ] TUT-T96 Configuração da disciplina no formato do protótipo: modo pistas, limite diário, provas e política de uso de IA (TUT-RF-06, TUT-RF-07, TUT-RF-08, TUT-RF-10)
+
 ## Dependências
 
 Depende das specs 001 (Histórias 1 e 2) e 002 (Histórias 1 e 2). A História 2 desta spec é pré-requisito da spec 004. O registro de uso (TUT-T91) é pré-requisito da spec 007.

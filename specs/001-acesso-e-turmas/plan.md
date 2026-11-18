@@ -96,6 +96,10 @@ O provedor institucional é o Google Workspace (decisão de 2026-11-18). O fluxo
 
 O Vite encaminha `/contas` ao Django, como já faz com `/api`. Em produção, o proxy faz o mesmo. A credencial OAuth (`FAROL_GOOGLE_CLIENT_ID` e `FAROL_GOOGLE_SECRET`) fica em variáveis de ambiente. Sem ela, o botão do Google não aparece, e `GET /api/entrada` diz quais formas de entrar existem.
 
+### Telas iguais ao protótipo
+
+As telas seguem o protótipo navegável, que é a referência visual aprovada. Para não reescrever o design system, o front-end reaproveita o CSS de componentes e de layout do protótipo (`prototipo/css/components.css` e `app.css`) em `frontend/src/estilos/`, com as mesmas classes `fr-`, e os ícones do Tabler Icons do protótipo (licença MIT), sem dependência nova. O Tailwind continua para ajustes pontuais. Os componentes React em `src/componentes/` geram a mesma marcação do protótipo.
+
 ## Modelo de dados
 
 | Entidade | Campos | Observações |
