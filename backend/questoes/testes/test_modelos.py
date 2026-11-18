@@ -61,7 +61,6 @@ def test_questao_nova_comeca_pendente_e_marcada_como_novo_rascunho(material, tre
     assert nova.status == Questao.Status.PENDENTE
     assert nova.nova is True
     assert nova.editada is False
-    assert nova.origem_retirada is False
     assert nova.pedido is None
 
 

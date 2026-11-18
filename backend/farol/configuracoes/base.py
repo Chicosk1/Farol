@@ -258,5 +258,7 @@ SPECTACULAR_SETTINGS = {
         "PerfilEnum": "contas.models.Perfil.choices",
         "StatusDaImportacaoEnum": "disciplinas.models.StatusDaImportacao",
         "StatusDoMaterialEnum": "materiais.models.StatusDoMaterial",
+        "StatusDaQuestaoEnum": "questoes.models.StatusDaQuestao",
+        "StatusDaGeracaoEnum": "questoes.models.StatusDaGeracao",
     },
 }

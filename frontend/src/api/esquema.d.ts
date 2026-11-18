@@ -210,6 +210,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/disciplinas/{disciplina_id}/questoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Questões da disciplina por status, com as contagens
+         * @description Só o professor da disciplina: inclui rascunhos e o gabarito (QUE-RF-04 e 06).
+         */
+        get: operations["disciplinas_questoes_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/disciplinas/{disciplina_id}/tutor": {
         parameters: {
             query?: never;
@@ -586,6 +606,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/questoes/{questao_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edita, aprova, descarta ou devolve uma questão para pendentes
+         * @description A edição só vale em pendentes (409 fora delas). Publicar só a partir de pendentes, e nunca uma questão cujo material foi retirado (QUE-RF-05).
+         */
+        patch: operations["questoes_partial_update"];
+        trace?: never;
+    };
     "/api/sair": {
         parameters: {
             query?: never;
@@ -688,6 +728,11 @@ export interface components {
             /** Política de uso de IA */
             politica?: string;
         };
+        Contagens: {
+            pendente: number;
+            publicada: number;
+            descartada: number;
+        };
         ConversaDoHistorico: {
             disciplina_id: number;
             disciplina_nome: string;
@@ -781,7 +826,7 @@ export interface components {
             id: number;
             material: number;
             quantidade: number;
-            status: components["schemas"]["GeracaoStatusEnum"];
+            status: components["schemas"]["StatusDaGeracaoEnum"];
             geradas: number;
             descartadas: number;
             /** Format: date-time */
@@ -789,13 +834,6 @@ export interface components {
             /** Format: date-time */
             terminado_em: string | null;
         };
-        /**
-         * @description * `processando` - processando
-         *     * `pronto` - pronto
-         *     * `erro` - erro
-         * @enum {string}
-         */
-        GeracaoStatusEnum: "processando" | "pronto" | "erro";
         Importacao: {
             readonly id: number;
             readonly status: components["schemas"]["StatusDaImportacaoEnum"];
@@ -951,6 +989,15 @@ export interface components {
             /** Política de uso de IA */
             politica?: string;
         };
+        /** @description Campos a editar (só em pendentes) e, ou, o novo status. */
+        PatchedMudancaDeQuestaoRequest: {
+            enunciado?: string;
+            alternativas?: string[];
+            correta?: number;
+            justificativa?: string;
+            topico?: string;
+            status?: components["schemas"]["StatusDaQuestaoEnum"];
+        };
         PatchedMudancaDeStatusRequest: {
             status?: components["schemas"]["MudancaDeStatusStatusEnum"];
         };
@@ -971,10 +1018,38 @@ export interface components {
         Previa: {
             texto_filtrado: string;
         };
+        /** @description A questão completa, com o gabarito: só o professor da disciplina a vê. */
+        QuestaoDoProfessor: {
+            id: number;
+            material: number;
+            aula_numero: number;
+            aula_titulo: string;
+            enunciado: string;
+            alternativas: string[];
+            correta: number;
+            justificativa: string;
+            topico: string;
+            trecho: components["schemas"]["TrechoDaQuestao"];
+            status: components["schemas"]["StatusDaQuestaoEnum"];
+            nova: boolean;
+            editada: boolean;
+            readonly origem_retirada: boolean;
+        };
+        QuestoesDaDisciplina: {
+            contagens: components["schemas"]["Contagens"];
+            questoes: components["schemas"]["QuestaoDoProfessor"][];
+        };
         Saude: {
             /** @description Sempre "ok" quando a API está no ar. */
             status: string;
         };
+        /**
+         * @description * `processando` - Gerando
+         *     * `pronto` - Pronto
+         *     * `erro` - Erro
+         * @enum {string}
+         */
+        StatusDaGeracaoEnum: "processando" | "pronto" | "erro";
         /**
          * @description * `pendente` - Pendente
          *     * `processando` - Processando
@@ -983,6 +1058,13 @@ export interface components {
          * @enum {string}
          */
         StatusDaImportacaoEnum: "pendente" | "processando" | "concluida" | "recusada";
+        /**
+         * @description * `pendente` - Pendente
+         *     * `publicada` - Publicada
+         *     * `descartada` - Descartada
+         * @enum {string}
+         */
+        StatusDaQuestaoEnum: "pendente" | "publicada" | "descartada";
         /**
          * @description * `processando` - Processando
          *     * `pronto` - Pronto para o tutor
@@ -993,6 +1075,10 @@ export interface components {
          * @enum {string}
          */
         StatusDoMaterialEnum: "processando" | "pronto" | "atencao" | "erro" | "retirado" | "substituido";
+        TrechoDaQuestao: {
+            id: number;
+            pagina: number;
+        };
         TrechoParaAbrir: {
             material_id: number;
             aula_numero: number;
@@ -1336,6 +1422,35 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MinhaDuvida"][];
+                };
+            };
+        };
+    };
+    disciplinas_questoes_retrieve: {
+        parameters: {
+            query?: {
+                material?: number;
+                /**
+                 * @description * `pendente` - Pendente
+                 *     * `publicada` - Publicada
+                 *     * `descartada` - Descartada
+                 */
+                status?: "pendente" | "publicada" | "descartada";
+            };
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestoesDaDisciplina"];
                 };
             };
         };
@@ -1883,6 +1998,33 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    questoes_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                questao_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedMudancaDeQuestaoRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedMudancaDeQuestaoRequest"];
+                "multipart/form-data": components["schemas"]["PatchedMudancaDeQuestaoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestaoDoProfessor"];
+                };
             };
         };
     };

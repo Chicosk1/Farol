@@ -53,6 +53,9 @@ class PedidoGeracao(models.Model):
         return f"{self.quantidade} questões da aula {self.material_id}"
 
 
+StatusDaGeracao = PedidoGeracao.Status
+
+
 class Questao(models.Model):
     """Uma questão de múltipla escolha de uma aula. Só a publicada chega ao aluno (QUE-RF-04)."""
 
@@ -91,7 +94,6 @@ class Questao(models.Model):
     )
     nova = models.BooleanField("novo rascunho, ainda não visto", default=True)
     editada = models.BooleanField("editada pelo professor", default=False)
-    origem_retirada = models.BooleanField("o material de origem foi retirado", default=False)
     criada_em = models.DateTimeField("criada em", auto_now_add=True)
     atualizada_em = models.DateTimeField("atualizada em", auto_now=True)
 

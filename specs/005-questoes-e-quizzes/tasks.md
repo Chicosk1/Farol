@@ -36,8 +36,8 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Produto: História 2, revisar e publicar (P1)
 
-- [ ] QUE-T30 [P] [H2] Teste de que nenhuma rota do aluno devolve rascunhos (QUE-RF-04)
-- [ ] QUE-T31 [H2] Edição, mudança de status e contagens (QUE-RF-05, QUE-RF-06)
+- [x] QUE-T30 [P] [H2] Teste de que nenhuma rota do aluno devolve rascunhos (QUE-RF-04)
+- [x] QUE-T31 [H2] Edição, mudança de status e contagens (QUE-RF-05, QUE-RF-06)
 - [ ] QUE-T32 [H2] Tela de revisão do professor no React (QUE-RF-05, QUE-RF-06)
 
 ## Produto: História 3, fazer o quiz (P1)

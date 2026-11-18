@@ -365,6 +365,47 @@ paths:
                 items:
                   $ref: '#/components/schemas/MinhaDuvida'
           description: ''
+  /api/disciplinas/{disciplina_id}/questoes:
+    get:
+      operationId: disciplinas_questoes_retrieve
+      description: 'Só o professor da disciplina: inclui rascunhos e o gabarito (QUE-RF-04
+        e 06).'
+      summary: Questões da disciplina por status, com as contagens
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: material
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          enum:
+          - pendente
+          - publicada
+          - descartada
+          type: string
+          default: pendente
+          minLength: 1
+        description: |-
+          * `pendente` - Pendente
+          * `publicada` - Publicada
+          * `descartada` - Descartada
+      tags:
+      - questoes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestoesDaDisciplina'
+          description: ''
   /api/disciplinas/{disciplina_id}/tutor:
     get:
       operationId: disciplinas_tutor_retrieve
@@ -896,6 +937,40 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/questoes/{questao_id}:
+    patch:
+      operationId: questoes_partial_update
+      description: A edição só vale em pendentes (409 fora delas). Publicar só a partir
+        de pendentes, e nunca uma questão cujo material foi retirado (QUE-RF-05).
+      summary: Edita, aprova, descarta ou devolve uma questão para pendentes
+      parameters:
+      - in: path
+        name: questao_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - questoes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMudancaDeQuestaoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMudancaDeQuestaoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMudancaDeQuestaoRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestaoDoProfessor'
+          description: ''
   /api/sair:
     post:
       operationId: sair_create
@@ -1045,6 +1120,19 @@ components:
         politica:
           type: string
           title: Política de uso de IA
+    Contagens:
+      type: object
+      properties:
+        pendente:
+          type: integer
+        publicada:
+          type: integer
+        descartada:
+          type: integer
+      required:
+      - descartada
+      - pendente
+      - publicada
     ConversaDoHistorico:
       type: object
       properties:
@@ -1262,7 +1350,7 @@ components:
         quantidade:
           type: integer
         status:
-          $ref: '#/components/schemas/GeracaoStatusEnum'
+          $ref: '#/components/schemas/StatusDaGeracaoEnum'
         geradas:
           type: integer
         descartadas:
@@ -1283,16 +1371,6 @@ components:
       - quantidade
       - status
       - terminado_em
-    GeracaoStatusEnum:
-      enum:
-      - processando
-      - pronto
-      - erro
-      type: string
-      description: |-
-        * `processando` - processando
-        * `pronto` - pronto
-        * `erro` - erro
     Importacao:
       type: object
       properties:
@@ -1629,6 +1707,24 @@ components:
         politica:
           type: string
           title: Política de uso de IA
+    PatchedMudancaDeQuestaoRequest:
+      type: object
+      description: Campos a editar (só em pendentes) e, ou, o novo status.
+      properties:
+        enunciado:
+          type: string
+        alternativas:
+          type: array
+          items:
+            type: string
+        correta:
+          type: integer
+        justificativa:
+          type: string
+        topico:
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusDaQuestaoEnum'
     PatchedMudancaDeStatusRequest:
       type: object
       properties:
@@ -1671,6 +1767,69 @@ components:
           type: string
       required:
       - texto_filtrado
+    QuestaoDoProfessor:
+      type: object
+      description: 'A questão completa, com o gabarito: só o professor da disciplina
+        a vê.'
+      properties:
+        id:
+          type: integer
+        material:
+          type: integer
+        aula_numero:
+          type: integer
+        aula_titulo:
+          type: string
+        enunciado:
+          type: string
+        alternativas:
+          type: array
+          items:
+            type: string
+        correta:
+          type: integer
+        justificativa:
+          type: string
+        topico:
+          type: string
+        trecho:
+          $ref: '#/components/schemas/TrechoDaQuestao'
+        status:
+          $ref: '#/components/schemas/StatusDaQuestaoEnum'
+        nova:
+          type: boolean
+        editada:
+          type: boolean
+        origem_retirada:
+          type: boolean
+          readOnly: true
+      required:
+      - alternativas
+      - aula_numero
+      - aula_titulo
+      - correta
+      - editada
+      - enunciado
+      - id
+      - justificativa
+      - material
+      - nova
+      - origem_retirada
+      - status
+      - topico
+      - trecho
+    QuestoesDaDisciplina:
+      type: object
+      properties:
+        contagens:
+          $ref: '#/components/schemas/Contagens'
+        questoes:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestaoDoProfessor'
+      required:
+      - contagens
+      - questoes
     Saude:
       type: object
       properties:
@@ -1679,6 +1838,16 @@ components:
           description: Sempre "ok" quando a API está no ar.
       required:
       - status
+    StatusDaGeracaoEnum:
+      enum:
+      - processando
+      - pronto
+      - erro
+      type: string
+      description: |-
+        * `processando` - Gerando
+        * `pronto` - Pronto
+        * `erro` - Erro
     StatusDaImportacaoEnum:
       enum:
       - pendente
@@ -1691,6 +1860,16 @@ components:
         * `processando` - Processando
         * `concluida` - Concluída
         * `recusada` - Recusada
+    StatusDaQuestaoEnum:
+      enum:
+      - pendente
+      - publicada
+      - descartada
+      type: string
+      description: |-
+        * `pendente` - Pendente
+        * `publicada` - Publicada
+        * `descartada` - Descartada
     StatusDoMaterialEnum:
       enum:
       - processando
@@ -1707,6 +1886,16 @@ components:
         * `erro` - Erro, tente de novo
         * `retirado` - Retirado
         * `substituido` - Substituído pela versão nova
+    TrechoDaQuestao:
+      type: object
+      properties:
+        id:
+          type: integer
+        pagina:
+          type: integer
+      required:
+      - id
+      - pagina
     TrechoParaAbrir:
       type: object
       properties:
