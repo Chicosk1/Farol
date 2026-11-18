@@ -9,7 +9,7 @@ A stack foi escolhida pelo critério "qualquer desenvolvedor pleno do mercado co
 ```mermaid
 flowchart LR
     user["Aluno e professor<br/>React, web ou PWA"]
-    sso["Login institucional<br/>Google Workspace"]
+    sso["Login com o Google<br/>OpenID Connect"]
     subgraph servidor["Servidor na nuvem, região de São Paulo, Docker Compose"]
         nginx["Nginx<br/>HTTPS e arquivos do front-end"]
         django["Django API<br/>API REST e chat do tutor"]
@@ -100,7 +100,7 @@ docker-compose.yml  ambiente completo de desenvolvimento
 | IA | Modelos abertos no Ollama, no próprio servidor (`gemma3:4b` para respostas e `embeddinggemma` para vetores), atrás de um módulo próprio ([ADR 0009](adr/0009-ia-com-modelos-abertos-no-ollama.md), que substitui em parte a [ADR 0005](adr/0005-ia-via-api-com-modulo-proprio.md)) | Provedor de mercado pago; planos gratuitos do Gemini ou do Groq | Custo zero e nenhum dado sai do servidor. Como o adaptador fala a API compatível com a da OpenAI, trocar por um provedor pago é só configuração | Qualidade menor que a de um modelo de mercado e respostas mais lentas em CPU |
 | Orquestração da IA | Código próprio e enxuto, com o HTTP da biblioteca padrão, sem SDK ([ADR 0009](adr/0009-ia-com-modelos-abertos-no-ollama.md)) | LangChain, LlamaIndex | O fluxo é curto: buscar trechos, montar o prompt, chamar o modelo. Menos camadas, depuração mais fácil | Escrever à mão utilitários que essas bibliotecas dão prontos |
 | Leitura de PDF | pypdf | PyMuPDF (licença AGPL), serviços de OCR | Licença permissiva e extração página a página, que permite citar a página | Não lê PDF escaneado; OCR fica para a expansão |
-| Login | OpenID Connect com o Google Workspace da instituição, via django-allauth | Usuário e senha próprios | O aluno entra com a conta que já tem, e a TI não administra senhas | Depende de conta institucional ativa; link mágico por e-mail como plano B |
+| Login | OpenID Connect com qualquer conta Google de e-mail verificado, via django-allauth; restrição a um domínio do Workspace opcional | Usuário e senha próprios | O aluno entra com a conta que já tem, e a TI não administra senhas | Quem não tem conta Google precisa criar uma |
 | Arquivos | API de armazenamento do Django: volume do Docker em desenvolvimento; disco com backup ou S3 compatível em produção, via django-storages ([ADR 0008](adr/0008-ambiente-local-em-docker.md)) | Supabase Storage, MinIO, S3 desde o início | O mesmo código serve aos dois destinos, sem serviço extra no desenvolvimento | A escolha de produção fica para a fase 0 |
 | Infraestrutura | Docker Compose em uma máquina virtual em São Paulo, com Nginx e HTTPS ([ADR 0006](adr/0006-docker-compose-em-um-servidor.md), [ADR 0008](adr/0008-ambiente-local-em-docker.md)) | Kubernetes; Render, Railway, Heroku | O mesmo arquivo sobe o sistema no notebook e em produção | Ponto único de falha, aceitável no piloto com backup diário |
 | Contrato da API | OpenAPI gerado pelo drf-spectacular; tipos TypeScript gerados com openapi-typescript ([ADR 0007](adr/0007-monolito-modular-em-camadas.md)) | Escrever os tipos à mão; GraphQL | O contrato do `plan.md` vira um arquivo verificável, e o front-end quebra na compilação se a API mudar | Um passo de geração a mais |
@@ -173,7 +173,7 @@ Só saem da instituição para o provedor de IA o texto da pergunta, sem identif
 | Anonimato no radar | O agrupamento trabalha com perguntas sem autoria; grupos com menos de 5 alunos distintos são descartados antes de qualquer exibição |
 | Retenção | Proposta de 12 meses para as perguntas, depois apagadas ou mantidas só de forma agregada |
 | Localização | Banco e arquivos na região de São Paulo |
-| Acesso | HTTPS em tudo, entrada só por conta institucional e permissões por disciplina |
+| Acesso | HTTPS em tudo, entrada só por conta Google de e-mail verificado e permissões por disciplina |
 | Segredos | Chaves de API em variáveis de ambiente |
 | Custo | Limite diário por aluno no Redis e alerta de orçamento no provedor |
 | Backup | Diário, com teste de restauração mensal |

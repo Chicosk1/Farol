@@ -10,8 +10,9 @@ from .base import DATABASES, login_do_google
 
 DEBUG = False
 
-# O login com o Google é a única forma de entrar (ACE-RF-01): sem domínio e credencial, não sobe.
-FAROL_DOMINIO_INSTITUCIONAL = ambiente.obrigatoria("FAROL_DOMINIO_INSTITUCIONAL")
+# O login com o Google é a única forma de entrar (ACE-RF-01): sem a credencial, não sobe. O
+# domínio é opcional: vazio, entra qualquer conta Google de e-mail verificado.
+FAROL_DOMINIO_INSTITUCIONAL = ambiente.opcional("FAROL_DOMINIO_INSTITUCIONAL", "")
 FAROL_GOOGLE_CLIENT_ID = ambiente.obrigatoria("FAROL_GOOGLE_CLIENT_ID")
 FAROL_GOOGLE_SECRET = ambiente.obrigatoria("FAROL_GOOGLE_SECRET")
 SOCIALACCOUNT_PROVIDERS = login_do_google(

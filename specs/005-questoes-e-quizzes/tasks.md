@@ -4,7 +4,7 @@
 | --- | --- |
 | Spec | [spec.md](./spec.md) |
 | Plano | [plan.md](./plan.md) |
-| Atualizado em | 2026-11-13 |
+| Atualizado em | 2026-11-18 |
 
 Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a tarefa pode ser feita em paralelo com outras `[P]` do mesmo bloco.
 
@@ -23,26 +23,28 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Produto: fundação
 
-- [ ] QUE-T10 Modelos `PedidoGeracao`, `Questao`, `RespostaQuiz` e `ProgressoQuiz`
-- [ ] QUE-T11 [P] Esquema Pydantic da questão e provedor falso com respostas válidas e inválidas
+- [x] QUE-T10 Modelos `PedidoGeracao`, `Questao`, `RespostaQuiz` e `ProgressoQuiz`
+- [x] QUE-T11 [P] Esquema Pydantic da questão, porta de geração no módulo `ia` e provedor falso com respostas válidas e inválidas (QUE-RF-02, QUE-RF-03)
+- [x] QUE-T12 Geração de questões no adaptador compatível com a OpenAI (Ollama), com resposta em JSON (QUE-RF-02)
 
 ## Produto: História 1, gerar rascunhos (P1)
 
-- [ ] QUE-T20 [P] [H1] Testes de geração, validação e descarte automático (QUE-RF-02, QUE-RF-03)
-- [ ] QUE-T21 [H1] Tarefa de geração no Celery com prompt fixo e validação do trecho (QUE-RF-02, QUE-RF-03)
-- [ ] QUE-T22 [H1] Rota de pedido de geração e tela com progresso (QUE-RF-01)
+- [x] QUE-T20 [P] [H1] Testes de geração, validação e descarte automático (QUE-RF-02, QUE-RF-03)
+- [x] QUE-T21 [H1] Tarefa de geração no Celery com prompt fixo e validação do trecho (QUE-RF-02, QUE-RF-03)
+- [x] QUE-T22 [H1] Rotas de pedido de geração e de acompanhamento do pedido (QUE-RF-01)
+- [x] QUE-T23 [H1] Tela de questões do professor com o gerador e o progresso, no formato do protótipo (QUE-RF-01)
 
 ## Produto: História 2, revisar e publicar (P1)
 
-- [ ] QUE-T30 [P] [H2] Teste de que nenhuma rota do aluno devolve rascunhos (QUE-RF-04)
-- [ ] QUE-T31 [H2] Edição, mudança de status e contagens (QUE-RF-05, QUE-RF-06)
-- [ ] QUE-T32 [H2] Tela de revisão do professor no React (QUE-RF-05, QUE-RF-06)
+- [x] QUE-T30 [P] [H2] Teste de que nenhuma rota do aluno devolve rascunhos (QUE-RF-04)
+- [x] QUE-T31 [H2] Edição, mudança de status e contagens (QUE-RF-05, QUE-RF-06)
+- [x] QUE-T32 [H2] Tela de revisão do professor no React (QUE-RF-05, QUE-RF-06)
 
 ## Produto: História 3, fazer o quiz (P1)
 
-- [ ] QUE-T40 [P] [H3] Testes do quiz: gabarito escondido até a resposta, retorno e progresso (QUE-RF-08)
-- [ ] QUE-T41 [H3] Rotas do quiz e registro de respostas com identificador pseudônimo (QUE-RF-07, QUE-RF-08, QUE-RF-11)
-- [ ] QUE-T42 [H3] Tela do quiz com retorno, botão "Perguntar ao tutor sobre isso" e resumo final (QUE-RF-09, QUE-RF-10, QUE-RNF-02)
+- [x] QUE-T40 [P] [H3] Testes do quiz: gabarito escondido até a resposta, retorno e progresso (QUE-RF-08)
+- [x] QUE-T41 [H3] Rotas do quiz e registro de respostas com identificador pseudônimo (QUE-RF-07, QUE-RF-08, QUE-RF-11)
+- [x] QUE-T42 [H3] Tela do quiz com retorno, botão "Perguntar ao tutor sobre isso" e resumo final (QUE-RF-09, QUE-RF-10, QUE-RNF-02)
 
 ## Produto: acabamento
 

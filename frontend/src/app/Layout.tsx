@@ -26,6 +26,13 @@ function itensDoAluno(): Item[] {
   return [
     { rotulo: 'Início', curto: 'Início', icone: 'home', para: '/', atual: (c) => c === '/' },
     {
+      rotulo: 'Revisão do dia',
+      curto: 'Revisão',
+      icone: 'cards',
+      para: '/revisao',
+      atual: (c) => c === '/revisao',
+    },
+    {
       rotulo: 'Disciplinas',
       curto: 'Disciplinas',
       icone: 'school',
@@ -62,11 +69,25 @@ function itensDoProfessor(disciplinaId: string | undefined): Item[] {
   const base = `/disciplinas/${disciplinaId}`;
   return [
     {
+      rotulo: 'Radar da turma',
+      curto: 'Radar',
+      icone: 'radar',
+      para: `${base}/radar`,
+      atual: (c) => c === `${base}/radar`,
+    },
+    {
       rotulo: 'Materiais',
       curto: 'Materiais',
       icone: 'files',
       para: `${base}/materiais`,
       atual: (c) => c === `${base}/materiais`,
+    },
+    {
+      rotulo: 'Questões',
+      curto: 'Questões',
+      icone: 'list-check',
+      para: `${base}/questoes`,
+      atual: (c) => c === `${base}/questoes`,
     },
     {
       rotulo: 'Dúvidas',

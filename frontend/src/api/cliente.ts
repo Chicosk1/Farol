@@ -421,3 +421,122 @@ export type TrechoParaAbrir = components['schemas']['TrechoParaAbrir'];
 export function obterTrecho(trechoId: number): Promise<TrechoParaAbrir> {
   return requisitar<TrechoParaAbrir>(`/api/trechos/${trechoId}`);
 }
+
+export type QuestaoDoProfessor = components['schemas']['QuestaoDoProfessor'];
+export type QuestoesDaDisciplina = components['schemas']['QuestoesDaDisciplina'];
+export type StatusDaQuestao = QuestaoDoProfessor['status'];
+export type Geracao = components['schemas']['Geracao'];
+export type Quiz = components['schemas']['Quiz'];
+export type RetornoDaQuestao = components['schemas']['RetornoDaQuestao'];
+export type QuizDaAula = components['schemas']['QuizDaAula'];
+/** O que o professor muda numa questão: o conteúdo (só em pendentes) e, ou, o status. */
+export type MudancaDeQuestao = Partial<
+  Pick<
+    QuestaoDoProfessor,
+    'enunciado' | 'alternativas' | 'correta' | 'justificativa' | 'topico' | 'status'
+  >
+>;
+
+/** GET /api/disciplinas/{id}/questoes: as questões de um status e as contagens (QUE-RF-06). */
+export function listarQuestoes(
+  disciplinaId: number,
+  status: StatusDaQuestao,
+): Promise<QuestoesDaDisciplina> {
+  return requisitar<QuestoesDaDisciplina>(
+    `/api/disciplinas/${disciplinaId}/questoes?status=${status}`,
+  );
+}
+
+/** PATCH /api/questoes/{id}: aprova, edita, descarta ou devolve para pendentes (QUE-RF-05). */
+export function mudarQuestao(
+  questaoId: number,
+  dados: MudancaDeQuestao,
+): Promise<QuestaoDoProfessor> {
+  return enviar<QuestaoDoProfessor>(`/api/questoes/${questaoId}`, dados, 'PATCH');
+}
+
+/** POST /api/materiais/{id}/geracoes: pede de 5 a 20 rascunhos de uma aula (QUE-RF-01). */
+export function pedirGeracao(materialId: number, quantidade: number): Promise<Geracao> {
+  return enviar<Geracao>(`/api/materiais/${materialId}/geracoes`, { quantidade });
+}
+
+/** GET /api/geracoes/{id}: o andamento do pedido de rascunhos. */
+export function obterGeracao(pedidoId: number): Promise<Geracao> {
+  return requisitar<Geracao>(`/api/geracoes/${pedidoId}`);
+}
+
+/** GET /api/materiais/{id}/quiz: as questões publicadas da aula, sem o gabarito (QUE-RF-04). */
+export function obterQuiz(materialId: number): Promise<Quiz> {
+  return requisitar<Quiz>(`/api/materiais/${materialId}/quiz`);
+}
+
+/** POST /api/questoes/{id}/respostas: corrige e devolve o retorno da questão (QUE-RF-08). */
+export function responderQuestao(
+  questaoId: number,
+  alternativa: number,
+): Promise<RetornoDaQuestao> {
+  return enviar<RetornoDaQuestao>(`/api/questoes/${questaoId}/respostas`, { alternativa });
+}
+
+/** POST /api/materiais/{id}/quiz/reiniciar: começa o quiz da aula de novo. */
+export async function reiniciarQuiz(materialId: number): Promise<void> {
+  await enviar<undefined>(`/api/materiais/${materialId}/quiz/reiniciar`);
+}
+
+/** GET /api/disciplinas/{id}/quizzes: as aulas com quiz e o andamento do aluno. */
+export function listarQuizzes(disciplinaId: number): Promise<QuizDaAula[]> {
+  return requisitar<QuizDaAula[]>(`/api/disciplinas/${disciplinaId}/quizzes`);
+}
+
+export type RevisaoDeHoje = components['schemas']['RevisaoDeHoje'];
+export type RetornoDoCartao = components['schemas']['RetornoDoCartao'];
+export type AgendaDoCartao = components['schemas']['AgendaDoCartao'];
+export type AvaliacaoDoCartao = components['schemas']['AvaliacaoDoCartaoEnum'];
+export type Lembrete = components['schemas']['Lembrete'];
+
+/** GET /api/revisao/hoje: a sessão do dia, as respostas e a sequência (REV-RF-06, REV-RF-07). */
+export function obterRevisaoDeHoje(): Promise<RevisaoDeHoje> {
+  return requisitar<RevisaoDeHoje>('/api/revisao/hoje');
+}
+
+/** POST /api/revisao/cartoes/{id}/resposta: o retorno do cartão, como no quiz (REV-RF-03). */
+export function responderCartao(cartaoId: number, alternativa: number): Promise<RetornoDoCartao> {
+  return enviar<RetornoDoCartao>(`/api/revisao/cartoes/${cartaoId}/resposta`, { alternativa });
+}
+
+/** POST /api/revisao/cartoes/{id}/avaliacao: agenda o cartão e diz quando ele volta (REV-RF-05). */
+export function avaliarCartao(
+  cartaoId: number,
+  avaliacao: AvaliacaoDoCartao,
+): Promise<AgendaDoCartao> {
+  return enviar<AgendaDoCartao>(`/api/revisao/cartoes/${cartaoId}/avaliacao`, { avaliacao });
+}
+
+/** GET /api/eu/lembrete: o lembrete diário da revisão (REV-RF-09). */
+export function obterLembrete(): Promise<Lembrete> {
+  return requisitar<Lembrete>('/api/eu/lembrete');
+}
+
+/** PUT /api/eu/lembrete: liga ou desliga o lembrete por e-mail, no horário escolhido. */
+export function salvarLembrete(lembrete: Lembrete): Promise<Lembrete> {
+  return enviar<Lembrete>('/api/eu/lembrete', lembrete, 'PUT');
+}
+
+export type Radar = components['schemas']['Radar'];
+export type SemanaDoRadar = components['schemas']['Semana'];
+
+/** GET /api/disciplinas/{id}/radar: o radar da semana, só com dados agregados (RAD-RF-06). */
+export function obterRadar(disciplinaId: number, semana?: string): Promise<Radar> {
+  const filtro = semana ? `?semana=${semana}` : '';
+  return requisitar<Radar>(`/api/disciplinas/${disciplinaId}/radar${filtro}`);
+}
+
+/** GET /api/disciplinas/{id}/radar/semanas: as semanas do seletor (RAD-RF-09). */
+export function listarSemanasDoRadar(disciplinaId: number): Promise<SemanaDoRadar[]> {
+  return requisitar<SemanaDoRadar[]>(`/api/disciplinas/${disciplinaId}/radar/semanas`);
+}
+
+/** POST /api/disciplinas/{id}/radar/exemplos-ocultos: esconde uma pergunta de exemplo. */
+export async function ocultarExemploDoRadar(disciplinaId: number, texto: string): Promise<void> {
+  await enviar<undefined>(`/api/disciplinas/${disciplinaId}/radar/exemplos-ocultos`, { texto });
+}

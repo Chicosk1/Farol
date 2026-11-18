@@ -23,7 +23,7 @@ FAROL_IA = {"ADAPTADOR": "ia.adaptadores.falso.ProvedorFalso"}
 FAROL_TUTOR_SIMILARIDADE_MINIMA = 0.3
 
 # Credencial fictícia do Google: os testes simulam a resposta dele (contas/testes/test_login.py).
-FAROL_DOMINIO_INSTITUCIONAL = "exemplo.edu.br"
+FAROL_DOMINIO_INSTITUCIONAL = ""  # o padrão: qualquer conta
 FAROL_GOOGLE_CLIENT_ID = "cliente-de-teste.apps.googleusercontent.com"
 FAROL_GOOGLE_SECRET = "segredo-de-teste"
 SOCIALACCOUNT_PROVIDERS = login_do_google(  # noqa: F405

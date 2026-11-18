@@ -365,6 +365,150 @@ paths:
                 items:
                   $ref: '#/components/schemas/MinhaDuvida'
           description: ''
+  /api/disciplinas/{disciplina_id}/questoes:
+    get:
+      operationId: disciplinas_questoes_retrieve
+      description: 'Só o professor da disciplina: inclui rascunhos e o gabarito (QUE-RF-04
+        e 06).'
+      summary: Questões da disciplina por status, com as contagens
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: material
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          enum:
+          - pendente
+          - publicada
+          - descartada
+          type: string
+          default: pendente
+          minLength: 1
+        description: |-
+          * `pendente` - Pendente
+          * `publicada` - Publicada
+          * `descartada` - Descartada
+      tags:
+      - questoes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestoesDaDisciplina'
+          description: ''
+  /api/disciplinas/{disciplina_id}/quizzes:
+    get:
+      operationId: disciplinas_quizzes_list
+      summary: Quizzes da disciplina, com o andamento do aluno
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - questoes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QuizDaAula'
+          description: ''
+  /api/disciplinas/{disciplina_id}/radar:
+    get:
+      operationId: disciplinas_radar_retrieve
+      description: Só o professor da disciplina. Sem semana, vale a atual (RAD-RF-02
+        a 09).
+      summary: O radar da turma numa semana
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: semana
+        schema:
+          type: string
+          format: date
+      tags:
+      - radar
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Radar'
+          description: ''
+  /api/disciplinas/{disciplina_id}/radar/exemplos-ocultos:
+    post:
+      operationId: disciplinas_radar_exemplos_ocultos_create
+      summary: Esconde uma pergunta de exemplo do radar
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - radar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExemploRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExemploRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExemploRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/disciplinas/{disciplina_id}/radar/semanas:
+    get:
+      operationId: disciplinas_radar_semanas_list
+      summary: As semanas que o seletor do radar oferece
+      parameters:
+      - in: path
+        name: disciplina_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - radar
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Semana'
+          description: ''
   /api/disciplinas/{disciplina_id}/tutor:
     get:
       operationId: disciplinas_tutor_retrieve
@@ -577,6 +721,47 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/eu/lembrete:
+    get:
+      operationId: eu_lembrete_retrieve
+      summary: O lembrete diário da revisão
+      tags:
+      - revisao
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lembrete'
+          description: ''
+    put:
+      operationId: eu_lembrete_update
+      summary: Liga ou desliga o lembrete diário, por e-mail
+      tags:
+      - revisao
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LembreteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LembreteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LembreteRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lembrete'
+          description: ''
   /api/eu/perfil-ativo:
     post:
       operationId: eu_perfil_ativo_create
@@ -603,6 +788,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Eu'
+          description: ''
+  /api/geracoes/{pedido_id}:
+    get:
+      operationId: geracoes_retrieve
+      summary: Andamento de um pedido de rascunhos
+      parameters:
+      - in: path
+        name: pedido_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - questoes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Geracao'
           description: ''
   /api/importacoes:
     post:
@@ -696,6 +902,82 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /api/materiais/{material_id}/geracoes:
+    post:
+      operationId: materiais_geracoes_create
+      description: 'Só o professor da disciplina. A geração roda em segundo plano:
+        acompanhe pelo id do pedido. Se já há um pedido em andamento para a aula,
+        devolve esse (QUE-RF-01).'
+      summary: Pede rascunhos de questões de uma aula
+      parameters:
+      - in: path
+        name: material_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - questoes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PedidoDeGeracaoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PedidoDeGeracaoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PedidoDeGeracaoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Geracao'
+          description: ''
+  /api/materiais/{material_id}/quiz:
+    get:
+      operationId: materiais_quiz_retrieve
+      description: Só as questões publicadas, sem o gabarito das que faltam responder
+        (QUE-RF-04).
+      summary: Quiz de uma aula para o aluno
+      parameters:
+      - in: path
+        name: material_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - questoes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quiz'
+          description: ''
+  /api/materiais/{material_id}/quiz/reiniciar:
+    post:
+      operationId: materiais_quiz_reiniciar_create
+      summary: Começa o quiz da aula de novo
+      parameters:
+      - in: path
+        name: material_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - questoes
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/materiais/{material_id}/versoes:
     post:
       operationId: materiais_versoes_create
@@ -839,6 +1121,156 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/questoes/{questao_id}:
+    patch:
+      operationId: questoes_partial_update
+      description: A edição só vale em pendentes (409 fora delas). Publicar só a partir
+        de pendentes, e nunca uma questão cujo material foi retirado (QUE-RF-05).
+      summary: Edita, aprova, descarta ou devolve uma questão para pendentes
+      parameters:
+      - in: path
+        name: questao_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - questoes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMudancaDeQuestaoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMudancaDeQuestaoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMudancaDeQuestaoRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestaoDoProfessor'
+          description: ''
+  /api/questoes/{questao_id}/respostas:
+    post:
+      operationId: questoes_respostas_create
+      description: Devolve o acerto, a correta, a justificativa e o trecho (QUE-RF-08
+        e 11).
+      summary: Responde a uma questão do quiz
+      parameters:
+      - in: path
+        name: questao_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - questoes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RespostaDoAlunoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RespostaDoAlunoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RespostaDoAlunoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetornoDaQuestao'
+          description: ''
+  /api/revisao/cartoes/{cartao_id}/avaliacao:
+    post:
+      operationId: revisao_cartoes_avaliacao_create
+      summary: Avalia um cartão como Difícil, Bom ou Fácil e diz quando ele volta
+      parameters:
+      - in: path
+        name: cartao_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - revisao
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvaliacaoDoCartaoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AvaliacaoDoCartaoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AvaliacaoDoCartaoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgendaDoCartao'
+          description: ''
+  /api/revisao/cartoes/{cartao_id}/resposta:
+    post:
+      operationId: revisao_cartoes_resposta_create
+      summary: Responde a um cartão da revisão
+      parameters:
+      - in: path
+        name: cartao_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - revisao
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RespostaAoCartaoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RespostaAoCartaoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RespostaAoCartaoRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetornoDoCartao'
+          description: ''
+  /api/revisao/hoje:
+    get:
+      operationId: revisao_hoje_retrieve
+      summary: A revisão do dia do aluno, com a sequência dos últimos 7 dias
+      tags:
+      - revisao
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevisaoDeHoje'
+          description: ''
   /api/sair:
     post:
       operationId: sair_create
@@ -892,6 +1324,33 @@ paths:
           description: ''
 components:
   schemas:
+    Acerto:
+      type: object
+      properties:
+        topico:
+          type: string
+        taxa:
+          type: integer
+        alunos:
+          type: integer
+        material:
+          type: integer
+      required:
+      - alunos
+      - material
+      - taxa
+      - topico
+    AgendaDoCartao:
+      type: object
+      properties:
+        proxima_data:
+          type: string
+          format: date
+        texto:
+          type: string
+      required:
+      - proxima_data
+      - texto
     AutorEnum:
       enum:
       - aluno
@@ -900,6 +1359,23 @@ components:
       description: |-
         * `aluno` - Aluno
         * `tutor` - Tutor
+    AvaliacaoDoCartaoEnum:
+      enum:
+      - dificil
+      - bom
+      - facil
+      type: string
+      description: |-
+        * `dificil` - Difícil
+        * `bom` - Bom
+        * `facil` - Fácil
+    AvaliacaoDoCartaoRequest:
+      type: object
+      properties:
+        avaliacao:
+          $ref: '#/components/schemas/AvaliacaoDoCartaoEnum'
+      required:
+      - avaliacao
     AvaliacaoEnum:
       enum:
       - util
@@ -939,6 +1415,31 @@ components:
     BlankEnum:
       enum:
       - ''
+    CartaoDaSessao:
+      type: object
+      description: 'O cartão antes da resposta: sem o gabarito (como no quiz).'
+      properties:
+        id:
+          type: integer
+        disciplina:
+          type: integer
+        disciplina_nome:
+          type: string
+        enunciado:
+          type: string
+        alternativas:
+          type: array
+          items:
+            type: string
+        topico:
+          type: string
+      required:
+      - alternativas
+      - disciplina
+      - disciplina_nome
+      - enunciado
+      - id
+      - topico
     CienciaDoAvisoRequest:
       type: object
       properties:
@@ -988,6 +1489,22 @@ components:
         politica:
           type: string
           title: Política de uso de IA
+        resumo_semanal:
+          type: boolean
+          title: Resumo semanal do radar por e-mail
+    Contagens:
+      type: object
+      properties:
+        pendente:
+          type: integer
+        publicada:
+          type: integer
+        descartada:
+          type: integer
+      required:
+      - descartada
+      - pendente
+      - publicada
     ConversaDoHistorico:
       type: object
       properties:
@@ -1005,6 +1522,17 @@ components:
       - disciplina_nome
       - mensagens
       - ultima_em
+    DiaDaSequencia:
+      type: object
+      properties:
+        data:
+          type: string
+          format: date
+        feita:
+          type: boolean
+      required:
+      - data
+      - feita
     Disciplina:
       type: object
       properties:
@@ -1180,6 +1708,15 @@ components:
       - perfil_ativo
       - perfis
       - precisa_ver_aviso
+    ExemploRequest:
+      type: object
+      properties:
+        texto:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - texto
     FormasDeEntrar:
       type: object
       description: Como se pode entrar neste ambiente, para a tela de entrada mostrar
@@ -1194,6 +1731,38 @@ components:
       required:
       - desenvolvimento
       - google
+    Geracao:
+      type: object
+      description: O andamento de um pedido de rascunhos.
+      properties:
+        id:
+          type: integer
+        material:
+          type: integer
+        quantidade:
+          type: integer
+        status:
+          $ref: '#/components/schemas/StatusDaGeracaoEnum'
+        geradas:
+          type: integer
+        descartadas:
+          type: integer
+        criado_em:
+          type: string
+          format: date-time
+        terminado_em:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - criado_em
+      - descartadas
+      - geradas
+      - id
+      - material
+      - quantidade
+      - status
+      - terminado_em
     Importacao:
       type: object
       properties:
@@ -1247,6 +1816,26 @@ components:
       required:
       - id
       - status
+    Indicadores:
+      type: object
+      properties:
+        alunos_ativos:
+          type: integer
+        matriculados:
+          type: integer
+        perguntas:
+          type: integer
+        acerto_medio:
+          type: integer
+          nullable: true
+        duvidas_sem_resposta:
+          type: integer
+      required:
+      - acerto_medio
+      - alunos_ativos
+      - duvidas_sem_resposta
+      - matriculados
+      - perguntas
     ItemDoAviso:
       type: object
       properties:
@@ -1274,6 +1863,28 @@ components:
       required:
       - id
       - inicio
+    Lembrete:
+      type: object
+      properties:
+        ligado:
+          type: boolean
+        horario:
+          type: string
+          format: time
+      required:
+      - horario
+      - ligado
+    LembreteRequest:
+      type: object
+      properties:
+        ligado:
+          type: boolean
+        horario:
+          type: string
+          format: time
+      required:
+      - horario
+      - ligado
     LimiteDiarioEnum:
       enum:
       - 20
@@ -1530,11 +2141,41 @@ components:
         politica:
           type: string
           title: Política de uso de IA
+        resumo_semanal:
+          type: boolean
+          title: Resumo semanal do radar por e-mail
+    PatchedMudancaDeQuestaoRequest:
+      type: object
+      description: Campos a editar (só em pendentes) e, ou, o novo status.
+      properties:
+        enunciado:
+          type: string
+        alternativas:
+          type: array
+          items:
+            type: string
+        correta:
+          type: integer
+        justificativa:
+          type: string
+        topico:
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusDaQuestaoEnum'
     PatchedMudancaDeStatusRequest:
       type: object
       properties:
         status:
           $ref: '#/components/schemas/MudancaDeStatusStatusEnum'
+    PedidoDeGeracaoRequest:
+      type: object
+      properties:
+        quantidade:
+          type: integer
+          maximum: 20
+          minimum: 5
+      required:
+      - quantidade
     PerfilEnum:
       enum:
       - aluno
@@ -1563,6 +2204,339 @@ components:
           type: string
       required:
       - texto_filtrado
+    QuestaoComAcerto:
+      type: object
+      properties:
+        enunciado:
+          type: string
+        taxa:
+          type: integer
+      required:
+      - enunciado
+      - taxa
+    QuestaoDoProfessor:
+      type: object
+      description: 'A questão completa, com o gabarito: só o professor da disciplina
+        a vê.'
+      properties:
+        id:
+          type: integer
+        material:
+          type: integer
+        aula_numero:
+          type: integer
+        aula_titulo:
+          type: string
+        enunciado:
+          type: string
+        alternativas:
+          type: array
+          items:
+            type: string
+        correta:
+          type: integer
+        justificativa:
+          type: string
+        topico:
+          type: string
+        trecho:
+          $ref: '#/components/schemas/TrechoDaQuestao'
+        status:
+          $ref: '#/components/schemas/StatusDaQuestaoEnum'
+        nova:
+          type: boolean
+        editada:
+          type: boolean
+        origem_retirada:
+          type: boolean
+          readOnly: true
+      required:
+      - alternativas
+      - aula_numero
+      - aula_titulo
+      - correta
+      - editada
+      - enunciado
+      - id
+      - justificativa
+      - material
+      - nova
+      - origem_retirada
+      - status
+      - topico
+      - trecho
+    QuestaoDoQuiz:
+      type: object
+      description: 'A questão como o aluno a vê antes de responder: sem o gabarito
+        nem a justificativa.'
+      properties:
+        id:
+          type: integer
+        enunciado:
+          type: string
+        alternativas:
+          type: array
+          items:
+            type: string
+        topico:
+          type: string
+      required:
+      - alternativas
+      - enunciado
+      - id
+      - topico
+    QuestoesDaDisciplina:
+      type: object
+      properties:
+        contagens:
+          $ref: '#/components/schemas/Contagens'
+        questoes:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestaoDoProfessor'
+      required:
+      - contagens
+      - questoes
+    Quiz:
+      type: object
+      properties:
+        material:
+          type: integer
+        disciplina:
+          type: integer
+        aula_numero:
+          type: integer
+        aula_titulo:
+          type: string
+        pausado:
+          type: boolean
+        questoes:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestaoDoQuiz'
+        respostas:
+          type: array
+          items:
+            $ref: '#/components/schemas/RetornoDaQuestao'
+        concluido:
+          type: boolean
+      required:
+      - aula_numero
+      - aula_titulo
+      - concluido
+      - disciplina
+      - material
+      - pausado
+      - questoes
+      - respostas
+    QuizDaAula:
+      type: object
+      properties:
+        material:
+          type: integer
+        aula_numero:
+          type: integer
+        aula_titulo:
+          type: string
+        questoes:
+          type: integer
+        respondidas:
+          type: integer
+        acertos:
+          type: integer
+      required:
+      - acertos
+      - aula_numero
+      - aula_titulo
+      - material
+      - questoes
+      - respondidas
+    Radar:
+      type: object
+      description: 'Só dados agregados: nenhum nome, e-mail, horário ou contagem por
+        aluno (RAD-RF-06).'
+      properties:
+        semana:
+          type: string
+          format: date
+        rotulo:
+          type: string
+        indicadores:
+          $ref: '#/components/schemas/Indicadores'
+        pouco_uso:
+          type: boolean
+        topicos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Topico'
+        acertos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Acerto'
+        questoes_com_menor_acerto:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestaoComAcerto'
+        sugestao:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sugestao'
+      required:
+      - acertos
+      - indicadores
+      - pouco_uso
+      - questoes_com_menor_acerto
+      - rotulo
+      - semana
+      - sugestao
+      - topicos
+    RespostaAoCartaoRequest:
+      type: object
+      properties:
+        alternativa:
+          type: integer
+          maximum: 3
+          minimum: 0
+      required:
+      - alternativa
+    RespostaDaSessao:
+      type: object
+      properties:
+        questao:
+          type: integer
+        alternativa:
+          type: integer
+        acerto:
+          type: boolean
+        correta:
+          type: integer
+        justificativa:
+          type: string
+        topico:
+          type: string
+        trecho:
+          $ref: '#/components/schemas/TrechoDaRevisao'
+        cartao:
+          type: integer
+        avaliacao:
+          type: string
+        volta:
+          type: string
+      required:
+      - acerto
+      - alternativa
+      - avaliacao
+      - cartao
+      - correta
+      - justificativa
+      - questao
+      - topico
+      - trecho
+      - volta
+    RespostaDoAlunoRequest:
+      type: object
+      properties:
+        alternativa:
+          type: integer
+          maximum: 3
+          minimum: 0
+      required:
+      - alternativa
+    RetornoDaQuestao:
+      type: object
+      description: 'O retorno depois de responder: só aqui o aluno recebe o gabarito
+        (QUE-RF-08).'
+      properties:
+        questao:
+          type: integer
+        alternativa:
+          type: integer
+        acerto:
+          type: boolean
+        correta:
+          type: integer
+        justificativa:
+          type: string
+        topico:
+          type: string
+        trecho:
+          $ref: '#/components/schemas/TrechoCitado'
+      required:
+      - acerto
+      - alternativa
+      - correta
+      - justificativa
+      - questao
+      - topico
+      - trecho
+    RetornoDoCartao:
+      type: object
+      properties:
+        questao:
+          type: integer
+        alternativa:
+          type: integer
+        acerto:
+          type: boolean
+        correta:
+          type: integer
+        justificativa:
+          type: string
+        topico:
+          type: string
+        trecho:
+          $ref: '#/components/schemas/TrechoDaRevisao'
+        cartao:
+          type: integer
+      required:
+      - acerto
+      - alternativa
+      - cartao
+      - correta
+      - justificativa
+      - questao
+      - topico
+      - trecho
+    RevisaoDeHoje:
+      type: object
+      properties:
+        data:
+          type: string
+          format: date
+        cartoes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartaoDaSessao'
+        respostas:
+          type: array
+          items:
+            $ref: '#/components/schemas/RespostaDaSessao'
+        concluida:
+          type: boolean
+        disciplinas:
+          type: array
+          items:
+            type: string
+        minutos:
+          type: integer
+        tem_questoes:
+          type: boolean
+        sequencia:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiaDaSequencia'
+        dias_seguidos:
+          type: integer
+      required:
+      - cartoes
+      - concluida
+      - data
+      - dias_seguidos
+      - disciplinas
+      - minutos
+      - respostas
+      - sequencia
+      - tem_questoes
     Saude:
       type: object
       properties:
@@ -1571,6 +2545,30 @@ components:
           description: Sempre "ok" quando a API está no ar.
       required:
       - status
+    Semana:
+      type: object
+      properties:
+        semana:
+          type: string
+          format: date
+        rotulo:
+          type: string
+        atual:
+          type: boolean
+      required:
+      - atual
+      - rotulo
+      - semana
+    StatusDaGeracaoEnum:
+      enum:
+      - processando
+      - pronto
+      - erro
+      type: string
+      description: |-
+        * `processando` - Gerando
+        * `pronto` - Pronto
+        * `erro` - Erro
     StatusDaImportacaoEnum:
       enum:
       - pendente
@@ -1583,6 +2581,16 @@ components:
         * `processando` - Processando
         * `concluida` - Concluída
         * `recusada` - Recusada
+    StatusDaQuestaoEnum:
+      enum:
+      - pendente
+      - publicada
+      - descartada
+      type: string
+      description: |-
+        * `pendente` - Pendente
+        * `publicada` - Publicada
+        * `descartada` - Descartada
     StatusDoMaterialEnum:
       enum:
       - processando
@@ -1599,6 +2607,64 @@ components:
         * `erro` - Erro, tente de novo
         * `retirado` - Retirado
         * `substituido` - Substituído pela versão nova
+    Sugestao:
+      type: object
+      properties:
+        nome:
+          type: string
+        material:
+          type: integer
+      required:
+      - material
+      - nome
+    Topico:
+      type: object
+      properties:
+        nome:
+          type: string
+        alunos:
+          type: integer
+        exemplos:
+          type: array
+          items:
+            type: string
+        material:
+          type: integer
+      required:
+      - alunos
+      - exemplos
+      - material
+      - nome
+    TrechoCitado:
+      type: object
+      properties:
+        id:
+          type: integer
+        rotulo:
+          type: string
+      required:
+      - id
+      - rotulo
+    TrechoDaQuestao:
+      type: object
+      properties:
+        id:
+          type: integer
+        pagina:
+          type: integer
+      required:
+      - id
+      - pagina
+    TrechoDaRevisao:
+      type: object
+      properties:
+        id:
+          type: integer
+        rotulo:
+          type: string
+      required:
+      - id
+      - rotulo
     TrechoParaAbrir:
       type: object
       properties:

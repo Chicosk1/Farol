@@ -51,3 +51,15 @@ def responder(
     if not pergunta.strip():
         raise ValueError("A pergunta está vazia.")
     return _provedor().responder(regras, trechos, pergunta)
+
+
+def gerar_questoes(regras: str, trechos: list[TrechoNumerado], quantidade: int) -> str:
+    """O JSON de questões que o modelo gerou a partir dos trechos de uma aula (QUE-RF-02).
+
+    Vem sem validação: o módulo questoes confere o formato e o trecho de cada questão.
+    """
+    if not trechos:
+        raise ValueError("Sem trechos do material, não há do que gerar questões.")
+    if quantidade < 1:
+        raise ValueError("A quantidade de questões precisa ser positiva.")
+    return _provedor().gerar_questoes(regras, trechos, quantidade)

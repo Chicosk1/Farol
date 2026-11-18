@@ -581,3 +581,22 @@ def conjunto_de_avaliacao() -> Conjunto:
     popular_demo.
     """
     return carregar()
+
+
+def registros_de_uso(disciplina_id: int, inicio, fim) -> list[dict]:
+    """As perguntas do período, só com o pseudônimo, para o radar (RAD-RNF-02)."""
+    return [
+        {"pseudonimo": p, "pergunta": texto, "trechos": trechos}
+        for p, texto, trechos in RegistroUso.objects.filter(
+            disciplina_id=disciplina_id, criado_em__date__range=(inicio, fim)
+        ).values_list("aluno_pseudonimo", "pergunta_filtrada", "trechos")
+    ]
+
+
+def resumo_semanal_desligado() -> set[int]:
+    """As disciplinas cujo professor desligou o resumo do radar por e-mail (RAD-RF-10)."""
+    return set(
+        ConfiguracaoTutor.objects.filter(resumo_semanal=False).values_list(
+            "disciplina_id", flat=True
+        )
+    )

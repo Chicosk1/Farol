@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState, type FormEvent } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 
 import {
   avaliarResposta,
@@ -374,7 +374,8 @@ export function PaginaTutor() {
   );
   const disciplina = useDisciplina(disciplinaId).data;
   const [novas, setNovas] = useState<MensagemNaTela[]>([]);
-  const [pergunta, setPergunta] = useState('');
+  const [parametros] = useSearchParams();
+  const [pergunta, setPergunta] = useState(parametros.get('pergunta') ?? '');
   const [erro, setErro] = useState('');
   const [anuncio, setAnuncio] = useState('');
   const [usadasNestaVisita, setUsadasNestaVisita] = useState(0);

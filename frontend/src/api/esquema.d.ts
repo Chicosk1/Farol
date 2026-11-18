@@ -210,6 +210,97 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/disciplinas/{disciplina_id}/questoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Questões da disciplina por status, com as contagens
+         * @description Só o professor da disciplina: inclui rascunhos e o gabarito (QUE-RF-04 e 06).
+         */
+        get: operations["disciplinas_questoes_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/disciplinas/{disciplina_id}/quizzes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Quizzes da disciplina, com o andamento do aluno */
+        get: operations["disciplinas_quizzes_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/disciplinas/{disciplina_id}/radar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * O radar da turma numa semana
+         * @description Só o professor da disciplina. Sem semana, vale a atual (RAD-RF-02 a 09).
+         */
+        get: operations["disciplinas_radar_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/disciplinas/{disciplina_id}/radar/exemplos-ocultos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Esconde uma pergunta de exemplo do radar */
+        post: operations["disciplinas_radar_exemplos_ocultos_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/disciplinas/{disciplina_id}/radar/semanas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** As semanas que o seletor do radar oferece */
+        get: operations["disciplinas_radar_semanas_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/disciplinas/{disciplina_id}/tutor": {
         parameters: {
             query?: never;
@@ -350,6 +441,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/eu/lembrete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** O lembrete diário da revisão */
+        get: operations["eu_lembrete_retrieve"];
+        /** Liga ou desliga o lembrete diário, por e-mail */
+        put: operations["eu_lembrete_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/eu/perfil-ativo": {
         parameters: {
             query?: never;
@@ -361,6 +470,23 @@ export interface paths {
         put?: never;
         /** Troca o perfil em uso, sem sair */
         post: operations["eu_perfil_ativo_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/geracoes/{pedido_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Andamento de um pedido de rascunhos */
+        get: operations["geracoes_retrieve"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -435,6 +561,63 @@ export interface paths {
         get: operations["materiais_arquivo_retrieve"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/materiais/{material_id}/geracoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Pede rascunhos de questões de uma aula
+         * @description Só o professor da disciplina. A geração roda em segundo plano: acompanhe pelo id do pedido. Se já há um pedido em andamento para a aula, devolve esse (QUE-RF-01).
+         */
+        post: operations["materiais_geracoes_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/materiais/{material_id}/quiz": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Quiz de uma aula para o aluno
+         * @description Só as questões publicadas, sem o gabarito das que faltam responder (QUE-RF-04).
+         */
+        get: operations["materiais_quiz_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/materiais/{material_id}/quiz/reiniciar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Começa o quiz da aula de novo */
+        post: operations["materiais_quiz_reiniciar_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -549,6 +732,97 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/questoes/{questao_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edita, aprova, descarta ou devolve uma questão para pendentes
+         * @description A edição só vale em pendentes (409 fora delas). Publicar só a partir de pendentes, e nunca uma questão cujo material foi retirado (QUE-RF-05).
+         */
+        patch: operations["questoes_partial_update"];
+        trace?: never;
+    };
+    "/api/questoes/{questao_id}/respostas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Responde a uma questão do quiz
+         * @description Devolve o acerto, a correta, a justificativa e o trecho (QUE-RF-08 e 11).
+         */
+        post: operations["questoes_respostas_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/revisao/cartoes/{cartao_id}/avaliacao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Avalia um cartão como Difícil, Bom ou Fácil e diz quando ele volta */
+        post: operations["revisao_cartoes_avaliacao_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/revisao/cartoes/{cartao_id}/resposta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Responde a um cartão da revisão */
+        post: operations["revisao_cartoes_resposta_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/revisao/hoje": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A revisão do dia do aluno, com a sequência dos últimos 7 dias */
+        get: operations["revisao_hoje_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sair": {
         parameters: {
             query?: never;
@@ -607,12 +881,33 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Acerto: {
+            topico: string;
+            taxa: number;
+            alunos: number;
+            material: number;
+        };
+        AgendaDoCartao: {
+            /** Format: date */
+            proxima_data: string;
+            texto: string;
+        };
         /**
          * @description * `aluno` - Aluno
          *     * `tutor` - Tutor
          * @enum {string}
          */
         AutorEnum: "aluno" | "tutor";
+        /**
+         * @description * `dificil` - Difícil
+         *     * `bom` - Bom
+         *     * `facil` - Fácil
+         * @enum {string}
+         */
+        AvaliacaoDoCartaoEnum: "dificil" | "bom" | "facil";
+        AvaliacaoDoCartaoRequest: {
+            avaliacao: components["schemas"]["AvaliacaoDoCartaoEnum"];
+        };
         /**
          * @description * `` - Sem avaliação
          *     * `util` - Útil
@@ -632,6 +927,15 @@ export interface components {
         };
         /** @enum {unknown} */
         BlankEnum: "";
+        /** @description O cartão antes da resposta: sem o gabarito (como no quiz). */
+        CartaoDaSessao: {
+            id: number;
+            disciplina: number;
+            disciplina_nome: string;
+            enunciado: string;
+            alternativas: string[];
+            topico: string;
+        };
         CienciaDoAvisoRequest: {
             /** @description A versão do aviso que a pessoa leu. */
             versao: string;
@@ -650,6 +954,13 @@ export interface components {
             limite_diario?: components["schemas"]["LimiteDiarioEnum"];
             /** Política de uso de IA */
             politica?: string;
+            /** Resumo semanal do radar por e-mail */
+            resumo_semanal?: boolean;
+        };
+        Contagens: {
+            pendente: number;
+            publicada: number;
+            descartada: number;
         };
         ConversaDoHistorico: {
             disciplina_id: number;
@@ -657,6 +968,11 @@ export interface components {
             mensagens: number;
             /** Format: date-time */
             ultima_em: string;
+        };
+        DiaDaSequencia: {
+            /** Format: date */
+            data: string;
+            feita: boolean;
         };
         Disciplina: {
             id: number;
@@ -732,12 +1048,28 @@ export interface components {
             /** @description Se o aluno ainda precisa ler a versão atual do aviso de privacidade. */
             precisa_ver_aviso: boolean;
         };
+        ExemploRequest: {
+            texto: string;
+        };
         /** @description Como se pode entrar neste ambiente, para a tela de entrada mostrar só os botões que valem. */
         FormasDeEntrar: {
             /** @description Se o login com o Google está configurado. */
             google: boolean;
             /** @description Se o atalho de desenvolvimento existe (nunca em produção). */
             desenvolvimento: boolean;
+        };
+        /** @description O andamento de um pedido de rascunhos. */
+        Geracao: {
+            id: number;
+            material: number;
+            quantidade: number;
+            status: components["schemas"]["StatusDaGeracaoEnum"];
+            geradas: number;
+            descartadas: number;
+            /** Format: date-time */
+            criado_em: string;
+            /** Format: date-time */
+            terminado_em: string | null;
         };
         Importacao: {
             readonly id: number;
@@ -760,6 +1092,13 @@ export interface components {
             id: number;
             status: components["schemas"]["StatusDaImportacaoEnum"];
         };
+        Indicadores: {
+            alunos_ativos: number;
+            matriculados: number;
+            perguntas: number;
+            acerto_medio: number | null;
+            duvidas_sem_resposta: number;
+        };
         ItemDoAviso: {
             titulo: string;
             texto: string;
@@ -773,6 +1112,16 @@ export interface components {
             inicio: string;
             /** Format: date-time */
             fim?: string | null;
+        };
+        Lembrete: {
+            ligado: boolean;
+            /** Format: time */
+            horario: string;
+        };
+        LembreteRequest: {
+            ligado: boolean;
+            /** Format: time */
+            horario: string;
         };
         /**
          * @description * `20` - 20 perguntas por dia
@@ -893,9 +1242,23 @@ export interface components {
             limite_diario?: components["schemas"]["LimiteDiarioEnum"];
             /** Política de uso de IA */
             politica?: string;
+            /** Resumo semanal do radar por e-mail */
+            resumo_semanal?: boolean;
+        };
+        /** @description Campos a editar (só em pendentes) e, ou, o novo status. */
+        PatchedMudancaDeQuestaoRequest: {
+            enunciado?: string;
+            alternativas?: string[];
+            correta?: number;
+            justificativa?: string;
+            topico?: string;
+            status?: components["schemas"]["StatusDaQuestaoEnum"];
         };
         PatchedMudancaDeStatusRequest: {
             status?: components["schemas"]["MudancaDeStatusStatusEnum"];
+        };
+        PedidoDeGeracaoRequest: {
+            quantidade: number;
         };
         /**
          * @description * `aluno` - Aluno
@@ -911,10 +1274,135 @@ export interface components {
         Previa: {
             texto_filtrado: string;
         };
+        QuestaoComAcerto: {
+            enunciado: string;
+            taxa: number;
+        };
+        /** @description A questão completa, com o gabarito: só o professor da disciplina a vê. */
+        QuestaoDoProfessor: {
+            id: number;
+            material: number;
+            aula_numero: number;
+            aula_titulo: string;
+            enunciado: string;
+            alternativas: string[];
+            correta: number;
+            justificativa: string;
+            topico: string;
+            trecho: components["schemas"]["TrechoDaQuestao"];
+            status: components["schemas"]["StatusDaQuestaoEnum"];
+            nova: boolean;
+            editada: boolean;
+            readonly origem_retirada: boolean;
+        };
+        /** @description A questão como o aluno a vê antes de responder: sem o gabarito nem a justificativa. */
+        QuestaoDoQuiz: {
+            id: number;
+            enunciado: string;
+            alternativas: string[];
+            topico: string;
+        };
+        QuestoesDaDisciplina: {
+            contagens: components["schemas"]["Contagens"];
+            questoes: components["schemas"]["QuestaoDoProfessor"][];
+        };
+        Quiz: {
+            material: number;
+            disciplina: number;
+            aula_numero: number;
+            aula_titulo: string;
+            pausado: boolean;
+            questoes: components["schemas"]["QuestaoDoQuiz"][];
+            respostas: components["schemas"]["RetornoDaQuestao"][];
+            concluido: boolean;
+        };
+        QuizDaAula: {
+            material: number;
+            aula_numero: number;
+            aula_titulo: string;
+            questoes: number;
+            respondidas: number;
+            acertos: number;
+        };
+        /** @description Só dados agregados: nenhum nome, e-mail, horário ou contagem por aluno (RAD-RF-06). */
+        Radar: {
+            /** Format: date */
+            semana: string;
+            rotulo: string;
+            indicadores: components["schemas"]["Indicadores"];
+            pouco_uso: boolean;
+            topicos: components["schemas"]["Topico"][];
+            acertos: components["schemas"]["Acerto"][];
+            questoes_com_menor_acerto: components["schemas"]["QuestaoComAcerto"][];
+            sugestao: components["schemas"]["Sugestao"][];
+        };
+        RespostaAoCartaoRequest: {
+            alternativa: number;
+        };
+        RespostaDaSessao: {
+            questao: number;
+            alternativa: number;
+            acerto: boolean;
+            correta: number;
+            justificativa: string;
+            topico: string;
+            trecho: components["schemas"]["TrechoDaRevisao"];
+            cartao: number;
+            avaliacao: string;
+            volta: string;
+        };
+        RespostaDoAlunoRequest: {
+            alternativa: number;
+        };
+        /** @description O retorno depois de responder: só aqui o aluno recebe o gabarito (QUE-RF-08). */
+        RetornoDaQuestao: {
+            questao: number;
+            alternativa: number;
+            acerto: boolean;
+            correta: number;
+            justificativa: string;
+            topico: string;
+            trecho: components["schemas"]["TrechoCitado"];
+        };
+        RetornoDoCartao: {
+            questao: number;
+            alternativa: number;
+            acerto: boolean;
+            correta: number;
+            justificativa: string;
+            topico: string;
+            trecho: components["schemas"]["TrechoDaRevisao"];
+            cartao: number;
+        };
+        RevisaoDeHoje: {
+            /** Format: date */
+            data: string;
+            cartoes: components["schemas"]["CartaoDaSessao"][];
+            respostas: components["schemas"]["RespostaDaSessao"][];
+            concluida: boolean;
+            disciplinas: string[];
+            minutos: number;
+            tem_questoes: boolean;
+            sequencia: components["schemas"]["DiaDaSequencia"][];
+            dias_seguidos: number;
+        };
         Saude: {
             /** @description Sempre "ok" quando a API está no ar. */
             status: string;
         };
+        Semana: {
+            /** Format: date */
+            semana: string;
+            rotulo: string;
+            atual: boolean;
+        };
+        /**
+         * @description * `processando` - Gerando
+         *     * `pronto` - Pronto
+         *     * `erro` - Erro
+         * @enum {string}
+         */
+        StatusDaGeracaoEnum: "processando" | "pronto" | "erro";
         /**
          * @description * `pendente` - Pendente
          *     * `processando` - Processando
@@ -923,6 +1411,13 @@ export interface components {
          * @enum {string}
          */
         StatusDaImportacaoEnum: "pendente" | "processando" | "concluida" | "recusada";
+        /**
+         * @description * `pendente` - Pendente
+         *     * `publicada` - Publicada
+         *     * `descartada` - Descartada
+         * @enum {string}
+         */
+        StatusDaQuestaoEnum: "pendente" | "publicada" | "descartada";
         /**
          * @description * `processando` - Processando
          *     * `pronto` - Pronto para o tutor
@@ -933,6 +1428,28 @@ export interface components {
          * @enum {string}
          */
         StatusDoMaterialEnum: "processando" | "pronto" | "atencao" | "erro" | "retirado" | "substituido";
+        Sugestao: {
+            nome: string;
+            material: number;
+        };
+        Topico: {
+            nome: string;
+            alunos: number;
+            exemplos: string[];
+            material: number;
+        };
+        TrechoCitado: {
+            id: number;
+            rotulo: string;
+        };
+        TrechoDaQuestao: {
+            id: number;
+            pagina: number;
+        };
+        TrechoDaRevisao: {
+            id: number;
+            rotulo: string;
+        };
         TrechoParaAbrir: {
             material_id: number;
             aula_numero: number;
@@ -1280,6 +1797,126 @@ export interface operations {
             };
         };
     };
+    disciplinas_questoes_retrieve: {
+        parameters: {
+            query?: {
+                material?: number;
+                /**
+                 * @description * `pendente` - Pendente
+                 *     * `publicada` - Publicada
+                 *     * `descartada` - Descartada
+                 */
+                status?: "pendente" | "publicada" | "descartada";
+            };
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestoesDaDisciplina"];
+                };
+            };
+        };
+    };
+    disciplinas_quizzes_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuizDaAula"][];
+                };
+            };
+        };
+    };
+    disciplinas_radar_retrieve: {
+        parameters: {
+            query?: {
+                semana?: string;
+            };
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Radar"];
+                };
+            };
+        };
+    };
+    disciplinas_radar_exemplos_ocultos_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExemploRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ExemploRequest"];
+                "multipart/form-data": components["schemas"]["ExemploRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    disciplinas_radar_semanas_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                disciplina_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Semana"][];
+                };
+            };
+        };
+    };
     disciplinas_tutor_retrieve: {
         parameters: {
             query?: never;
@@ -1498,6 +2135,50 @@ export interface operations {
             };
         };
     };
+    eu_lembrete_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Lembrete"];
+                };
+            };
+        };
+    };
+    eu_lembrete_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LembreteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["LembreteRequest"];
+                "multipart/form-data": components["schemas"]["LembreteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Lembrete"];
+                };
+            };
+        };
+    };
     eu_perfil_ativo_create: {
         parameters: {
             query?: never;
@@ -1519,6 +2200,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Eu"];
+                };
+            };
+        };
+    };
+    geracoes_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pedido_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Geracao"];
                 };
             };
         };
@@ -1608,6 +2310,74 @@ export interface operations {
                 content: {
                     "application/pdf": string;
                 };
+            };
+        };
+    };
+    materiais_geracoes_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                material_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PedidoDeGeracaoRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PedidoDeGeracaoRequest"];
+                "multipart/form-data": components["schemas"]["PedidoDeGeracaoRequest"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Geracao"];
+                };
+            };
+        };
+    };
+    materiais_quiz_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                material_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Quiz"];
+                };
+            };
+        };
+    };
+    materiais_quiz_reiniciar_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                material_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -1775,6 +2545,133 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    questoes_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                questao_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedMudancaDeQuestaoRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedMudancaDeQuestaoRequest"];
+                "multipart/form-data": components["schemas"]["PatchedMudancaDeQuestaoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestaoDoProfessor"];
+                };
+            };
+        };
+    };
+    questoes_respostas_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                questao_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RespostaDoAlunoRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RespostaDoAlunoRequest"];
+                "multipart/form-data": components["schemas"]["RespostaDoAlunoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RetornoDaQuestao"];
+                };
+            };
+        };
+    };
+    revisao_cartoes_avaliacao_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cartao_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AvaliacaoDoCartaoRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AvaliacaoDoCartaoRequest"];
+                "multipart/form-data": components["schemas"]["AvaliacaoDoCartaoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaDoCartao"];
+                };
+            };
+        };
+    };
+    revisao_cartoes_resposta_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cartao_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RespostaAoCartaoRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["RespostaAoCartaoRequest"];
+                "multipart/form-data": components["schemas"]["RespostaAoCartaoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RetornoDoCartao"];
+                };
+            };
+        };
+    };
+    revisao_hoje_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RevisaoDeHoje"];
+                };
             };
         };
     };

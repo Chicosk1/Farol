@@ -362,6 +362,54 @@ def buscar_trechos(
     ]
 
 
+@dataclass(frozen=True)
+class ResumoDoMaterial:
+    id: int
+    disciplina_id: int
+    aula_numero: int
+    aula_titulo: str
+    pronto: bool
+
+
+def resumo_do_material(material_id: int) -> ResumoDoMaterial:
+    """A aula e o status de um material, para os outros módulos. Levanta MaterialNaoEncontrado."""
+    try:
+        material = Material.objects.get(pk=material_id)
+    except Material.DoesNotExist:
+        raise MaterialNaoEncontrado(material_id) from None
+    return ResumoDoMaterial(
+        id=material.id,
+        disciplina_id=material.disciplina_id,
+        aula_numero=material.aula_numero,
+        aula_titulo=material.aula_titulo,
+        pronto=material.status == Material.Status.PRONTO,
+    )
+
+
+@dataclass(frozen=True)
+class TrechoDaAula:
+    id: int
+    pagina: int
+    texto: str
+
+
+def trechos_da_aula(material_id: int, limite: int) -> list[TrechoDaAula]:
+    """Até `limite` trechos de um material pronto, espalhados pela aula toda, na ordem das páginas.
+
+    Material que não está pronto não tem trechos: nada sai de um material que o professor não
+    publicou ou retirou (princípio I).
+    """
+    trechos = list(
+        Trecho.objects.filter(material_id=material_id, material__status=Material.Status.PRONTO)
+        .order_by("pagina", "ordem", "id")
+        .values_list("id", "pagina", "texto")
+    )
+    if len(trechos) > limite:
+        passo = len(trechos) / limite
+        trechos = [trechos[int(i * passo)] for i in range(limite)]
+    return [TrechoDaAula(*trecho) for trecho in trechos]
+
+
 def versao_atual(material: Material) -> Material:
     """A versão em uso de um material substituído; a citação antiga abre a nova (spec 002)."""
     vistos = {material.pk}
@@ -454,3 +502,25 @@ def trecho_para_abrir(pessoa, perfil: str | None, trecho_id: int) -> TrechoParaA
         fim=fim,
         atualizado=atual.id != trecho.material_id,
     )
+
+
+@dataclass(frozen=True)
+class AulaDoTrecho:
+    id: int
+    aula_numero: int
+    aula_titulo: str
+
+
+def aulas_dos_trechos(trecho_ids: set[int]) -> dict[int, AulaDoTrecho]:
+    """De que aula é cada trecho, para agrupar as perguntas no radar."""
+    return {
+        t.id: AulaDoTrecho(t.material_id, t.material.aula_numero, t.material.aula_titulo)
+        for t in Trecho.objects.filter(id__in=trecho_ids).select_related("material")
+    }
+
+
+def aulas_dos_materiais(material_ids: set[int]) -> dict[int, AulaDoTrecho]:
+    return {
+        m.id: AulaDoTrecho(m.id, m.aula_numero, m.aula_titulo)
+        for m in Material.objects.filter(id__in=material_ids)
+    }

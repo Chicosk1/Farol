@@ -219,3 +219,13 @@ def _aplicar_importacao(aceitas: list[leitura_csv.Linha], encerrar_ausentes: boo
                 .update(situacao=Matricula.Situacao.ENCERRADA, atualizada_em=timezone.now())
             )
     return encerradas
+
+
+def matriculados(disciplina_id: int) -> int:
+    return Matricula.objects.filter(
+        disciplina_id=disciplina_id, situacao=Matricula.Situacao.ATIVA
+    ).count()
+
+
+def ids_de_todas() -> list[int]:
+    return list(Disciplina.objects.order_by("id").values_list("id", flat=True))

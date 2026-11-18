@@ -6,6 +6,7 @@ busca por proximidade de verdade, sem chamar um modelo.
 """
 
 import hashlib
+import json
 import math
 import re
 import unicodedata
@@ -104,4 +105,60 @@ def _responder(
 
 ProvedorFalso.responder = lambda self, regras, trechos, pergunta: _responder(  # type: ignore[attr-defined]
     regras, trechos, pergunta
+)
+
+
+# Alternativas erradas de reserva, quando a aula tem poucos trechos para servir de distrator.
+DISTRATORES = (
+    "O material da aula não trata deste assunto.",
+    "Todas as outras alternativas estão corretas.",
+    "Isso só vale quando os dados já estão ordenados.",
+)
+TAMANHO_DA_ALTERNATIVA = 300
+
+
+def _alternativa(frase: str) -> str:
+    if len(frase) <= TAMANHO_DA_ALTERNATIVA:
+        return frase
+    return frase[: TAMANHO_DA_ALTERNATIVA - 1].rstrip() + "…"
+
+
+def _topico(frase: str) -> str:
+    """As três primeiras palavras da frase: basta para agrupar as questões no falso."""
+    palavras = re.findall(r"[^\W_]+", frase)
+    return " ".join(palavras[:3]).capitalize() or "Material da aula"
+
+
+def _gerar_questoes(trechos: list[TrechoNumerado], quantidade: int) -> str:
+    """Questões montadas só com frases dos trechos: a correta sai do trecho citado, e as erradas,
+    dos outros trechos ou da reserva. O resultado é sempre o mesmo para a mesma entrada."""
+    principais = []
+    for trecho in trechos:
+        frases = _frases(trecho.texto) or [trecho.texto.strip()]
+        principais.append((trecho, _alternativa(frases[0])))
+    questoes = []
+    for i in range(quantidade):
+        trecho, certa = principais[i % len(principais)]
+        erradas: list[str] = []
+        for candidata in [f for _, f in principais] + list(DISTRATORES):
+            if candidata.casefold() != certa.casefold() and candidata not in erradas:
+                erradas.append(candidata)
+        erradas = erradas[:3]
+        correta = (trecho.numero + i) % 4
+        alternativas = erradas[:correta] + [certa] + erradas[correta:]
+        questoes.append(
+            {
+                "enunciado": f"Questão {i + 1}: de acordo com a aula, qual afirmação está correta?",
+                "alternativas": alternativas,
+                "correta": correta,
+                "justificativa": f"O trecho [{trecho.numero}] do material diz: {certa}",
+                "topico": _topico(certa),
+                "trecho": trecho.numero,
+            }
+        )
+    return json.dumps({"questoes": questoes}, ensure_ascii=False)
+
+
+ProvedorFalso.gerar_questoes = lambda self, regras, trechos, quantidade: _gerar_questoes(  # type: ignore[attr-defined]
+    trechos, quantidade
 )

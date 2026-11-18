@@ -170,18 +170,18 @@ Para voltar ao adaptador falso, comente a linha no `.env` e rode `docker compose
 
 ### Configurar o login com o Google
 
-O login institucional é o Google Workspace (ACE-RF-01), pelo django-allauth. No desenvolvimento ele é opcional: sem a credencial, a tela de entrada mostra só os atalhos de desenvolvimento. Para testar com uma conta de verdade, sem custo:
+O login é com o Google (ACE-RF-01), pelo django-allauth: entra qualquer conta Google de e-mail verificado. No desenvolvimento ele é opcional: sem a credencial, a tela de entrada mostra só os atalhos de desenvolvimento. Para testar com uma conta de verdade, sem custo:
 
-1. No [Google Cloud Console](https://console.cloud.google.com/), crie um projeto e configure a tela de consentimento OAuth. Para uso só dentro da instituição, escolha o tipo "Interno".
+1. No [Google Cloud Console](https://console.cloud.google.com/), crie um projeto e configure a tela de consentimento OAuth com o tipo "Externo", para aceitar qualquer conta Google. Enquanto o app estiver em "Teste", só entram as contas listadas em "Usuários de teste"; para abrir a todos, publique o app. O tipo "Interno" só serve a quem restringe ao domínio de um Google Workspace.
 2. Em "Credenciais", crie um "ID do cliente OAuth" do tipo "Aplicativo da Web", com:
    - origem JavaScript autorizada `http://localhost:5173`;
    - URI de redirecionamento autorizado `http://localhost:5173/contas/google/login/callback/`.
 3. No `.env`, preencha:
    - `FAROL_GOOGLE_CLIENT_ID` e `FAROL_GOOGLE_SECRET` com a credencial criada;
-   - `FAROL_DOMINIO_INSTITUCIONAL` com o domínio do Workspace, por exemplo `unimater.edu.br`.
+   - `FAROL_DOMINIO_INSTITUCIONAL` só se quiser aceitar apenas um domínio de Google Workspace, por exemplo `unimater.edu.br`. Vazio, entra qualquer conta.
 4. Rode `docker compose up -d` para recriar os containers. A tela de entrada passa a mostrar "Entrar com o Google".
 
-Só entra um e-mail verificado do domínio, de conta do Workspace. Contas pessoais, inclusive as criadas com o e-mail da instituição, voltam para a entrada com "Use a sua conta institucional". Quem entra pela primeira vez sem ter sido importado vira aluno, sem disciplinas. Em produção, as três variáveis são obrigatórias, e o endereço de redirecionamento é o do servidor (`https://<endereço>/contas/google/login/callback/`).
+Uma conta com o e-mail ainda não verificado volta para a entrada com "Confirme o seu e-mail no Google". Com o domínio preenchido, só entra um e-mail verificado do domínio, de conta do Workspace, e as outras voltam com "Use a sua conta institucional". Quem entra pela primeira vez sem ter sido importado vira aluno, sem disciplinas: o professor só aparece para quem tem matrícula, importada pelo e-mail da conta Google. Em produção, a credencial é obrigatória, e o endereço de redirecionamento é o do servidor (`https://<endereço>/contas/google/login/callback/`).
 
 ## Problemas comuns
 

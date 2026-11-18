@@ -163,6 +163,7 @@ describe('login com o Google e troca de perfil (ACE-T23)', () => {
   });
 
   it.each([
+    ['conta_nao_verificada', 'Confirme o seu e-mail no Google'],
     ['conta_externa', 'Use a sua conta institucional.'],
     ['conta_desativada', 'A sua conta está desativada no Farol.'],
     ['falha', 'Não foi possível entrar com o Google.'],

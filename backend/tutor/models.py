@@ -24,6 +24,7 @@ class ConfiguracaoTutor(models.Model):
     modo_pistas = models.BooleanField("modo pistas", default=True)
     limite_diario = models.PositiveSmallIntegerField("limite diário", choices=LIMITES, default=40)
     politica = models.TextField("política de uso de IA", blank=True)
+    resumo_semanal = models.BooleanField("resumo semanal do radar por e-mail", default=True)
 
     class Meta:
         verbose_name = "configuração do tutor"
@@ -153,6 +154,9 @@ class Citacao(models.Model):
     def rotulo(self) -> str:
         """O texto da citação, como o aluno a vê: "Aula 4, p. 5"."""
         return f"Aula {self.trecho.material.aula_numero}, p. {self.trecho.pagina}"
+
+
+AvaliacaoDaMensagem = Mensagem.Avaliacao  # nome do enum no contrato (ENUM_NAME_OVERRIDES)
 
 
 class RegistroUso(models.Model):

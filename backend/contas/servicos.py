@@ -23,25 +23,32 @@ def pessoa_ativa_por_email(email: str) -> Pessoa:
         raise PessoaNaoEncontrada(email) from None
 
 
+class ContaNaoVerificada(PermissionError):
+    """O Google não confirmou que o e-mail é da pessoa (ACE-RF-01)."""
+
+
 class ContaExterna(PermissionError):
-    """A conta do Google não é da instituição (ACE-RF-01)."""
+    """Com a restrição de domínio ligada, a conta não é do domínio configurado (ACE-RF-01)."""
 
 
-def conferir_conta_institucional(
+def conferir_conta_do_google(
     email: str, email_verificado: bool, dominio_do_google: str | None
 ) -> None:
-    """Só aceita um e-mail verificado do domínio institucional, de uma conta do Workspace.
+    """Aceita qualquer conta Google de e-mail verificado (ACE-RF-01).
 
-    O `hd` que o Google informa é o domínio do Workspace da conta. Sem ele, a conta é pessoal,
-    mesmo que tenha sido criada com o e-mail da instituição.
+    Com FAROL_DOMINIO_INSTITUCIONAL definido, só aceita um e-mail desse domínio, de uma conta do
+    Workspace: o `hd` que o Google informa é o domínio do Workspace da conta. Sem ele, a conta é
+    pessoal, mesmo que tenha sido criada com o e-mail da instituição.
     """
-    dominio = settings.FAROL_DOMINIO_INSTITUCIONAL.lower()
-    institucional = (
-        email_verificado
-        and normalizar_email(email).endswith(f"@{dominio}")
-        and (dominio_do_google or "").lower() == dominio
+    if not email_verificado or not email:
+        raise ContaNaoVerificada(email)
+    dominio = settings.FAROL_DOMINIO_INSTITUCIONAL.strip().lower()
+    if not dominio:
+        return
+    do_dominio = normalizar_email(email).endswith(f"@{dominio}") and (
+        (dominio_do_google or "").lower() == dominio
     )
-    if not institucional:
+    if not do_dominio:
         raise ContaExterna(email)
 
 

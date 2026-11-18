@@ -18,29 +18,29 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 
 ## Produto: fundação
 
-- [ ] RAD-T10 Modelo `RadarSemanal` e `ExemploOculto`
-- [ ] RAD-T11 [P] Gerador de registros sintéticos para testes, com grupos de 4, 5 e 20 alunos
+- [x] RAD-T10 Modelo `RadarSemanal` e `ExemploOculto`
+- [x] RAD-T11 [P] Gerador de registros sintéticos para testes, com grupos de 4, 5 e 20 alunos
 
 ## Produto: Histórias 1 e 2, tópicos e acertos (P1)
 
-- [ ] RAD-T20 [P] [H1] Testes da regra dos 5 alunos para tópicos e taxas (RAD-RF-04, RAD-RF-07)
-- [ ] RAD-T21 [H1] Tarefa `radar.calcular`: agrupamento, filtro de 5 alunos e nomes dos tópicos (RAD-RF-01, RAD-RF-03, RAD-RF-04)
-- [ ] RAD-T22 [H1] Filtro de dados pessoais nos exemplos e ocultação pelo professor (RAD-RF-05)
-- [ ] RAD-T23 [H2] Taxas de acerto por tópico e por questão a partir de `RespostaQuiz` (RAD-RF-07)
-- [ ] RAD-T24 [H1] Teste de que a resposta da API não contém dado de aluno (RAD-RF-06)
+- [x] RAD-T20 [P] [H1] Testes da regra dos 5 alunos para tópicos e taxas (RAD-RF-04, RAD-RF-07)
+- [x] RAD-T21 [H1] Tarefa `radar.calcular`: agrupamento, filtro de 5 alunos e nomes dos tópicos (RAD-RF-01, RAD-RF-03, RAD-RF-04)
+- [x] RAD-T22 [H1] Filtro de dados pessoais nos exemplos e ocultação pelo professor (RAD-RF-05)
+- [x] RAD-T23 [H2] Taxas de acerto por tópico e por questão a partir de `RespostaQuiz` (RAD-RF-07)
+- [x] RAD-T24 [H1] Teste de que a resposta da API não contém dado de aluno (RAD-RF-06)
 
 ## Produto: História 3, o que retomar (P1)
 
-- [ ] RAD-T30 [H3] Pontuação e escolha dos 3 tópicos sugeridos (RAD-RF-08)
-- [ ] RAD-T31 [H3] Atalho para gerar questões das aulas sugeridas (RAD-RF-11)
+- [x] RAD-T30 [H3] Pontuação e escolha dos 3 tópicos sugeridos (RAD-RF-08)
+- [x] RAD-T31 [H3] Atalho para gerar questões das aulas sugeridas (RAD-RF-11)
 
 ## Produto: História 4, indicadores e semanas (P2)
 
-- [ ] RAD-T40 [H4] Indicadores, seletor de semana e tela do radar no React (RAD-RF-02, RAD-RF-09, RAD-RNF-01)
+- [x] RAD-T40 [H4] Indicadores, seletor de semana e tela do radar no React (RAD-RF-02, RAD-RF-09, RAD-RNF-01)
 
 ## Produto: História 5, resumo por e-mail (P2)
 
-- [ ] RAD-T50 [H5] Tarefa `radar.enviar_resumos` e modelo do e-mail (RAD-RF-10)
+- [x] RAD-T50 [H5] Tarefa `radar.enviar_resumos` e modelo do e-mail (RAD-RF-10)
 
 ## Produto: acabamento
 

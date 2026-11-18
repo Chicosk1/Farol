@@ -24,6 +24,7 @@ class ServidorFalso:
         self.vetores: list[list[float]] | None = None
         self.pedacos = ["Uma pilha ", "segue a ordem LIFO. [1]"]
         self.uso: dict | None = {"prompt_tokens": 120, "completion_tokens": 9}
+        self.conteudo: str | None = '{"questoes": []}'  # resposta sem streaming
         servidor = self
 
         class Tratador(BaseHTTPRequestHandler):
@@ -42,6 +43,9 @@ class ServidorFalso:
                     return
                 if self.path.endswith("/embeddings"):
                     self._vetores(corpo)
+                elif not corpo.get("stream"):
+                    mensagem = {"role": "assistant", "content": servidor.conteudo}
+                    self._json({"choices": [{"index": 0, "message": mensagem}]})
                 else:
                     self._resposta()
 
@@ -220,3 +224,34 @@ def test_provedor_fora_do_ar_e_erro_do_provedor(servidor, settings):
 
 def test_os_testes_do_farol_usam_sempre_o_adaptador_falso(settings):
     assert settings.FAROL_IA["ADAPTADOR"] == "ia.adaptadores.falso.ProvedorFalso"
+
+
+@pytest.mark.requisito("QUE-RF-02")
+def test_a_geracao_de_questoes_pede_json_sem_streaming_com_os_trechos_numerados(servidor):
+    servidor.conteudo = '{"questoes": [{"enunciado": "Qual regra a pilha segue?"}]}'
+
+    texto = ProvedorCompativelOpenAI().gerar_questoes("REGRAS DAS QUESTÕES", TRECHOS, 7)
+
+    assert texto == servidor.conteudo  # quem valida é o módulo questoes
+    corpo = servidor.pedidos[0]["corpo"]
+    assert servidor.pedidos[0]["caminho"] == "/v1/chat/completions"
+    assert corpo["stream"] is False
+    assert corpo["response_format"] == {"type": "json_object"}
+    sistema, usuario = corpo["messages"]
+    assert sistema == {"role": "system", "content": "REGRAS DAS QUESTÕES"}
+    assert "[1] Uma pilha segue a ordem LIFO" in usuario["content"]
+    assert "[2] Uma fila segue a ordem FIFO." in usuario["content"]
+    assert "Gere 7 questões" in usuario["content"]
+
+
+def test_resposta_da_geracao_sem_texto_vira_texto_vazio_e_o_pedido_e_descartado(servidor):
+    servidor.conteudo = None
+
+    assert ProvedorCompativelOpenAI().gerar_questoes("REGRAS", TRECHOS, 5) == ""
+
+
+def test_erro_na_geracao_de_questoes_e_erro_do_provedor(servidor):
+    servidor.status = 500
+
+    with pytest.raises(ErroDoProvedor, match="500"):
+        ProvedorCompativelOpenAI().gerar_questoes("REGRAS", TRECHOS, 5)

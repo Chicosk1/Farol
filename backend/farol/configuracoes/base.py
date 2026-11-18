@@ -2,6 +2,8 @@
 
 from pathlib import Path
 
+from celery.schedules import crontab
+
 from . import ambiente
 
 # Pasta backend/
@@ -30,6 +32,9 @@ INSTALLED_APPS = [
     "duvidas",
     "notificacoes",
     "tutor",
+    "questoes",
+    "revisao",
+    "radar",
     "ia",
     "demonstracao",
 ]
@@ -102,22 +107,29 @@ FAROL_IA_COMPATIVEL_OPENAI = {
     "PREFIXO_DO_TRECHO": ambiente.definida_ou("FAROL_IA_PREFIXO_DO_TRECHO", "title: none | text: "),
     # Segundos de espera por uma resposta. Em CPU, o modelo leva um tempo para carregar.
     "TEMPO_LIMITE": int(ambiente.opcional("FAROL_IA_TEMPO_LIMITE", "120")),
+    # A geração de questões roda em segundo plano e, em CPU, leva minutos (QUE-RNF-01).
+    "TEMPO_LIMITE_DA_GERACAO": int(ambiente.opcional("FAROL_IA_TEMPO_LIMITE_DA_GERACAO", "600")),
 }
 
-# Login institucional com o Google Workspace, pelo django-allauth (ACE-RF-01, specs/001 plan.md).
-# Só entra um e-mail verificado do domínio da instituição. Sem a credencial OAuth, o botão do
-# Google não aparece (GET /api/entrada). Os padrões só servem ao desenvolvimento.
-FAROL_DOMINIO_INSTITUCIONAL = ambiente.opcional("FAROL_DOMINIO_INSTITUCIONAL", "exemplo.edu.br")
+# Login com o Google, pelo django-allauth (ACE-RF-01, specs/001 plan.md). Entra qualquer conta
+# Google de e-mail verificado. FAROL_DOMINIO_INSTITUCIONAL, se definido, restringe a entrada ao
+# domínio de um Google Workspace; vazio (o padrão), não há restrição. Sem a credencial OAuth, o
+# botão do Google não aparece (GET /api/entrada).
+FAROL_DOMINIO_INSTITUCIONAL = ambiente.opcional("FAROL_DOMINIO_INSTITUCIONAL", "")
 FAROL_GOOGLE_CLIENT_ID = ambiente.opcional("FAROL_GOOGLE_CLIENT_ID", "")
 FAROL_GOOGLE_SECRET = ambiente.opcional("FAROL_GOOGLE_SECRET", "")
 
 
 def login_do_google(dominio: str, client_id: str, secret: str) -> dict:
-    """A configuração do provedor Google do allauth, com o domínio sugerido ao escolher a conta."""
+    """A configuração do provedor Google do allauth. Com a restrição de domínio, o parâmetro `hd`
+    sugere ao Google a conta desse domínio na hora de escolher a conta."""
+    parametros = {"prompt": "select_account"}
+    if dominio.strip():
+        parametros["hd"] = dominio.strip()
     return {
         "google": {
             "SCOPE": ["openid", "email", "profile"],
-            "AUTH_PARAMS": {"hd": dominio, "prompt": "select_account"},
+            "AUTH_PARAMS": parametros,
             "OAUTH_PKCE_ENABLED": True,
             "APPS": [{"client_id": client_id, "secret": secret, "key": ""}] if client_id else [],
         }
@@ -226,6 +238,24 @@ CELERY_BEAT_SCHEDULE = {
         "task": "tutor.verificar_orcamento",
         "schedule": 24 * 3600,  # uma vez por dia
     },
+    # A sessão da revisão do dia fica pronta às 6h (REV-RF-08).
+    "revisao-do-dia": {
+        "task": "revisao.montar_sessoes",
+        "schedule": crontab(hour=6, minute=0),
+    },
+    "lembretes-da-revisao": {
+        "task": "revisao.enviar_lembretes",
+        "schedule": 15 * 60,
+    },
+    # O radar é recalculado de madrugada, e o resumo sai às segundas, antes das 7h (RAD-RF-10).
+    "radar-da-turma": {
+        "task": "radar.calcular",
+        "schedule": crontab(hour=3, minute=0),
+    },
+    "resumo-do-radar": {
+        "task": "radar.enviar_resumos",
+        "schedule": crontab(hour=6, minute=30, day_of_week=1),
+    },
 }
 
 # E-mail: no desenvolvimento, o Mailpit captura tudo (ADR 0008).
@@ -255,5 +285,12 @@ SPECTACULAR_SETTINGS = {
         "PerfilEnum": "contas.models.Perfil.choices",
         "StatusDaImportacaoEnum": "disciplinas.models.StatusDaImportacao",
         "StatusDoMaterialEnum": "materiais.models.StatusDoMaterial",
+        "StatusDaQuestaoEnum": "questoes.models.StatusDaQuestao",
+        "StatusDaGeracaoEnum": "questoes.models.StatusDaGeracao",
+        "AvaliacaoDoCartaoEnum": "revisao.models.AvaliacaoDoCartao",
+        "AvaliacaoEnum": "tutor.models.AvaliacaoDaMensagem",
     },
 }
+
+# Endereço do Farol nos e-mails (lembrete da revisão, resumo do radar).
+FAROL_ENDERECO_PUBLICO = ambiente.opcional("FAROL_ENDERECO_PUBLICO", "http://localhost:5173")

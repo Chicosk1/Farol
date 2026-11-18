@@ -29,8 +29,10 @@ const PESSOAS_FICTICIAS = [
 
 // O allauth devolve a pessoa a /entrar?erro=... quando o login com o Google não vale (ACE-RF-01).
 const ERROS_DO_LOGIN: Record<string, string> = {
+  conta_nao_verificada:
+    'Confirme o seu e-mail no Google e tente de novo. O Farol só aceita contas com o e-mail verificado.',
   conta_externa:
-    'Use a sua conta institucional. Contas pessoais do Google e de outras instituições não entram no Farol.',
+    'Use a sua conta institucional. Este Farol só aceita contas do domínio da instituição.',
   conta_desativada:
     'A sua conta está desativada no Farol. Se isso parece um engano, fale com a secretaria do curso.',
   falha: 'Não foi possível entrar com o Google. Tente de novo.',

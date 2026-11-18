@@ -21,7 +21,7 @@ O arquivo do Docker Compose de produção, com o proxy HTTPS e o front-end compi
 | `FAROL_ARQUIVOS` | Pasta dos PDFs enviados, num disco com backup |
 | `FAROL_SEGREDO_PSEUDONIMO` | Segredo dos identificadores pseudônimos (TUT-RF-12). Trocá-lo muda todos os identificadores |
 | `FAROL_IA_ADAPTADOR` | `ia.adaptadores.compativel_openai.ProvedorCompativelOpenAI` |
-| `FAROL_DOMINIO_INSTITUCIONAL` | Domínio do Google Workspace, por exemplo `unimater.edu.br` |
+| `FAROL_DOMINIO_INSTITUCIONAL` | Opcional. Restringe a entrada a um domínio de Google Workspace, por exemplo `unimater.edu.br`; vazio, entra qualquer conta Google de e-mail verificado |
 | `FAROL_GOOGLE_CLIENT_ID`, `FAROL_GOOGLE_SECRET` | Credencial OAuth do Google ([passo a passo](desenvolvimento.md#configurar-o-login-com-o-google)). O endereço de retorno é `https://<endereço>/contas/google/login/callback/` |
 
 Opcionais, com padrão:

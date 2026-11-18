@@ -4,7 +4,7 @@
 | --- | --- |
 | Código | `QUE` |
 | Branch | `005-questoes-e-quizzes` |
-| Status | Em revisão |
+| Status | Aprovada |
 | Criada em | 2026-11-13 |
 | Origem | Documento de idealização, funcionalidade F2 |
 
@@ -64,7 +64,7 @@ Como aluno, quero responder às questões de uma aula e saber na hora se acertei
 
 - Geração demora ou falha: o professor vê "Não foi possível gerar agora" e pode tentar de novo; nenhum rascunho incompleto aparece.
 - Material retirado (MAT-RF-10): as questões publicadas que vieram dele ficam marcadas "Origem retirada" para o professor decidir.
-- Professor edita uma questão já publicada: [PRECISA ESCLARECER: a edição vale na hora para a turma, ou a questão volta para pendentes?]
+- Professor quer editar uma questão já publicada: primeiro a volta para pendentes, edita e aprova de novo. Assim nada muda para a turma sem uma nova aprovação.
 - Aluno sai no meio do quiz: ao voltar, continua da questão em que parou.
 
 ## Requisitos
@@ -110,11 +110,12 @@ Como aluno, quero responder às questões de uma aula e saber na hora se acertei
 
 | Questão | Dono | Prazo |
 | --- | --- | --- |
-| Editar questão publicada vale na hora ou volta para pendentes | Professores do piloto | Fase 0 |
-| O professor também pode escrever questões do zero | Professores do piloto | Fase 0 |
+| O professor também pode escrever questões do zero (fica fora desta versão) | Professores do piloto | Fase 0 |
 
 ## Histórico
 
 | Data | Mudança |
 | --- | --- |
 | 2026-11-13 | Criação da spec a partir da idealização e do protótipo |
+| 2026-11-18 | Aprovada pelo dono do produto |
+| 2026-11-18 | Edição só em pendentes: a questão publicada volta para pendentes antes de ser editada (decisão do dono do produto) |
