@@ -1,7 +1,9 @@
 import { Navigate, useNavigate, useSearchParams } from 'react-router';
 
 import { ENDERECO_DO_LOGIN_GOOGLE, tokenCsrf } from '../../api/cliente';
+import { Avatar } from '../../componentes/Avatar';
 import { Botao } from '../../componentes/Botao';
+import { Icone } from '../../componentes/Icone';
 import {
   loginDeDesenvolvimentoDisponivel,
   useEntrarEmDesenvolvimento,
@@ -10,8 +12,20 @@ import {
 } from './sessao';
 
 // Pessoas fictícias criadas pelo comando popular_demo (docs/desenvolvimento.md).
-const ALUNA = 'ana.souza@exemplo.edu.br';
-const PROFESSOR = 'carlos.mendes@exemplo.edu.br';
+const PESSOAS_FICTICIAS = [
+  {
+    email: 'ana.souza@exemplo.edu.br',
+    nome: 'Ana Souza',
+    descricao: 'Aluna do 2º período de Sistemas de Informação',
+    rotulo: 'Entrar como aluna',
+  },
+  {
+    email: 'carlos.mendes@exemplo.edu.br',
+    nome: 'Carlos Mendes',
+    descricao: 'Professor de Estruturas de Dados',
+    rotulo: 'Entrar como professor',
+  },
+] as const;
 
 // O allauth devolve a pessoa a /entrar?erro=... quando o login com o Google não vale (ACE-RF-01).
 const ERROS_DO_LOGIN: Record<string, string> = {
@@ -22,6 +36,7 @@ const ERROS_DO_LOGIN: Record<string, string> = {
   falha: 'Não foi possível entrar com o Google. Tente de novo.',
 };
 
+/** Tela de entrada, no formato do protótipo: cartão com a marca e as formas de entrar. */
 export function PaginaEntrar() {
   const eu = useEu();
   const formas = useFormasDeEntrar();
@@ -37,57 +52,81 @@ export function PaginaEntrar() {
   const entrarComo = (email: string) => entrar.mutate(email, { onSuccess: () => navegar('/') });
 
   return (
-    <main id="conteudo" className="mx-auto max-w-md p-4">
-      <h1 className="text-2xl font-extrabold text-ink">Entrar no Farol</h1>
-
-      {erro && (
-        <p role="alert" className="mt-4 rounded-md bg-danger-soft p-3 text-danger-text">
-          {erro}
-        </p>
-      )}
-
-      {formas.data?.google && (
-        <form method="post" action={ENDERECO_DO_LOGIN_GOOGLE} className="mt-6">
-          <p className="text-ink-muted">
-            Entre com a conta Google da instituição, sem criar senha nova.
+    <main className="login" id="conteudo">
+      <div className="login-card">
+        <div className="fr-wordmark">
+          <b>Farol</b>
+          <span>Tutor de estudos</span>
+        </div>
+        <div className="stack-sm">
+          <h1 className="page-title">Entrar no Farol</h1>
+          <p className="muted">
+            O tutor de estudos com IA da UNIMATER, com o material dos seus professores.
           </p>
-          <input type="hidden" name="csrfmiddlewaretoken" value={tokenCsrf() ?? ''} />
-          <Botao type="submit" className="mt-3 w-full">
-            Entrar com o Google
-          </Botao>
-        </form>
-      )}
-      {formas.data && !formas.data.google && (
-        <p className="mt-4 text-ink-muted">
-          O login com o Google ainda não foi configurado neste ambiente.
-        </p>
-      )}
+        </div>
 
-      {loginDeDesenvolvimentoDisponivel() && (
-        <section aria-labelledby="titulo-dev" className="mt-8">
-          <h2 id="titulo-dev" className="text-base font-bold text-ink">
-            Desenvolvimento
-          </h2>
-          <p className="mt-1 text-ink-muted">Entre com uma pessoa fictícia do protótipo.</p>
-          <div className="mt-3 flex flex-col gap-3">
-            <Botao onClick={() => entrarComo(ALUNA)} disabled={entrar.isPending}>
-              Entrar como aluna
+        {erro && (
+          <p role="alert" className="notice notice--danger">
+            <Icone nome="alert-triangle" />
+            {erro}
+          </p>
+        )}
+
+        {formas.data?.google && (
+          <form method="post" action={ENDERECO_DO_LOGIN_GOOGLE} className="stack-sm">
+            <input type="hidden" name="csrfmiddlewaretoken" value={tokenCsrf() ?? ''} />
+            <Botao type="submit" icone="school">
+              Entrar com o Google
             </Botao>
-            <Botao
-              variante="secundario"
-              onClick={() => entrarComo(PROFESSOR)}
-              disabled={entrar.isPending}
-            >
-              Entrar como professor
-            </Botao>
-          </div>
-          {entrar.isError && (
-            <p role="alert" className="mt-3 text-danger-text">
-              Não foi possível entrar. Rode o comando popular_demo e tente de novo.
+            <p className="small muted login-hint">
+              <Icone nome="shield-lock" />
+              Use a conta Google da instituição. O Farol não cria senha nova.
             </p>
-          )}
-        </section>
-      )}
+          </form>
+        )}
+        {formas.data && !formas.data.google && (
+          <p className="small muted login-hint">
+            <Icone nome="info-circle" />O login com o Google ainda não foi configurado neste
+            ambiente.
+          </p>
+        )}
+
+        {loginDeDesenvolvimentoDisponivel() && (
+          <section aria-labelledby="titulo-dev" className="stack-sm">
+            <h2 id="titulo-dev" className="section-title">
+              Desenvolvimento
+            </h2>
+            <p className="small muted">Entre com uma pessoa fictícia do protótipo.</p>
+            <div className="role-options">
+              {PESSOAS_FICTICIAS.map((pessoa) => (
+                <button
+                  key={pessoa.email}
+                  type="button"
+                  className="role-option"
+                  aria-label={pessoa.rotulo}
+                  disabled={entrar.isPending}
+                  onClick={() => entrarComo(pessoa.email)}
+                >
+                  <Avatar nome={pessoa.nome} grande />
+                  <span className="role-option-text">
+                    <span className="role-option-title">{pessoa.rotulo}</span>
+                    <span className="small muted">
+                      {pessoa.nome} · {pessoa.descricao}
+                    </span>
+                  </span>
+                  <Icone nome="chevron-right" />
+                </button>
+              ))}
+            </div>
+            {entrar.isError && (
+              <p role="alert" className="notice notice--danger">
+                <Icone nome="alert-triangle" />
+                Não foi possível entrar. Rode o comando popular_demo e tente de novo.
+              </p>
+            )}
+          </section>
+        )}
+      </div>
     </main>
   );
 }
