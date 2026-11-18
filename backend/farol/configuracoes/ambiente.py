@@ -21,6 +21,11 @@ def opcional(nome: str, padrao: str) -> str:
     return os.environ.get(nome, "").strip() or padrao
 
 
+def definida_ou(nome: str, padrao: str) -> str:
+    """Devolve o valor da variável como está, mesmo vazio, ou o padrão quando ela não existe."""
+    return os.environ.get(nome, padrao)
+
+
 def lista(valor: str) -> list[str]:
     """Separa um texto como `a.com, b.com` em itens, sem espaços nem itens vazios."""
     return [item.strip() for item in valor.split(",") if item.strip()]

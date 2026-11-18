@@ -163,7 +163,7 @@ def responder_pergunta(
     chegar sem dados pessoais.
     """
     try:
-        vetor = ia.gerar_embedding(sem_marcas(pergunta))
+        vetor = ia.gerar_embedding_da_pergunta(sem_marcas(pergunta))
     except ValueError:  # pergunta sem nenhuma palavra útil
         yield from _nao_encontrei()
         return

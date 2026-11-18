@@ -48,7 +48,8 @@ def _vetor(texto: str, dimensao: int) -> list[float]:
 
 
 class ProvedorFalso:
-    def embeddings(self, textos: list[str]) -> list[list[float]]:
+    def embeddings(self, textos: list[str], finalidade: str = "trecho") -> list[list[float]]:
+        # O falso não usa instruções de busca: pergunta e trecho geram o vetor do mesmo jeito.
         return [_vetor(texto, settings.FAROL_DIMENSAO_DO_VETOR) for texto in textos]
 
 

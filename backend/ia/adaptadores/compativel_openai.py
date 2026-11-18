@@ -91,8 +91,14 @@ def _eventos_do_stream(resposta) -> Iterator[dict]:
 
 
 class ProvedorCompativelOpenAI:
-    def embeddings(self, textos: list[str]) -> list[list[float]]:
-        modelo = _configuracao()["MODELO_DE_VETORES"]
+    def embeddings(self, textos: list[str], finalidade: str = "trecho") -> list[list[float]]:
+        configuracao = _configuracao()
+        modelo = configuracao["MODELO_DE_VETORES"]
+        # A instrução de busca do modelo (no embeddinggemma, uma para a pergunta e outra para o
+        # trecho) vai antes do texto. Sem instrução configurada, o texto vai como está.
+        chave = "PREFIXO_DA_PERGUNTA" if finalidade == "pergunta" else "PREFIXO_DO_TRECHO"
+        prefixo = configuracao.get(chave, "")
+        textos = [prefixo + texto for texto in textos]
         vetores: list[list[float]] = []
         for inicio in range(0, len(textos), TEXTOS_POR_LOTE):
             lote = textos[inicio : inicio + TEXTOS_POR_LOTE]

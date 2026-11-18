@@ -93,6 +93,12 @@ FAROL_IA_COMPATIVEL_OPENAI = {
     "CHAVE": ambiente.opcional("FAROL_IA_CHAVE", ""),
     "MODELO_DE_RESPOSTAS": ambiente.opcional("FAROL_IA_MODELO_DE_RESPOSTAS", "gemma3:4b"),
     "MODELO_DE_VETORES": ambiente.opcional("FAROL_IA_MODELO_DE_VETORES", "embeddinggemma"),
+    # Instruções de busca do embeddinggemma, que melhoram a busca. Outro modelo de vetores pode
+    # pedir outras, ou nenhuma: defina as variáveis vazias.
+    "PREFIXO_DA_PERGUNTA": ambiente.definida_ou(
+        "FAROL_IA_PREFIXO_DA_PERGUNTA", "task: search result | query: "
+    ),
+    "PREFIXO_DO_TRECHO": ambiente.definida_ou("FAROL_IA_PREFIXO_DO_TRECHO", "title: none | text: "),
     # Segundos de espera por uma resposta. Em CPU, o modelo leva um tempo para carregar.
     "TEMPO_LIMITE": int(ambiente.opcional("FAROL_IA_TEMPO_LIMITE", "120")),
 }

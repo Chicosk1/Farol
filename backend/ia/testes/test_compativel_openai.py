@@ -125,6 +125,27 @@ def test_muitos_textos_vao_em_lotes(servidor):
     assert [len(p["corpo"]["input"]) for p in servidor.pedidos] == [32, 32, 6]
 
 
+def test_a_finalidade_poe_a_instrucao_de_busca_do_modelo_antes_do_texto(servidor, settings):
+    """O embeddinggemma busca melhor com uma instrução para a pergunta e outra para o trecho."""
+    settings.FAROL_IA_COMPATIVEL_OPENAI = {
+        **settings.FAROL_IA_COMPATIVEL_OPENAI,
+        "PREFIXO_DA_PERGUNTA": "task: search result | query: ",
+        "PREFIXO_DO_TRECHO": "title: none | text: ",
+    }
+
+    ProvedorCompativelOpenAI().embeddings(["O que é pilha?"], finalidade="pergunta")
+    ProvedorCompativelOpenAI().embeddings(["Uma pilha é LIFO."], finalidade="trecho")
+
+    assert servidor.pedidos[0]["corpo"]["input"] == ["task: search result | query: O que é pilha?"]
+    assert servidor.pedidos[1]["corpo"]["input"] == ["title: none | text: Uma pilha é LIFO."]
+
+
+def test_sem_instrucoes_configuradas_o_texto_vai_como_esta(servidor):
+    ProvedorCompativelOpenAI().embeddings(["O que é pilha?"], finalidade="pergunta")
+
+    assert servidor.pedidos[0]["corpo"]["input"] == ["O que é pilha?"]
+
+
 def test_vetor_menor_que_o_do_banco_e_erro(servidor):
     servidor.vetores = [[1.0] * 100]
 

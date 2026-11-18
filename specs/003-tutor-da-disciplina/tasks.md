@@ -32,7 +32,7 @@ Formato: `ID [P] [história] descrição (requisitos)`. `[P]` indica que a taref
 - [x] TUT-T12 [P] Montar o conjunto de 100 perguntas de Estruturas de Dados com resposta e trecho esperados em `backend/tutor/avaliacao/`
 - [x] TUT-T13 Comando `avaliar_tutor`, que roda o conjunto e calcula a taxa de citação correta, as afirmações sem citação e o "não encontrei" das perguntas sem base, e sugere o limite de similaridade (TUT-CS-01, TUT-CS-03, TUT-CS-04)
 - [ ] TUT-T16 Workflow do GitHub Actions que roda o `avaliar_tutor` com o Ollama toda semana e nos pull requests que mudam o módulo `ia` ou o conjunto (TUT-CS-01)
-- [ ] TUT-T17 Vetores com a finalidade (pergunta ou trecho do material), para o adaptador usar as instruções de busca do `embeddinggemma` (TUT-RF-01)
+- [x] TUT-T17 Vetores com a finalidade (pergunta ou trecho do material), para o adaptador usar as instruções de busca do `embeddinggemma` (TUT-RF-01)
 - [ ] TUT-T18 Similaridade mínima do tutor configurável por variável de ambiente e calibrada para o `embeddinggemma` com o `avaliar_tutor` (TUT-RF-04)
 
 ## Produto: História 1, perguntar e receber resposta com a fonte (P1)

@@ -103,7 +103,7 @@ class Relatorio:
 
 def _maior_similaridade(disciplina_id: int, pergunta: str) -> float:
     try:
-        vetor = ia.gerar_embedding(pergunta)
+        vetor = ia.gerar_embedding_da_pergunta(pergunta)
     except ValueError:  # o adaptador falso recusa perguntas sem palavras úteis
         return 0.0
     trechos = materiais.buscar_trechos(disciplina_id, vetor, limite=1)

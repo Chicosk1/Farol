@@ -166,7 +166,7 @@ Por padrão, o tutor e o processamento dos PDFs usam o adaptador falso, que não
 
 O Ollama precisa de cerca de 6 GB de memória livre. Em CPU, a primeira resposta depois de subir demora mais, porque o modelo é carregado na memória.
 
-Para voltar ao adaptador falso, comente a linha no `.env` e rode `docker compose up -d`. Para usar um provedor de mercado compatível com a API da OpenAI, mude no `.env` `FAROL_IA_ENDERECO`, os dois modelos e `FAROL_IA_CHAVE`.
+Para voltar ao adaptador falso, comente a linha no `.env` e rode `docker compose up -d`. Para usar um provedor de mercado compatível com a API da OpenAI, mude no `.env` `FAROL_IA_ENDERECO`, os dois modelos e `FAROL_IA_CHAVE`. As instruções de busca do `embeddinggemma`, que vão antes da pergunta e de cada trecho, ficam em `FAROL_IA_PREFIXO_DA_PERGUNTA` e `FAROL_IA_PREFIXO_DO_TRECHO`; outro modelo de vetores pode pedir outras, ou nenhuma (variáveis vazias). Trocar de modelo de vetores exige enviar de novo os PDFs.
 
 ### Configurar o login com o Google
 

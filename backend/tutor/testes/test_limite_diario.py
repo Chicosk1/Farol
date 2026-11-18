@@ -121,7 +121,7 @@ def test_pergunta_recusada_por_provedor_fora_do_ar_nao_gasta_o_limite(
 ):
     # O vetor da pergunta também vem do provedor: fora do ar, nada é respondido.
     fora_do_ar = RuntimeError("fora do ar")
-    with mock.patch.object(servicos.ia, "gerar_embedding", side_effect=fora_do_ar):
+    with mock.patch.object(servicos.ia, "gerar_embedding_da_pergunta", side_effect=fora_do_ar):
         assert perguntar(cliente_aluna, disciplina).status_code == 503
 
     assert contador.usadas(disciplina.id, aluna.id) == 0

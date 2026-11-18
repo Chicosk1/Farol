@@ -4,5 +4,8 @@ from django.conf import settings
 
 
 class Constante:
-    def embeddings(self, textos: list[str]) -> list[list[float]]:
+    finalidades: list[str] = []  # o que cada pedido de vetores informou, para os testes conferirem
+
+    def embeddings(self, textos: list[str], finalidade: str = "trecho") -> list[list[float]]:
+        Constante.finalidades.append(finalidade)
         return [[1.0] + [0.0] * (settings.FAROL_DIMENSAO_DO_VETOR - 1) for _ in textos]

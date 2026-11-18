@@ -2,7 +2,7 @@
 
 from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Literal, Protocol
 
 
 @dataclass(frozen=True)
@@ -30,9 +30,13 @@ class EventoFim:
 
 EventoResposta = EventoTexto | EventoFim
 
+# Para que serve o vetor: buscar (a pergunta do aluno) ou ser achado (o trecho do material).
+# Alguns modelos, como o embeddinggemma, usam uma instrução diferente para cada caso.
+Finalidade = Literal["pergunta", "trecho"]
+
 
 class ProvedorDeIA(Protocol):
-    def embeddings(self, textos: list[str]) -> list[list[float]]:
+    def embeddings(self, textos: list[str], finalidade: Finalidade = "trecho") -> list[list[float]]:
         """Um vetor para cada texto, com o tamanho FAROL_DIMENSAO_DO_VETOR e comprimento 1."""
         ...
 
