@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from '@testing-library/react';
+import { fireEvent, screen, within, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { violacoesDeAcessibilidade } from '../../testes/acessibilidade';
@@ -81,7 +81,12 @@ describe('favoritas na tela inicial (ACE-T36)', () => {
     renderizarApp('/disciplinas');
 
     fireEvent.click(await screen.findByRole('button', { name: 'Favoritar Estruturas de Dados' }));
-    await screen.findByText('★');
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Favoritar Estruturas de Dados' })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      ),
+    );
     fireEvent.click(screen.getByRole('link', { name: 'Início' }));
 
     const lista = await screen.findByRole('list', { name: 'Disciplinas favoritas' });

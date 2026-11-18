@@ -89,7 +89,7 @@ As telas do produto passam a ter o mesmo visual e a mesma organização do prot�
 - [x] ACE-T71 Casca do protótipo: cabeçalho com a marca, o sino e o menu da conta (trocar de perfil e sair), menu lateral por perfil e barra inferior no celular (ACE-RF-03)
 - [x] ACE-T72 Tela de entrada no formato do protótipo (ACE-RF-01)
 - [x] ACE-T73 Rota `GET /api/disciplinas/{id}` e campo `tem_tutor` na lista de disciplinas, para os cartões e a página da disciplina (ACE-RF-04, ACE-RF-10)
-- [ ] ACE-T74 Disciplinas em cartões e em lista, com busca, abas e favoritas, como no protótipo (ACE-RF-10)
+- [x] ACE-T74 Disciplinas em cartões e em lista, com busca, abas e favoritas, como no protótipo (ACE-RF-10)
 - [ ] ACE-T75 Início do aluno no formato do protótipo: cartão do tutor, novidades e as disciplinas favoritas (ACE-RF-10)
 - [ ] ACE-T76 Início do professor: as disciplinas que leciona, com os atalhos para materiais, dúvidas e configuração (ACE-RF-04)
 - [ ] ACE-T77 Aviso de privacidade e Meus dados no formato do protótipo (ACE-RF-08, ACE-RF-09)

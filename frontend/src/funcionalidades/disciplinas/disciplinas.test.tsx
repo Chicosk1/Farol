@@ -2,7 +2,7 @@ import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { violacoesDeAcessibilidade } from '../../testes/acessibilidade';
-import { ANA, DISCIPLINAS, simularApi } from '../../testes/api';
+import { ANA, CARLOS, DISCIPLINAS, simularApi } from '../../testes/api';
 import { renderizarApp } from '../../testes/renderizar';
 
 describe('tela de disciplinas (ACE-T33)', () => {
@@ -29,9 +29,9 @@ describe('tela de disciplinas (ACE-T33)', () => {
     const lista = await screen.findByRole('list', { name: 'Disciplinas' });
     const itens = within(lista).getAllByRole('listitem');
     expect(itens).toHaveLength(6);
-    expect(within(itens[3]!).getByText('Estruturas de Dados')).toBeInTheDocument();
+    expect(within(itens[3]!).getByText(/^Estruturas de Dados/)).toBeInTheDocument();
     expect(within(itens[3]!).getByText(/SINF201/)).toBeInTheDocument();
-    expect(within(itens[3]!).getByText(/SINF2NA/)).toBeInTheDocument();
+    expect(within(itens[3]!).getAllByText(/SINF2NA/).length).toBeGreaterThan(0);
     expect(within(itens[3]!).getByText(/Carlos Mendes/)).toBeInTheDocument();
     expect(screen.getByText('6 disciplinas')).toHaveAttribute('role', 'status');
   });
@@ -50,7 +50,7 @@ describe('tela de disciplinas (ACE-T33)', () => {
     });
 
     await waitFor(() => expect(screen.getAllByRole('listitem')).toHaveLength(1));
-    expect(screen.getByText('Estruturas de Dados')).toBeInTheDocument();
+    expect(screen.getByText(/^Estruturas de Dados/)).toBeInTheDocument();
     expect(await screen.findByText('1 disciplina')).toHaveAttribute('role', 'status');
     expect(chamadas.some((c) => c.caminho === '/api/disciplinas?busca=estruturas')).toBe(true);
   });
@@ -68,7 +68,9 @@ describe('tela de disciplinas (ACE-T33)', () => {
       target: { value: 'culinaria' },
     });
 
-    expect(await screen.findByText('Nenhuma disciplina encontrada.')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Nenhuma disciplina encontrada' }),
+    ).toBeInTheDocument();
     expect(screen.queryByRole('list', { name: 'Disciplinas' })).not.toBeInTheDocument();
   });
 
@@ -76,7 +78,9 @@ describe('tela de disciplinas (ACE-T33)', () => {
     simularApi({ 'GET /api/eu': { corpo: ANA }, 'GET /api/disciplinas': { corpo: [] } });
     renderizarApp('/disciplinas');
 
-    expect(await screen.findByText('Nenhuma disciplina encontrada.')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Nenhuma disciplina encontrada' }),
+    ).toBeInTheDocument();
   });
 
   it('alterna entre grade e lista, e o botão ativo avisa o leitor de tela', async () => {
@@ -124,7 +128,7 @@ describe('tela de disciplinas (ACE-T33)', () => {
     fireEvent.click(await screen.findByRole('tab', { name: 'Com tutor' }));
 
     await waitFor(() => expect(screen.getAllByRole('listitem')).toHaveLength(1));
-    expect(screen.getByText('Estruturas de Dados')).toBeInTheDocument();
+    expect(screen.getByText(/^Estruturas de Dados/)).toBeInTheDocument();
   });
 
   it('na aba Com tutor sem nenhuma disciplina pronta, explica o motivo', async () => {
@@ -145,6 +149,52 @@ describe('tela de disciplinas (ACE-T33)', () => {
     const { container } = renderizarApp('/disciplinas');
     await screen.findByRole('list', { name: 'Disciplinas' });
 
+    expect(await violacoesDeAcessibilidade(container)).toEqual([]);
+  });
+
+  it('o cartão mostra o atalho do tutor só quando a disciplina tem material pronto (ACE-T74)', async () => {
+    const comTutor = DISCIPLINAS.map((d) => ({ ...d, tem_tutor: d.codigo === 'SINF201' }));
+    simularApi({ 'GET /api/eu': { corpo: ANA }, 'GET /api/disciplinas': { corpo: comTutor } });
+    renderizarApp('/disciplinas');
+
+    const itens = within(await screen.findByRole('list', { name: 'Disciplinas' })).getAllByRole(
+      'listitem',
+    );
+    expect(within(itens[3]!).getByText('Com tutor')).toBeInTheDocument();
+    expect(
+      within(itens[3]!).getByRole('link', { name: 'Tutor de Estruturas de Dados' }),
+    ).toBeInTheDocument();
+    expect(within(itens[1]!).queryByRole('link', { name: /^Tutor de/ })).toBeNull();
+    expect(
+      within(itens[3]!).getByRole('heading', { level: 2, name: 'Estruturas de Dados (SINF201)' }),
+    ).toBeInTheDocument();
+  });
+
+  it('o professor tem os atalhos de materiais, dúvidas e configuração em cada cartão', async () => {
+    simularApi({
+      'GET /api/eu': { corpo: CARLOS },
+      'GET /api/disciplinas': { corpo: [DISCIPLINAS[3]] },
+    });
+    renderizarApp('/disciplinas');
+
+    for (const nome of ['Materiais de', 'Dúvidas de', 'Configurar o tutor de']) {
+      expect(
+        await screen.findByRole('link', { name: `${nome} Estruturas de Dados` }),
+      ).toBeInTheDocument();
+    }
+    expect(screen.queryByRole('link', { name: 'Tutor de Estruturas de Dados' })).toBeNull();
+  });
+
+  it('no modo lista, cada disciplina é uma linha que leva aos materiais', async () => {
+    simularApi({ 'GET /api/eu': { corpo: ANA }, 'GET /api/disciplinas': { corpo: DISCIPLINAS } });
+    const { container } = renderizarApp('/disciplinas');
+    await screen.findByRole('list', { name: 'Disciplinas' });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Ver em lista' }));
+
+    const linha = screen.getByRole('link', { name: /Estruturas de Dados \(SINF201\)/ });
+    expect(linha).toHaveClass('course-row');
+    expect(linha).toHaveAttribute('href', `/disciplinas/${DISCIPLINAS[3]!.id}/materiais`);
     expect(await violacoesDeAcessibilidade(container)).toEqual([]);
   });
 });

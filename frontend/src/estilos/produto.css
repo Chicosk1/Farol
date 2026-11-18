@@ -14,6 +14,16 @@ a.popover-action {
   text-decoration: none;
 }
 
+/* Lista de disciplinas no modo lista: cada linha é um item, com a borda entre elas. */
+.list-panel > li + li > .course-row {
+  border-top: 1px solid var(--line);
+}
+
+/* Atalhos no rodapé do cartão de disciplina, à direita. */
+.cartao-atalhos {
+  justify-content: flex-end;
+}
+
 /* Notificação ainda não lida, no sino. */
 .popover-item.is-unread {
   background: var(--accent-soft);

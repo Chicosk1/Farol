@@ -44,7 +44,9 @@ function simularTutor(
 ) {
   return simularApi({
     'GET /api/eu': { corpo: ANA },
-    'GET /api/disciplinas': { corpo: DISCIPLINAS },
+    'GET /api/disciplinas': {
+      corpo: DISCIPLINAS.map((d) => ({ ...d, tem_tutor: d.id === ESTRUTURAS.id })),
+    },
     [`GET ${URL_DO_TUTOR}`]: { corpo: tutor },
     [`GET /api/disciplinas/${ESTRUTURAS.id}/minhas-duvidas`]: { corpo: duvidas },
     ...(pergunta ? { [`POST ${URL_DO_TUTOR}/perguntas`]: pergunta } : {}),
